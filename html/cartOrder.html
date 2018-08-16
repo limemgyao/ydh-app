@@ -1,0 +1,381 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <link rel="stylesheet" type="text/css" href="../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../css/public.css" />
+    <link rel="stylesheet" type="text/css" href="../css/bookInfo.css" />
+    <style>
+    #loading_layer {position: fixed;z-index: 10;;top: 0;left: 0;width: 100%;height: 100%;}
+    #loading_win {position: absolute;left: 45%; margin: 0 auto;top:40%;}
+    #loading_win img {border-radius: 40px;}
+    .hide{display: none;}
+    .headerinfo {color: #fff;background-color: #00AF68;position: fixed;}
+    .inconn {color: #fff !important;}
+    </style>
+</head>
+
+<body class="goodsOrder_body">
+    <header class="aui-bar aui-bar-nav aui-bar-light headerinfo" id="aui-header" style="font-size:18px;font-weight:bold;z-index: 99;">
+        <a class="aui-btn aui-pull-left" tapmode onclick="closeWin()">
+            <span class="aui-iconfont aui-icon-left inconn"></span>
+        </a>
+        <div class="aui-title" id="EditTitle">确认订单</div>
+    </header>
+    <div class="goodsOrder" id="wrapper">
+      <div class="div_footer_hid" style="background-color: #F2F2F2;width:100%;height:65px;"></div>
+        <div class="content">
+            <!-- 收货信息 -->
+            <div class="ConsigneeInfo" tapmode onclick="Edit_ads()">
+                <div id="divDefault" class="isDefault"></div>
+                <div class="Consignee" id="divMebName"></div>
+                <div class="td_Mobile" id="divMobile"></div>
+                </br>
+                <div class="gps"></div>
+                <div class="td_Ads" id="divAds"></div>
+                <div class="img_Edit"></div>
+                </br>
+                <div class="ads_image"></div>
+                <input id="Hid_Address" type="hidden" />
+                <input id="Hid_UserName" type="hidden" />
+            </div>
+            <!-- 商品信息 -->
+            <div class="goodsInfo">
+                <div class="goods_Divimage">
+                    <img class="goods_image" id="goods_image" src="" />
+                </div>
+                <div class="td_GoodsName" id="td_GoodsName"></div>
+                </br>
+                <div class="unit_Price"><span><span style="color:red;">¥</span><span style="font-size:1.2em;color:red;" id="unit_Price"></span></div>
+                <div class="div_number">
+                    <div class="number_add" tapmode onclick="numberAdd()"></div>
+                    <input id="Hid_MaxSaleCount" type="hidden" />
+                    <input id="Hid_GoodsId" type="hidden" />
+                    <input class="input_number" type="tel" id="number" value="1" tapmode onBlur="number_On()" tapmode onchange="number_On()" />
+                    <div class="number_minus" tapmode onclick="numberMinus()"></div>
+                  </br><div style="color:#808080;font-size:12px; float:right; padding-right:25px;" id="div_MaxSaleCount"></div>
+                </div>
+            </div>
+            <!-- 支付方式 -->
+            <div class="payType">
+                <input id="Hid_payType" type="hidden" />
+                <div class="div_payZ" tapmode onclick="payTypeOn(1)">
+                    <div class="payZ_image"></div>
+                    <div class="payZ_Name">支付宝支付</div>
+                    <div class="pay_type payZ_type pay_typeNo"></div>
+                </div>
+                <div class="payHr"></div>
+                <div class="div_payW" tapmode onclick="payTypeOn(2)">
+                    <div class="payW_image"></div>
+                    <div class="payW_Name">微信支付</div>
+                    <div class="pay_type payW_type pay_typeNo"></div>
+                </div>
+            </div>
+
+            <!-- 说明 -->
+            <div class="explainInfo">
+                <div class="explain_image"></div>
+                <div class="ex_Title">游读会说明：</div>
+                </br>
+                <div class="ex_content">&nbsp;&nbsp;订单支付成功后，我们会尽快安排发货，请确保信息填写正确!</div>
+            </div>
+        </div>
+        <div class="div_footer_hid" style="background-color: #F2F2F2;width:100%;height:60px;"></div>
+        <footer class="aui-bar aui-bar-tab" id="footer" style="height:60px;z-index: 2;bottom: 0px;">
+            <div class="aui-bar-tab-item" style="width: 60%;">
+                <div style="font-size:14px;text-align:left;padding-left:5px;">
+                    总计：<span class="Price"><span style="color:red;">¥</span>
+                    <span style="font-size:24px;font-weight:bold;color:red;" id="amount">0</span>
+                    <span id="span_ExpressRate" style="color: red;font-size:14px;"></span>
+                </div>
+            </div>
+            <input id="Hid_orderId" type="hidden" />
+            <div class="aui-bar-tab-item aui-bg-danger aui-text-white" tapmode onclick="GoodsOrder.Submit()" tapmode style="width: auto;background-color:#00AE67 !important; font-size:18px; font-weight:bold;">立即支付</div>
+        </footer>
+
+        <!--支付成功显示 -->
+        <div id="success" style="height: 48%">
+            <div class="success_title">
+                <img src="../image/paysuccess.png" />
+            </div>
+            <div class="success_content">
+                <span>您的订单已支付成功！</span>
+                <span>我们将以最快的速度为您发货～</span>
+            </div>
+            <div class="success_foot">
+                <label> <i class="aui-iconfont aui-icon-share share"></i> <input type="button" value="分享" /></label>
+                <label> <input type="button" value="查看订单" onclick="GoodsOrder.Vieworder()" /></label>
+            </div>
+        </div>
+        <div id="layer_success"></div>
+        <!-- 加载 -->
+        <div id="loading_layer"></div>
+        <div id="loading_win"><img src="../image/93.gif" /></div>
+</body>
+<script type="text/javascript" src="../script/jquery.js"></script>
+<script type="text/javascript" src="../script/config.js"></script>
+<script type="text/javascript" src="../script/payhelper.js"></script>
+<script type="text/javascript" src="../script/paycallback.js"></script>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/goodsOrder.js"></script>
+<script type="text/javascript">
+    var goodid = 0;
+    var mebid = 0;
+    var contactID = 0;
+    var ishasContact = false;
+    apiready = function() {
+
+        try {
+          // 阻止页面弹动
+          api.setWinAttr({
+              bounces: false
+          });
+
+            api.parseTapmode();
+
+
+            var header = $api.byId('aui-header');
+            $api.fixStatusBar(header);
+            var headerPos = $api.offset(header);
+            var body_h = $api.offset($api.dom('body')).h;
+            var footerH = $api.offset($api.byId('footer')).h;
+            mebid = $api.user.userid();
+            init_html(); //初始化数据
+            $("#divDefault").removeClass("isDefault");
+            //获取商品信息
+            loadAjaxGoodsData(goodid);
+      } catch (e) {alert("请求失败,请检查网络是否正常");} finally {}
+
+
+    };
+
+    //初始化数据函数
+    //用于其他窗体返回的时候，可能需要重新加载此页面的部分数据
+    //如果是需要重新加载数据，请将需要重新调用的数据写入到此方法中
+    function init_html() {
+
+        mebid = $api.user.userid();
+
+        //从订单列表发起支付时获取订单ID
+        if (api.pageParam.orderid) {
+          $("#Hid_orderId").val(api.pageParam.orderid);
+        }else {
+          $("#Hid_orderId").val("");
+        }
+
+       if (api.pageParam.goodsId) {
+            goodid = api.pageParam.goodsId; //界面参数传进来，则使用界面参数
+            $api.setStorage('goodsId', goodid); //并且将参数缓存到本地中
+        } else {
+            goodid = $api.getStorage('goodsId'); //否则直接从缓存中读取该信息
+        }
+        ///如果窗体中有缓存对象进入到，则通过此缓存开始加载
+        var data = $api.getStorage("pageParam");
+        loadData_whenpageParamWithContactInfo(data);
+    }
+
+    //如果窗体传送的过程中，存在了此信息，则通过此方法加载数据
+    function loadData_whenpageParamWithContactInfo(data) {
+      try {
+        var contact_data;
+        //如果缓存中存在数据，则说明用户已经进了选择，或者用户新增加了数据
+        //此时直接从缓存中将数据加载到页面
+        //否则直接根据缓存中的用户ID数据，异步获取用户地址信息
+
+        var default_data = getdefaultdata();
+
+        if (data) {
+            if (data && data.ContactSotre) {
+                ishasContact = true;
+                inint_adsinfo(data.ContactSotre);
+                $("#divDefault").addClass("isDefault");
+            } else {
+                //没有获取到数据
+                inint_adsinfo(default_data);
+            }
+        } else {
+            if (!mebid) mebid = -1;
+            $.get(app_apiconfig.MebContact.querymasterbymebid + "?mebid=" + mebid,
+                function(data) {
+                    //console.log(app_apiconfig.MebContact.querymasterbymebid + "?mebid=" + mebid);
+                    if (data && data.Data) {
+                        ishasContact = true;
+                        inint_adsinfo(data.Data);
+                        $("#divDefault").addClass("isDefault");
+                    } else {
+                        //没有获取到数据
+                        inint_adsinfo(default_data);
+                    }
+                });
+        }
+      } catch (e) {alert("请求失败,请检查网络是否正常");} finally {}
+
+    }
+
+
+    //如果没有数据，用于进行初始化数据
+    function getdefaultdata() {
+        return {
+            "ContactName": "",
+            "MobileNo": "",
+            "ProviceName": "新增一个收货地址",
+            "CityName": "",
+            "AreaName": "",
+            "Address": ""
+        };
+    }
+
+    ///加载用户收货地址信息
+    function inint_adsinfo(contactdata) {
+        var elMebName = $api.byId('divMebName');
+        var elMobile = $api.byId('divMobile');
+        var elAds = $api.byId('divAds');
+
+
+
+        try {
+            if (contactdata) {
+                if (elMebName) {
+                    $api.text(elMebName, contactdata.ContactName);
+                }
+
+                if (elMobile) {
+                    $api.text(elMobile, contactdata.MobileNo);
+                }
+                if (elAds) {
+                    $api.text(elAds, contactdata.ProviceName + contactdata.CityName + contactdata.AreaName + contactdata.Address);
+                }
+
+                $api.val($api.byId('Hid_Address'), contactdata.ProviceName + contactdata.CityName + contactdata.AreaName + contactdata.Address);
+                $api.val($api.byId('Hid_UserName'), contactdata.ContactName);
+            }
+
+        } catch (e) {
+            $api.text(elMebName, "");
+            $api.text(elMobile, "");
+            $api.text(elAds, "还没有收货地址，点击立即新增一个");
+        }
+
+    }
+
+   //获取商品信息
+    function loadAjaxGoodsData(goodid) {
+      try {
+          if (goodid <= 0) {
+              return;
+          }
+            api.ajax({
+                url: app_apiconfig.singnbkdetailAPI + 'id=' + goodid,
+                method: 'get',
+            }, function(json, err) {
+                if (json) {
+                    if (json.State == 1) {
+                        if (json.Data != null) {
+                            var htmldata = json.Data;
+                            var bkname = htmldata.Name;
+                            var imageurl = htmldata.Cover==""?"/Skin/images/goods_pic_def.jpg":htmldata.Cover;
+                            var price = htmldata.DiscountRate;
+                            var MaxSaleCount = htmldata.MaxSaleCount;
+                            var ExpressRate = htmldata.ExpressRate;
+                            var amount = 0;
+                           if (Number(price) >= 0) {
+                               amount = Number(price).toFixed(2);
+                           }
+                            $api.attr($api.byId('goods_image'), 'src', app_apiconfig.imageServer + imageurl);
+                            $api.html($api.byId('td_GoodsName'), bkname);
+                            $api.val($api.byId('number'), 1);
+                            $api.html($api.byId('unit_Price'), price);
+                            $api.val($api.byId('Hid_MaxSaleCount'), MaxSaleCount);
+                            $api.html($api.byId('div_MaxSaleCount'), "最大购买数量" + MaxSaleCount);
+                            $api.html($api.byId('amount'), amount);
+                            $api.html($api.byId('span_ExpressRate'), "  + " + ExpressRate + " (运费)");
+                            $api.val($api.byId('Hid_GoodsId'), goodid);
+                        }
+                    }
+                }
+                $api.addCls(loading_layer, 'hide');
+                $api.addCls(loading_win, 'hide');
+                //mangerdiv();
+            });
+        } catch (e) {
+          $api.addCls(loading_layer, 'hide');
+          $api.addCls(loading_win, 'hide');
+            alert('哦？似乎我们的应用开小差了,请稍等片刻!');
+        }
+
+    }
+    //修改地址
+    function Edit_ads() {
+      try {
+        api.openWin({
+            name: ishasContact ? 'getGoodsAds' : 'addGoodsAds',
+            url: ishasContact ? 'getGoodsAds.html' : 'addGoodsAds.html',
+            pageParam: {
+                'goodid': goodid
+            },
+            bounces: true,
+            rect: {
+                x: 0,
+                y: 0,
+                w: 'auto',
+                h: 'auto'
+            }
+        });
+      } catch (e) {alert("请求失败,请检查网络是否正常");} finally {}
+
+
+    }
+
+    function closeWin() {
+        api.closeWin();
+    }
+
+    function numberAdd() {
+        var nummber = Number($("#number").val());
+        if (nummber < 10000000) {
+            $("#number").val(nummber + 1);
+        }
+        number_On();
+    }
+
+    function numberMinus() {
+        var nummber = Number($("#number").val());
+        if (nummber > 1) {
+            $("#number").val(nummber - 1);
+        }
+        number_On();
+    }
+    //计算总计
+    function number_On() {
+        var reg = /^\+?[1-9]\d*$/;
+        var count = $("#number").val();
+        if (!reg.test(count) || count == "" || count == "0"){
+          $("#number").val("1");
+           count = 1;
+        }
+        if (Number($("#unit_Price").html()) >= 0 && Number(count) > 0) {
+            $("#amount").html((Number($("#unit_Price").html()) * Number(count)).toFixed(2));
+        }
+    }
+    //1支付宝 2微信
+    function payTypeOn(type) {
+        if (type == 1) {
+            $("#Hid_payType").val(type);
+            $(".payW_type").removeClass("pay_typeOk");
+            $(".payZ_type").removeClass("pay_typeNo");
+            $(".payW_type").addClass("pay_typeNo");
+            $(".payZ_type").addClass("pay_typeOk");
+        } else if (type == 2) {
+            $("#Hid_payType").val(2);
+            $(".payZ_type").removeClass("pay_typeOk");
+            $(".payW_type").removeClass("pay_typeNo");
+            $(".payW_type").addClass("pay_typeOk");
+            $(".payZ_type").addClass("pay_typeNo");
+        }
+    }
+</script>
+
+</html>

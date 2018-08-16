@@ -1,0 +1,332 @@
+<!doctype html>
+<html>
+<!-- 地址列表  -->
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <link rel="stylesheet" type="text/css" href="../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../css/bookInfo.css" />
+    <style>
+        .headerinfo {
+            color: #fff;
+            background-color: #00AF68;
+        }
+
+        .inconn {
+            color: #fff !important;
+        }
+    </style>
+</head>
+
+<body class="getGoodsAds_body">
+    <header class="aui-bar aui-bar-nav aui-bar-light headerinfo" id="aui-header" style="position: fixed;top: 0px;table-layout: fixed;font-weight:bold;font-size:18px;">
+        <a class="aui-btn aui-pull-left" tapmode onclick="closeWin()">
+            <span class="aui-iconfont aui-icon-left inconn"></span>
+        </a>
+        <div class="aui-title" id="EditTitle">选择收货地址</div>
+    </header>
+    <div style="background-color: #F2F2F2;width:100%;height:65px;"></div>
+    <div class="getGoodsAds" id="wrapper">
+        <div class="content" id="tabContact">
+
+        </div>
+    </div>
+    <div style="background-color: #F2F2F2;width:100%;height:75px;margin-top:4%;"></div>
+    <footer class="aui-bar aui-bar-tab" id="footer" style="height:75px;">
+        <input id="Hid_TravelId" type="hidden" />
+        <div class="footerSubmit" tapmode onclick="addSubmit()">新增收货地址</div>
+    </footer>
+</body>
+<script type="text/javascript" src="../script/jquery.js"></script>
+<script type="text/javascript" src="../script/config.js"></script>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript">
+    var goodid = 0;
+    var tableid = 0;
+    apiready = function() {
+        try {
+          // 阻止页面弹动
+          api.setWinAttr({
+              bounces: false
+          });
+            api.parseTapmode();
+            var header = $api.byId('aui-header');
+            $api.fixStatusBar(header);
+            var headerPos = $api.offset(header);
+            var body_h = $api.offset($api.dom('body')).h;
+            var footerH = $api.offset($api.byId('footer')).h;
+
+            //商品ID
+            goodid = api.pageParam.goodid;
+
+
+            loadAjaxMebContactData();
+
+            //增加一个监听，用于当前页面被缓存后，则直接关闭此页面
+            api.addEventListener({
+                name: 'viewdisappear'
+            }, function(ret, err) {
+                api.closeWin({
+                    name: 'getGoodsAds'
+                });
+            });
+        } catch (e) {
+            alert("请求失败,请检查网络是否正常");
+        } finally {}
+
+
+        //viewdisappear
+    };
+
+    // function mangerdiv() {
+    //     try {
+    //         if (myScroll == undefined) {
+    //             //init scroll
+    //             InitBodyScroll();
+    //         } else {
+    //             myScroll.refresh();
+    //         }
+    //     } catch (e) {
+    //         alert("请求失败,请检查网络是否正常");
+    //     } finally {}
+    //
+    // }
+
+    //设置默认选项
+    function setMasterContact(obj) {
+        try {
+            $(".Defaultflag").removeClass("Defaultflag_OK");
+            $(".Defaultflag").addClass("Defaultflag_No");
+            $(obj).removeClass("Defaultflag_No");
+            $(obj).addClass("Defaultflag_OK");
+            var contactID = $(obj).attr('data');
+            var data = {
+                "ContactID": contactID
+            };
+            //异步调用设置
+            $.ajax({
+                type: 'POST',
+                url: app_apiconfig.MebContact.setMaster,
+                data: data,
+                success: function(ret) {},
+                dataType: 'json'
+            });
+        } catch (e) {}
+
+    }
+
+    //默认存储进来的是tableid
+    function edit(tableid) {
+      try {
+        //console.log('------------edit--------------:'+tableid);
+        var flag = getTabledata(tableid);
+      } catch (e) {alert("请求失败,请检查网络是否正常");} finally {}
+
+
+    }
+
+    //删除
+    function del(contactid) {
+      try {
+        // console.log('------------del--------------');
+        //var flag = getTabledata(tableid);
+        var tableid = contactid;
+        //console.log('DEL');
+        if (contactid > 0) {
+            var data = {
+                "ContactID": contactid
+            };
+            $.ajax({
+                type: 'POST',
+                url: app_apiconfig.MebContact.delContact,
+                data: data,
+                success: function(ret) {
+                    //console.log($api.jsonToStr(ret));
+                    if (ret && ret.Data && ret.Data > 0) {
+                        var tablename = "#table" + tableid;
+                        $(tablename).slideUp(300, function() {
+                            $(this).remove()
+                        });
+                    }else {
+                      alert("删除失败，请注意不能直接删除默认地址");
+                    }
+                },
+                dataType: 'json'
+            });
+        }
+      } catch (e) {alert("请求失败,请检查网络是否正常");} finally {}
+
+    }
+
+
+    function sel(tableid) {
+      try {
+        //console.log('------------sel--------------');
+        var flag = getTabledata(tableid);
+        if (flag) {
+
+            //让后台加载数据信息
+            var loaddatafun = 'init_html();';
+            api.execScript({
+                name: 'goodsOrder',
+                script: loaddatafun
+            });
+            api.closeWin();
+        }
+      } catch (e) {alert("请求失败,请检查网络是否正常");} finally {}
+
+    }
+
+
+    //设置缓存中的数据信息
+    function getTabledata(tableid) {
+        var contactObj;
+        try {
+            var tableinfo = $api.byId("table" + tableid);
+            var data = $api.attr(tableinfo, 'data'); //获取data
+            if (data && data != "") {
+                data = data.replace(/'/g, "\"");
+                //将格式进行转化
+                contactObj = JSON.parse(data);
+            }
+            var pageparam = {
+                    'ContactSotre': contactObj,
+                    'ContactID': tableid,
+                    'GoodId': goodid
+                }
+                //如果存在，则需要删除这个pageParam
+            if ($api.getStorage("pageParam")) {
+                $api.rmStorage("pageParam");
+            }
+            //设置对象信息
+            $api.setStorage("pageParam", pageparam);
+            //console.log($api.jsonToStr(pageparam));
+        } catch (e) {
+            return false;
+        }
+        return true;
+    }
+
+
+
+    //异步加载数据，加载来自服务器上的数据信息
+    function loadAjaxMebContactData() {
+      try {
+        var mebid = $api.user.userid();
+        $api.get(app_apiconfig.MebContact.querylistbymebid + "?mebid=" + mebid,
+            function(ret) {
+                try {
+                    if (ret) {
+                        //  console.log(JSON.stringify(ret));
+                        var jsonRet = $api.strToJson(ret);
+                        if (jsonRet && jsonRet.ErrCode == 200 && jsonRet.Data && jsonRet.Data != '' && jsonRet.Data.length > 0) {
+                            var data = jsonRet.Data;
+                            if (!data) {
+                                return;
+                            }
+                            var objdiv = $api.byId('tabContact');
+                            for (var i = 0; i < data.length; i++) {
+                                var item = data[i];
+                                //console.log($api.jsonToStr('item.ismaster:'+ item.ContactName +'__'+ item.IsMain));
+                                try {
+                                    var temp = '';
+                                    //第一行 收货人，手机号
+                                    temp += '<div class="tableInfo" id="table' + item.ContactID + '" mebcontact="' + item.ContactID + '" mebid="' + item.MebID + '"   data="' + $api.jsonToStr(item).replace(/"/g, "\'") + '">';
+                                    temp += '<div class="ConsigneeInfo" onclick="sel(' + item.ContactID + ')">';
+                                    temp += '<div class="isDefault ' + (item.IsMain == 1 ? 'isDefault_Ok' : 'isDefault_No') + '"></div>';
+                                    temp += '<div class="Consignee">收货人:' + item.ContactName + '</div>';
+                                    temp += '<div class="td_Mobile"><span>' + item.MobileNo + '</span></div>';
+                                    temp += '</div>';
+                                    //第二行 地址
+                                    temp += '<div class="td_Ads" onclick="sel(' + item.ContactID + ')"><span>' + item.Address + '</span></div>';
+                                    //第三行 设置（设为默认、编辑、删除）
+                                    temp += '<div class="DelEditInfo">';
+                                    temp += '<div style="margin-left:10px;background-color:#ccc;">';
+                                    temp += '<div class="Defaultflag ' + (item.IsMain == 1 ? 'Defaultflag_OK' : 'Defaultflag_No') + ' " onclick="setMasterContact(this);" data="' + item.ContactID + ' " ></div>';
+                                    temp += '<div class="Default_div" >设为默认</div>';
+                                    temp += '</div>';
+
+                                    temp += '<div style="float:right;" >';
+                                    temp += '<div class="td_Edit" onclick="editSubmit(' + item.ContactID + ')"></div>';
+                                    temp += '<div class="Div_DelEdit" onclick="editSubmit(' + item.ContactID + ')">编辑</div>';
+                                    temp += '<div class="td_Del" onclick="del(' + item.ContactID + ')"></div>';
+                                    temp += '<div class="Div_DelEdit" onclick="del(' + item.ContactID + ')">删除</div>';
+                                    temp += '</div>';
+                                    temp += '</div>';
+
+
+
+                                    $api.append(objdiv, temp);
+                                } catch (e) {
+                                    continue;
+                                }
+
+                            }
+
+                        }
+                    }
+                } catch (e) {}
+                //mangerdiv(); //加载样式，请勿删除
+            });
+      } catch (e) {alert("请求失败,请检查网络是否正常");} finally {}
+
+    }
+
+
+
+
+
+    function closeWin() {
+        api.closeWin();
+    }
+
+    function editSubmit(str_contactID) {
+      try {
+        api.openWin({
+            name: 'editGoodsAds',
+            url: 'editGoodsAds.html',
+            pageParam: {
+                'contactID': str_contactID
+            },
+
+            bounces: true,
+            rect: {
+                x: 0,
+                y: 0,
+                w: 'auto',
+                h: 'auto'
+            }
+        });
+      } catch (e) {alert("请求失败,请检查网络是否正常");} finally {}
+
+    }
+
+    function addSubmit(str_contactID) {
+
+      try {
+        api.execScript({
+            name: 'addGoodsAds',
+            script: "init_data()"
+        });
+
+        api.openWin({
+            name: 'addGoodsAds',
+            url: 'addGoodsAds.html',
+            pageParam: {},
+
+            bounces: true,
+            rect: {
+                x: 0,
+                y: 0,
+                w: 'auto',
+                h: 'auto'
+            }
+        });
+      } catch (e) {alert("请求失败,请检查网络是否正常");} finally {}
+
+    }
+</script>
+
+</html>

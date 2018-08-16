@@ -1,0 +1,501 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <link href="../css/bookInfo.css" rel="stylesheet" />
+    <title></title>
+    <style>
+    #cost_detail{ display:none; height: 215px; width: 80%;position: fixed;top: 25%;bottom: 40%;left: 10%;z-index: 2; background: #fff;text-align:center;}
+    #cost_detail .cost_detail_title{width:100%;height:45px;line-height: 45px;color: #222222;font-size:18px;}
+    #cost_detail .div_payZ{height: 50px;}
+    #cost_detail .payZ_image{background:url(../image/alipay.png);background-size:100% 100%; height:22px;width:22px;margin-left:15px; margin-top:15px;float: left;}
+    #cost_detail .payZ_Name{padding-left:10px;line-height: 20px;font-size: 16px;padding-top: 18px;float: left;}
+    #cost_detail .pay_type{ height:22px;width:22px;float: right;margin-right:20px;margin-top: 20px;}
+    #cost_detail .payHr{width: 90%;height: 1px;background-color: #ccc;margin-left:5%;}
+    #cost_detail .div_payW{height: 50px;}
+    #cost_detail .payW_image{background:url(../image/weixin.jpg);background-size:100% 100%; height:22px;width:22px;margin-left:15px; margin-top:15px;float: left;}
+    #cost_detail .payW_Name{padding-left:10px;line-height: 20px;font-size: 16px;padding-top: 18px;float: left;}
+    #cost_detail .payW_type{background:url(../image/CombinedShape.png); background-size:100% 100%; height:22px;width:22px;float: right;margin-right:20px;margin-top: 20px;}
+    #cost_detail .pay_typeNo{background:url(../image/Rectangle.png);background-size:100% 100%;}
+    #cost_detail .pay_typeOk{background:url(../image/CombinedShape.png);background-size:100% 100%;}
+    #cost_detail .order_plate_foot{width:100%;height: 40px;margin-top: 15px;}
+    #cost_detail .order_plate_foot div{width: 40%;height:100%; line-height: 40px; background: #00AF68; color: #fff;margin: auto;}
+    #layer_cost_detail { display: none; width: 100%; height: 100%;opacity: 0.5; filter: alpha(opacity=80); position: fixed; top: 0;left: 0; z-index: 1; background: #000;}
+    </style>
+</head>
+
+<body>
+    <div class="bookInfo">
+        <div class="content">
+            <div class="contentTop">
+                <!-- <div class="BookImg" id="bkimage"></div> -->
+                <!-- <div class="exhibitionCount">
+                    <img src="../image/imgCount.png" />
+                </div> -->
+            </div>
+            <div class="bookAttribute" style="border:none;">
+                <span class="bookNeme" id="bookname"></span><br />
+                <span class="bookAuthor" id="authname"></span><br />
+                <span class="bookPress"></span><br />
+                <input id="Hid_bookPrice" type="hidden" />
+                <input id="Hid_ExpressRate" type="hidden" />
+                <span class="bookPrice" id="price" style="display:none"><span>¥</span>0</span>
+            </div>
+            <div class="contentSummary">
+                <!-- <span class="contentSummaryNeme">内容简介</span><br /> -->
+                <div class="contentSummaryInfo" id="info" bookid='0'>
+
+                </div>
+            </div>
+            <div style="height: 40px;"></div>
+            <div style="background: #fff;padding: 5px 0 0 3px;color: #cccccc;font-size: 0.7em;width: 100%; height: 40px;">
+                <img style="width:18px;" src="../image/eye.png" />
+                <span> 阅读数 </span><span id="readcount" >0</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 支付方式 -->
+    <div id="cost_detail">
+      <input id="Hid_payType" type="hidden" />
+      <input id="Hid_orderId" type="hidden" />
+      <div class="cost_detail_title">支付方式</div>
+      <div class="payHr"></div>
+      <div class="div_payZ" tapmode onclick="payTypeOn(1)">
+          <div class="payZ_image"></div>
+          <div class="payZ_Name">支付宝支付</div>
+          <div class="pay_type payZ_type pay_typeNo"></div>
+      </div>
+      <div class="payHr"></div>
+      <div class="div_payW" tapmode onclick="payTypeOn(2)">
+          <div class="payW_image"></div>
+          <div class="payW_Name">微信支付</div>
+          <div class="pay_type payW_type pay_typeNo"></div>
+      </div>
+      <div class="payHr"></div>
+      <div class="order_plate_foot">
+          <div onclick="gopay()">支付</div>
+      </div>
+    </div>
+  <div id="layer_cost_detail" onclick="layerclose()"></div>
+
+</body>
+
+<script type="text/javascript" src="../script/jquery.js"></script>
+<script type="text/javascript" src="../script/config.js"></script>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/payhelper.js"></script>
+<script type="text/javascript" src="../script/paycallback.js"></script>
+<script type="text/javascript">
+    // app_apiconfig.singnbkServerAP
+    //加载图文列表信息
+
+    apiready = function() {
+        try {
+
+            $api.rmStorage('sharedata');
+            //输出Log，Log将显示在APICloud Studio控制台
+            api.parseTapmode();
+            var uuid = api.pageParam.bookid;
+            showinfo(uuid);
+            getShopCartInfo();
+           $api.set_shareinfo('ord', uuid);
+        } catch (e) {
+            alert("请求失败,请检查网络是否正常");
+        } finally {}
+
+    }
+
+    function showinfo(uuid) {
+
+        try {
+            if (uuid <= 0) return;
+            api.ajax({
+                url: app_apiconfig.singnbkdetailAPI + 'id=' + uuid,
+                method: 'get',
+            }, function(json, err) {
+                var divinfo = $api.byId('bklist');
+                if (json) {
+                    if (json.State == 1) {
+                        if (json.Data != null) {
+                            var htmldata = json.Data;
+                            var bkname = htmldata.Name;
+                            var authname = htmldata.Author;
+                            var imageurl = htmldata.Cover == "" ? app_apiconfig.imageServer + "/Skin/images/goods_pic_def.jpg" : app_apiconfig.imageServer + htmldata.Cover;
+                            var content = htmldata.Contect;
+                            var price = htmldata.DiscountRate;
+                            var sale = htmldata.Sale;
+                            var Stock=htmldata.Stock;
+
+                            $api.html($api.byId('bookname'), bkname);
+                            $api.html($api.byId('authname'), authname + '  著');
+                            // $api.html($api.byId('bkimage'), '<img src="' + imageurl + '" />');
+                            $api.html($api.byId('price'), '<span>¥</span>' + price);
+                            $("#Hid_bookPrice").val(price);
+                            $("#Hid_ExpressRate").val(htmldata.ExpressRate);
+                            $api.html($api.byId('info'), content);
+                            $api.attr($api.byId('info'), 'bookid', htmldata.ID);
+                            //获取阅读数
+                            GetReadingCount(uuid);
+                            //存储当前详情页面存储的信息
+                            $api.setStorage('sharedata', {
+                                'title': bkname,
+                                'id': htmldata.ID,
+                                'contentUrl': 'http://m.youduhui.com/m/web/appShare.html?id=' + htmldata.ID,
+                                // 'contentUrl': 'http://m.youduhui.com/GoodsDetail.html?id=' + htmldata.ID,
+                                'description': ''
+                            }); //加载的过程中，将信息存储到缓存中，并且将信息缓存进去
+
+                            //是否可购买
+                            if (Number(Stock)-Number(sale)<=0) {
+                                var loaddatafun = 'cannobuy();';
+                                api.execScript({
+                                    name: 'signbkdetail_win',
+                                    script: loaddatafun
+                                });
+                            }
+                          //是否打赏商品
+                          if(bkname.indexOf("原创首发")>-1){
+                            var loaddatafun = 'buyAreward(1);';
+                            api.execScript({
+                                name: 'signbkdetail_win',
+                                script: loaddatafun
+                            });
+                          }else {
+                            var loaddatafun = 'buyAreward(2);';
+                            api.execScript({
+                                name: 'signbkdetail_win',
+                                script: loaddatafun
+                            });
+                          }
+
+                        }
+                    }
+                }
+            });
+        } catch (e) {
+            alert('哦？似乎我们的应用开小差了,请稍等片刻!');
+        }
+    }
+
+
+//获取阅读数,每一次获取后台加1
+function GetReadingCount(uuid) {
+    //type为2为游读活动，1为 签名书、特产、其它
+    try {
+      api.ajax({
+          url: app_apiconfig.GetRead + '?id=' + uuid + '&type=1',
+          method: 'get',
+      }, function(json, err) {
+        if (json.Data != null && json.Data != "") {
+            var htmldata = json.Data;
+            $("#readcount").html(htmldata.Count);
+          }
+      });
+    }
+    catch (e) {}
+  }
+
+    //添加商品到购物车功能
+    function addShopCart(){
+      //判断是否是打赏商品，如果是则不能添加
+      var isAreward =$("#info").html();
+      if(isAreward.indexOf("喜欢就打赏")>-1){
+          alert('抱赚，打赏商品不支持购物车结算，请直接打赏！');
+          return;
+      }
+
+      var Data = {
+          "MebID": $api.user.userid(),
+          "Type": 2,
+          "BusID": api.pageParam.bookid,
+          "Count": 1,
+          "Rate": $("#Hid_bookPrice").val(),
+          "ExpressRate":$("#Hid_ExpressRate").val()
+      }
+      $.ajax({
+          type: 'POST',
+          url: app_apiconfig.addUserShopcart,
+          data: Data,
+          dataType: 'json',
+          success: function(ret) {
+              if (parseInt(ret.Data) > 0) {
+                  try {
+                    //添加成功
+                    alert("添加成功，请前往车结算");
+                    //更新购物车信息
+                    getShopCartInfo();
+                    } catch (e) {}
+              } else if(ret.Data =="-99"){
+                alert("该商品已添加到购物车，请前往结算");
+              }
+              else {
+                  alert("添加失败！请检查网络是否正常");
+              }
+          }
+
+      });
+    }
+
+    //更新购物车信息
+    function getShopCartInfo() {
+        try {
+            api.ajax({
+                url: app_apiconfig.getUserShopcart + "?mebid=" + $api.user.userid()+"&idlist=",
+                method: 'get',
+            }, function(json, err) {
+                if (json) {
+                    if (json.ErrCode == 200) {
+                        if (json.Data != null) {
+                            try {
+                              var loaddatafun = 'getShopCount('+json.Data.length+');';
+                              api.execScript({
+                                  name:'signbkdetail_win',
+                                  script: loaddatafun
+                              });
+                          } catch (e) {}
+
+                        }
+                    }
+                }
+
+            });
+        } catch (e) {}
+        //刷新购物车页面
+        try {
+            var loaddatafun = 'getListInfo('+$api.user.userid()+');';
+            api.execScript({
+                name:'shoppingCart_win',
+                frameName: 'shoppingCart_frm',
+                script: loaddatafun
+            });
+        } catch (e) {}
+
+    }
+
+    //登录页跳转
+    function gologin() {
+        try {
+            api.openWin({
+                name: 'login',
+                url: 'login.html',
+                bounces: true,
+                animation: {
+                    type: 'signbkdetail_win'
+                },
+                rect: {
+                    x: 0,
+                    y: 0,
+                    w: 'auto',
+                    h: 'auto'
+                }
+            });
+        } catch (e) {
+            alert("请求失败,请检查网络是否正常");
+        } finally {}
+
+
+    }
+
+    //直接打赏生成订单并支付
+    function OpenPayType() {
+      //还原支付方式
+      $(".payW_type").removeClass("pay_typeOk");
+      $(".payZ_type").removeClass("pay_typeOk");
+      $(".payW_type").addClass("pay_typeNo");
+      $(".payZ_type").addClass("pay_typeNo");
+      $("#Hid_payType").val("");
+      //显进支付方式DIV
+      $("#layer_cost_detail").show();
+      $("#cost_detail").show();
+    }
+    //选择支付方式 1支付宝 2微信
+    function payTypeOn(type) {
+        if (type == 1) {
+            $("#Hid_payType").val(1);
+            $(".payW_type").removeClass("pay_typeOk");
+            $(".payZ_type").removeClass("pay_typeNo");
+            $(".payW_type").addClass("pay_typeNo");
+            $(".payZ_type").addClass("pay_typeOk");
+        } else if (type == 2) {
+            $("#Hid_payType").val(2);
+            $(".payZ_type").removeClass("pay_typeOk");
+            $(".payW_type").removeClass("pay_typeNo");
+            $(".payW_type").addClass("pay_typeOk");
+            $(".payZ_type").addClass("pay_typeNo");
+        }
+    }
+    //关闭支付
+    function layerclose() {
+        $("#layer_cost_detail").hide();
+        $("#cost_detail").hide();
+        //还原支付方式
+        $(".payW_type").removeClass("pay_typeOk");
+        $(".payZ_type").removeClass("pay_typeOk");
+        $(".payW_type").addClass("pay_typeNo");
+        $(".payZ_type").addClass("pay_typeNo");
+        $("#Hid_payType").val("");
+    }
+    //生成订单并发起支付
+    function gopay() {
+      try {
+        if (!$api.user.islogin()) {
+            gologin();
+            return;
+           }
+          payType=$("#Hid_payType").val();
+          if(payType!="1" && payType!="2"){alert("请选择支付方式");return;}
+
+          var GoodsName=$("#bookname").html();
+          if (GoodsName != "") {
+              GoodsName = GoodsName.slice(0, 20) + '...';
+          } else {
+              GoodsName = "原创打赏";
+          }
+          var username = $api.user.username(); //收货人
+          var mobile = $api.user.mobile(); //收货人联系方式
+          var count =1; //购买数量
+          var address =username+" 打赏支付"; //地址
+          var code = ""; //验证码
+          var remark = ""; //备注
+          var orderid = $("#Hid_orderId").val().trim() || 0; //订单ID,新订单生成传0
+          var id = api.pageParam.bookid; //商品ID
+          var data = {
+              'MebName': username,
+              'Mobile': mobile,
+              'Count': count,
+              'Address': address,
+              'Remark': remark,
+              'EtyCode': code,
+              'ChainID': 0,
+              'GoodID': id,
+              'MebID': $api.user.userid(),
+              'orderid':orderid,
+          }
+          $.ajax({
+              type: 'POST',
+              url: app_apiconfig.OrderLogic,
+              data: data,
+              dataType: 'json',
+              success: function(ret) {
+                  if (ret.State == 1 && ret.Data != null) {
+                    var order = ret.Data;
+                    var fee = order.Rate;
+                    var orderNo = order.OrderNo;
+                    var PayData = {};
+                    //1支付宝 2微信
+                    if (payType == 1) {
+                        PayData = {
+                            "tradeNO": "",
+                            "subject": GoodsName.toString(), //商品名称
+                            "body": "购买签名书", //商品描述
+                            "amount": fee.toString() //商品商额 单位元
+                        };
+                    } else if (payType == 2) {
+                        PayData = {
+                            "tradeNo": "",
+                            "attach": "",
+                            "description": GoodsName.toString(), //商品名称
+                            "totalFee": (Number(fee) * 100).toString() //总金额 单位分
+                        };
+                      }
+                    var attach = {
+                          "type": 1,
+                          "busid": order.ID,
+                          "mebid": $api.user.userid(),
+                          "mebtype": 1,
+                          "orderno": order.OrderNo
+                      }
+                      if (orderNo != "" && orderNo != null && orderNo != undefined) {
+                          //订单生成成功，发生支付
+                          //alert("生成订单成功,订单号=" + orderNo + "价格=" + fee);
+                          if (payType == 1 && Number(fee) > 0) {
+                              PayData.amount = fee.toString();
+                              PayData.tradeNO = orderNo.toString();
+
+                          } else if (payType == 2 && Number(fee) > 0 && attach.busid != "" && attach.busid != null) {
+                              var amount = (Number(fee) * 100).toFixed(0);
+                              PayData.totalFee = amount.toString();
+                              PayData.tradeNo = orderNo.toString();
+                              PayData.attach = JSON.stringify(attach);
+                          }
+                          $("#Hid_orderId").val(order.ID.toString());
+                          //如果订单金额为0则不需要支付
+                          if (!fee || fee == "0") {
+                              //GoodsOrder.successshow();
+                              alert("谢谢您的打赏");
+                              $("#Hid_orderId").val();
+                          } else {
+                              Order_pay(PayData, payType);
+                          }
+                      } else {
+                          if (ret.ErrMsg != "") {
+                              alert(ret.ErrMsg);
+                          } else {
+                              alert("订单请求失败,请检查网络是否正常");
+                          }
+                      }
+                  } else {
+                      alert("订单生成失败,请检查网络是否正常");
+                  }
+              }
+          });
+        } catch (e) {
+          alert("订单数据异常,请检查网络是否正常");
+      }
+
+    }
+    //支付
+    function Order_pay(data, payType) {
+        try {
+            //1支付宝 2微信
+            if (payType == 1) {
+                $payObject.aliPayHelper(data, alip_paycallback);
+            } else if (payType == 2) {
+                $payObject.wxPayHelper(data, wx_paycallback);
+            }
+        } catch (e) {
+            alert("请求失败,请检查网络是否正常");
+        } finally {}
+
+    }
+    //微信支付成功 回调
+    function wx_paycallback(ret, err) {
+        try {
+            var data = paycallback.wxPay_callback(ret, err);
+            if (data.status == '200') {
+                alert("支付成功，谢谢您打赏");
+                $("#Hid_orderId").val("");
+                layerclose();
+            } else {
+                alert(data.msg);
+            }
+        } catch (e) {
+            alert("请求失败,请检查网络是否正常");
+        } finally {}
+
+    }
+   //支付宝支付成功 回调
+   function alip_paycallback(res, err) {
+        try {
+            var data = paycallback.alipPay_callback(res, err);
+            if (data.status == '200') {
+                alert("支付成功，谢谢您打赏");
+                $("#Hid_orderId").val("");
+                layerclose();
+            } else {
+                alert(data.msg);
+            }
+        } catch (e) {
+            alert("请求失败,请检查网络是否正常");
+        } finally {}
+
+    }
+
+</script>
+
+
+</html>

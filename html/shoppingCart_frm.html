@@ -1,0 +1,698 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title></title>
+    <link href="../css/aui.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="../css/shoppingCart.css" />
+    <style>
+        #loading_layer {
+            position: fixed;
+            z-index: 10;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        #loading_win {
+            position: absolute;
+            left: 45%;
+            margin: 0 auto;
+            top: 40%;
+        }
+
+        #loading_win img {
+            border-radius: 40px;
+        }
+
+        .hide {
+            display: none;
+        }
+
+        .ui-input-text {
+            border: 0px;
+        }
+    </style>
+</head>
+
+<body class="body_shoppingCart_frm">
+    <div class="content" id="ShoppingCartList">
+        <!-- <div class="shopp">
+            <div class="shoppSelect">
+                <div class="selectNo"></div>
+                <div class="shoCart_book"></div>
+                <div>图书</div>
+            </div>
+            <div class="goodsList">
+                <div class="goodsimginfo">
+                    <div class="goodsSelect selectNo"></div>
+                    <div class="goodsImg"><img src="../image/books_img2.png" /></div>
+                </div>
+                <div class="goodsinfo">
+                    <div style="overflow:hidden;height:40%;">
+                        <div class="bookName">摩尔人的最后叹息</div>
+                        <div class="delbookimg" onclick="delbook();"><img src="../image/del_1.png" /></div>
+                    </div>
+
+                    <div style="overflow: hidden;height:30%;">
+                        <div class="bookauthor">林晓彤 著</div>
+                    </div>
+
+                    <div style="overflow: hidden;">
+                        <span style="color:red;font-size:12px;">¥</span>
+                        <span style="color:#d0021b;font-size:18px;">39</span>
+                        <div class="div_number" style="">
+                            <div class="div_numberAdd"></div>
+                            <input class="input_number" type="tel" id="number" value="1" />
+                            <div class="number_Minus"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div> -->
+
+        <!-- <div class="div_shoppCartimg">
+          <div></div>
+          <div>您的购物车是空的</div>
+          <div>要是有喜欢的宝贝，就赶紧买回家吧</div>
+          <div onclick="goBooks();">去逛逛</div>
+        </div> -->
+
+    </div>
+    <!-- 加载 -->
+    <div id="loading_layer" class="hide"></div>
+    <div id="loading_win" class="hide"><img src="../image/93.gif" /></div>
+</body>
+
+</html>
+<script type="text/javascript" src="../script/jquery.js"></script>
+<script type="text/javascript" src="../script/config.js"></script>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type='text/javascript'>
+    apiready = function() {
+        api.parseTapmode();
+        //验证是否登录
+        if (!$api.user.islogin()) {
+            gologin();
+            return;
+        }
+        getListInfo($api.user.userid());
+    }
+
+    function getListInfo(user_id) {
+        try {
+            $("#ShoppingCartList").html("");
+            $api.removeCls(loading_layer, 'hide');
+            $api.removeCls(loading_win, 'hide');
+            api.ajax({
+                url: app_apiconfig.getUserShopcart + "?mebid=" + user_id + "&idlist=",
+                method: 'get',
+            }, function(json, err) {
+                $api.addCls(loading_layer, 'hide');
+                $api.addCls(loading_win, 'hide');
+                var data = null;
+                var Temp = '';
+                //图书
+                var bookTemp = '';
+                //其它
+                var OthersTemp = '';
+                if (json) {
+                    if (json.ErrCode == 200) {
+                        if (json.Data != null && json.Data.length > 0) {
+                            $(".body_shoppingCart_frm").css("background-color", "#f4f4f4");
+                            for (var i = 0; i < json.Data.length; i++) {
+
+                                try {
+                                    var loaddatafun = 'showHtml();';
+                                    api.execScript({
+                                        name: 'shoppingCart_win',
+                                        script: loaddatafun
+                                    });
+                                } catch (e) {}
+
+                                data = json.Data[i];
+                                var Cover = data.Cover;
+                                var Author = data.Author;
+                                //图片处理
+                                if (Cover == "" || Cover == null || Cover == undefined) {
+                                    Cover = "" + app_apiconfig.imageServer + "/" + "Skin/images/goods_pic_def.jpg";
+                                } else {
+                                    Cover = app_apiconfig.imageServer + "/" + data.Cover;
+                                }
+                                //作者显示处理
+                                if (Author != "" && Author != null && Author != undefined) {
+                                    Author = data.Author + "  著";
+                                } else {
+                                    Author = "";
+                                }
+                                //是否过期
+                                var StartHtml = "";
+                                var StartHtml_1 = "";
+                                var L_State = "0";
+                                if (data.State != "1" || data.Flag != "1") {
+                                    //过期
+                                    StartHtml = '<div class="div_Invalid"></div>';
+                                    StartHtml += '<div class="div_Invalid div_delGoods" onclick="delbook(' + data.ID + ');"></div>';
+                                    StartHtml_1 = '<div class="div_InvalidTag">已失效</div>';
+                                    L_State = "1";
+                                }else  if(Number(data.Stock) - Number(data.Sale) <= 0){
+                                  StartHtml = '<div class="div_Invalid"></div>';
+                                  StartHtml += '<div class="div_Invalid div_delGoods" onclick="delbook(' + data.ID + ');"></div>';
+                                  StartHtml_1 = '<div class="div_InvalidTag">已售罄</div>';
+                                  L_State = "1";
+                                }
+                                Temp += '<div class="goodsList" id="goodsList_div_' + data.ID + '" L_ID="' + data.ID + '" L_ExpressRate="' + data.ExpressRate + '" L_State="' + L_State + '" >';
+                                Temp += StartHtml;
+                                Temp += '<div class="goodsimginfo">';
+                                Temp += '<div class="div_goodsSelect"  onclick="setSelect_on(this);"><div class="goodsSelect selectNo" ></div></div>';
+                                Temp += '<div class="goodsImg"><img src="' + Cover + '" /></div>';
+                                Temp += StartHtml_1;
+                                Temp += '</div>';
+                                Temp += '<div class="goodsinfo">';
+                                Temp += '<div style="overflow:hidden;height:40%;">';
+                                Temp += '<div class="bookName">' + data.Name + '</div>';
+                                Temp += '<div class="delbookimg" onclick="delbook(' + data.ID + ');"><img src="../image/del_1.png" /></div>';
+                                Temp += '</div>';
+
+                                Temp += '<div style="overflow: hidden;height:30%;">';
+                                Temp += '<div class="bookauthor">' + Author + '</div>';
+                                Temp += '</div>';
+
+                                Temp += '<div style="overflow: hidden;">';
+                                Temp += '<span style="color:red;font-size:12px;">¥</span>';
+                                Temp += '<span class="span_Rate" style="color:#d0021b;font-size:18px;">' + data.Rate + '</span>';
+                                Temp += '<div class="div_number" style="">';
+                                Temp += '<div class="number_Minus" onclick="numberMinus_on(' + data.ID + ');"></div>';
+                                Temp += '<input class="input_number  input_number_id_' + data.ID + '" type="tel" tapmode onBlur="number_On(' + data.ID + ')" MaxSaleCount=' + data.MaxSaleCount + ' tempValue=' + data.Count + ' value=' + data.Count +
+                                    ' />';
+                                Temp += '<div class="div_numberAdd"  onclick="numberAdd_on(' + data.ID + ');"></div>';
+                                Temp += '</div>';
+                                Temp += '</div>';
+                                Temp += '</div>';
+                                Temp += '</div>';
+
+                                //Type=2 签名书,3为特产，4为其它
+                                //bookTemp ='';
+                                //OthersTemp='';
+                                if (data.Type == "2") {
+                                    if ($("#bookSelect").html() == undefined || $("#bookSelect").html() == null || $("#bookSelect").html() == "") {
+                                        bookTemp = '<div class="shopp" id="bookShopp">';
+                                        if ($("#ShoppingCartList").html() != "") {
+                                            bookTemp += '<div class="shoppSelect" id="bookSelect" style="margin-top:2%;">';
+                                        } else {
+                                            bookTemp += '<div class="shoppSelect" id="bookSelect">';
+                                        }
+                                        bookTemp += '<div style="width:auto;" onclick="isSelected_on(this);"><div class="selectNo isSelected"></div>';
+                                        bookTemp += '<div class="shoCart_book"></div>';
+                                        bookTemp += '<div>图书</div></div>';
+                                        bookTemp += '</div>';
+                                    }
+                                    bookTemp += Temp;
+                                } else if (data.Type == "3" || data.Type == "4") {
+                                    if ($("#othersSelect").html() == undefined || $("#othersSelect").html() == null || $("#othersSelect").html() == "") {
+                                        OthersTemp = '<div class="shopp" id="otherShopp">';
+                                        if ($("#ShoppingCartList").html() != "") {
+                                            OthersTemp += '<div class="shoppSelect" id="othersSelect" style="margin-top:2%;">';
+                                        } else {
+                                            OthersTemp += '<div class="shoppSelect" id="othersSelect" >';
+                                        }
+                                        OthersTemp += '<div style="width:auto;" onclick="isSelected_on(this);"><div class="selectNo isSelected"></div>';
+                                        OthersTemp += '<div class="shoCart_tourism"></div>';
+                                        OthersTemp += '<div>特产&其它</div></div>';
+                                        OthersTemp += '</div>';
+                                    }
+
+                                    OthersTemp += Temp;
+                                }
+
+                                if (i == json.Data.length - 1) {
+                                    if (bookTemp != "") {
+                                        bookTemp += '</div>';
+                                        $("#ShoppingCartList").append(bookTemp);
+                                        bookTemp = '';
+                                        Temp = "";
+                                    }
+                                    if (OthersTemp != "") {
+                                        OthersTemp += '</div>'
+                                        $("#ShoppingCartList").append(OthersTemp);
+                                        OthersTemp = '';
+                                        Temp = "";
+                                    }
+
+                                } else if (data.Type != json.Data[i + 1].Type) {
+                                    if ((data.Type == "3" || data.Type == "4") && (json.Data[i + 1].Type == "3" || json.Data[i + 1].Type == "4")) {
+
+                                    } else {
+                                        if (bookTemp != "") {
+                                            bookTemp += '</div>';
+                                            $("#ShoppingCartList").append(bookTemp);
+                                            bookTemp = '';
+                                            Temp = "";
+                                        }
+                                        if (OthersTemp != "") {
+                                            OthersTemp += '</div>'
+                                            $("#ShoppingCartList").append(OthersTemp);
+                                            OthersTemp = '';
+                                            Temp = "";
+                                        }
+                                    }
+
+                                }
+
+
+                            }
+                        } else {
+                            shopCart_empty();
+                        }
+                    }
+                }
+                sumFee();
+            });
+        } catch (e) {
+            $api.addCls(loading_layer, 'hide');
+            $api.addCls(loading_win, 'hide');
+            alert("请求失败,请检查网络是否正常");
+        }
+    }
+
+    //购物车为空时添加页面内容
+    function shopCart_empty() {
+        try {
+
+            try {
+                var loaddatafun = 'hindHtml();';
+                api.execScript({
+                    name: 'shoppingCart_win',
+                    script: loaddatafun
+                });
+            } catch (e) {}
+
+            $("#ShoppingCartList").html("");
+            $(".body_shoppingCart_frm").css("background-color", "#ffffff");
+            var CartimgTemp = '';
+            CartimgTemp += '<div class="div_shoppCartimg">';
+            CartimgTemp += '<div></div>';
+            CartimgTemp += '<div>您的购物车是空的</div>';
+            CartimgTemp += '<div>要是有喜欢的宝贝，就赶紧买回家吧</div>';
+            CartimgTemp += '<div onclick="goBooks();">去逛逛</div>';
+            CartimgTemp += '</div>';
+            $("#ShoppingCartList").append(CartimgTemp);
+        } catch (e) {}
+
+    }
+
+    //去逛逛
+    function goBooks() {
+        try {
+            if (!$api.user.islogin()) {
+                gologin();
+                return;
+            }
+            api.openWin({
+                name: 'signbk_win',
+                url: 'signbk_win.html',
+                bounces: true,
+                rect: {
+                    x: 0,
+                    y: 0,
+                    w: 'auto',
+                    h: 'auto'
+                }
+            });
+        } catch (e) {
+            alert("请求失败,请检查网络是否正常");
+        }
+
+    }
+    //登录页跳转
+    function gologin() {
+        try {
+            api.openWin({
+                name: 'login',
+                url: 'login.html',
+                bounces: true,
+                animation: {
+                    type: 'shoppingCart_win'
+                },
+                rect: {
+                    x: 0,
+                    y: 0,
+                    w: 'auto',
+                    h: 'auto'
+                }
+            });
+        } catch (e) {
+            alert("请求失败,请检查网络是否正常");
+        } finally {}
+
+
+    }
+    //修改购物车功能
+    function editShoppinCart(sData) {
+        if (sData == null) {
+            return;
+        }
+        $.ajax({
+            type: 'POST',
+            url: app_apiconfig.updateUserShopcart,
+            data: sData,
+            dataType: 'json',
+            success: function(ret) {
+                if (parseInt(ret.Data) > 0) {
+                    try {
+                        if (sData.Flag == "2") {
+                            del_callback(sData.ID);
+                        } else {
+                            //修改成功
+                            sumFee();
+                        }
+
+                    } catch (e) {}
+                } else {
+                    alert("遇到问题啦！请您稍后重试");
+                    getListInfo($api.user.userid());
+                }
+            }
+
+        });
+    }
+
+    //加数量
+    function numberAdd_on(sID) {
+        var flag = 0;
+        var TempNumber = $(".input_number_id_" + sID).val();
+        //最大购买数量
+        var MaxSaleCount = $(".input_number_id_" + sID).attr('MaxSaleCount');
+        if (Number(TempNumber) + 1 > Number(MaxSaleCount)) {
+            alert("此商品最大购买数量为：" + MaxSaleCount);
+        } else {
+            TempNumber = Number(TempNumber) + 1;
+            $(".input_number_id_" + sID).val(TempNumber);
+            flag = 1;
+        }
+        //var TempsJson=$(".goodsList_div_JSON_"+sID).attr('sJson');
+        if (flag == 1) {
+            $(".input_number_id_" + sID).attr('tempValue', TempNumber);
+            var sData = {
+                "ID": sID,
+                "Rate": -1,
+                "ExpressRate": -1,
+                "Type": '',
+                "Count": TempNumber,
+                "Flag": -1
+            }
+            editShoppinCart(sData);
+        }
+    }
+
+    //减数量
+    function numberMinus_on(sID) {
+        var flag = 0;
+        var TempNumber = $(".input_number_id_" + sID).val();
+        if (TempNumber != "1") {
+            TempNumber = Number(TempNumber) - 1;
+            $(".input_number_id_" + sID).val(TempNumber);
+            flag = 1;
+        }
+
+        if (flag == 1) {
+            $(".input_number_id_" + sID).attr('tempValue', TempNumber);
+            var sData = {
+                "ID": sID,
+                "Rate": -1,
+                "ExpressRate": -1,
+                "Type": '',
+                "Count": TempNumber,
+                "Flag": -1
+            }
+            editShoppinCart(sData);
+        }
+    }
+
+    //手动修改数量
+    function number_On(sID) {
+        var reg = /^\+?[1-9]\d*$/;
+        var count = $(".input_number_id_" + sID).val();
+        var tempValue = $(".input_number_id_" + sID).attr('tempValue');
+        //最大购买数量
+        var MaxSaleCount = $(".input_number_id_" + sID).attr('MaxSaleCount');
+        if (!reg.test(count) || count == "" || count == "0") {
+            if (Number(tempValue) > 0) {
+                $(".input_number_id_" + sID).val(tempValue);
+                count = tempValue;
+            } else {
+                $(".input_number_id_" + sID).val("1");
+                count = "1";
+            }
+        } else if (Number(count) > Number(MaxSaleCount)) {
+            alert("此商品最大购买数量为：" + MaxSaleCount);
+            $(".input_number_id_" + sID).val(tempValue);
+            count = tempValue;
+        } else if (Number(count) > Number(MaxSaleCount)) {
+            $(".input_number_id_" + sID).val(MaxSaleCount);
+        } else if (Number(count) > 9999) {
+            $(".input_number_id_" + sID).val("9999");
+            count = 9999;
+        } else if (Number(count) <= 0) {
+            if (Number(tempValue) > 0) {
+                $(".input_number_id_" + sID).val(tempValue);
+                count = tempValue;
+            } else {
+                $(".input_number_id_" + sID).val("1");
+                count = "1";
+            }
+        }
+        if (tempValue != count) {
+            $(".input_number_id_" + sID).attr('tempValue', count);
+            var sData = {
+                "ID": sID,
+                "Rate": -1,
+                "ExpressRate": -1,
+                "Type": '',
+                "Count": count,
+                "Flag": -1
+            }
+            editShoppinCart(sData);
+        }
+    }
+
+    //删除
+    function delbook(sID) {
+        var sData = {
+            "ID": sID,
+            "Rate": -1,
+            "ExpressRate": -1,
+            "Type": '',
+            "Count": -1,
+            "Flag": 2
+        }
+        api.confirm({
+            msg: '您确定要移除该书籍吗？',
+            buttons: ['取消', '删除']
+        }, function(ret, err) {
+            if (ret) {
+                if (ret.buttonIndex == "2") {
+                    editShoppinCart(sData);
+                }
+            }
+        });
+    }
+    //删除完成处理
+    function del_callback(s_id) {
+        //删除成功
+        try {
+            var del_div = "#goodsList_div_" + s_id;
+            $(del_div).slideUp(200, function() {
+                $(this).remove()
+            });
+            setTimeout(function() {
+                if ($("#bookShopp").find(".goodsList").html() == undefined) {
+                    $("#bookShopp").slideUp(200, function() {
+                        $(this).remove()
+                    });
+                }
+
+                if ($("#otherShopp").find(".goodsList").html() == undefined) {
+                    $("#otherShopp").slideUp(200, function() {
+                        $(this).remove()
+                    });
+                }
+
+                if ($(".shopp").find(".goodsList").html() == undefined) {
+                    shopCart_empty();
+                }
+
+                sumFee();
+                //更新购物车数量
+                // try {
+                //     var loaddatafun = 'getShopCartInfo();';
+                //     api.execScript({
+                //         name:'signbkdetail_win',
+                //         frameName:'signbkdetail_frm',
+                //         script: loaddatafun
+                //     });
+                // } catch (e) {}
+
+            }, 300);
+
+
+        } catch (e) {}
+    }
+
+    //选择商品事件
+    function setSelect_on(obj) {
+        if ($(obj).find(".goodsSelect").hasClass("selectOk")) {
+            $(obj).find(".goodsSelect").removeClass("selectOk");
+            $(obj).find(".goodsSelect").addClass("selectNo");
+        } else if ($(obj).find(".goodsSelect").hasClass("selectNo")) {
+            $(obj).find(".goodsSelect").removeClass("selectNo");
+            $(obj).find(".goodsSelect").addClass("selectOk");
+        }
+        sumFee();
+    }
+    //选择一类商品处理
+    function isSelected_on(obj) {
+        if ($(obj).find(".isSelected").hasClass("selectOk")) {
+            $(obj).find(".isSelected").removeClass("selectOk");
+            $(obj).find(".isSelected").addClass("selectNo");
+            //去掉全选此类型商品
+            var tempList = $(obj).parent().parent().find(".goodsList");
+            for (var i = 0; i < tempList.length; i++) {
+                $(tempList).eq(i).find(".goodsSelect").removeClass("selectOk");
+                $(tempList).eq(i).find(".goodsSelect").addClass("selectNo");
+            }
+        } else if ($(obj).find(".isSelected").hasClass("selectNo")) {
+            $(obj).find(".isSelected").removeClass("selectNo");
+            $(obj).find(".isSelected").addClass("selectOk");
+            //全选此类型商品
+            var tempList = $(obj).parent().parent().find(".goodsList");
+            for (var i = 0; i < tempList.length; i++) {
+                if (tempList.eq(i).attr("L_State") == "0") {
+                    $(tempList).eq(i).find(".goodsSelect").removeClass("selectNo");
+                    $(tempList).eq(i).find(".goodsSelect").addClass("selectOk");
+                } else {
+                    $(tempList).eq(i).find(".goodsSelect").removeClass("selectOk");
+                    $(tempList).eq(i).find(".goodsSelect").addClass("selectNo");
+                }
+            }
+
+        }
+        sumFee();
+    }
+    //全选 sflag 为1全选中，2 全不选
+    function selectAll_on(sflag) {
+        if ($(".shopp").length > 0) {
+            for (var i = 0; i < $(".shopp").length; i++) {
+                //全选此类型商品
+                if (sflag == "1") {
+                    $(".shopp").eq(i).find(".shoppSelect").find(".isSelected").removeClass("selectNo");
+                    $(".shopp").eq(i).find(".shoppSelect").find(".isSelected").addClass("selectOk");
+                } else if (sflag == "2") {
+                    $(".shopp").eq(i).find(".shoppSelect").find(".isSelected").removeClass("selectOk");
+                    $(".shopp").eq(i).find(".shoppSelect").find(".isSelected").addClass("selectNo");
+                }
+
+                //全选此类下面有效的商品
+                var tempList = $(".shopp").eq(i).find(".goodsList");
+                for (var j = 0; j < tempList.length; j++) {
+                    if (tempList.eq(j).attr("L_State") == "0") {
+                        if (sflag == "1") {
+                            $(tempList).eq(j).find(".goodsSelect").removeClass("selectNo");
+                            $(tempList).eq(j).find(".goodsSelect").addClass("selectOk");
+                        } else if (sflag == "2") {
+                            $(tempList).eq(j).find(".goodsSelect").removeClass("selectOk");
+                            $(tempList).eq(j).find(".goodsSelect").addClass("selectNo");
+                        }
+                    } else {
+                        $(tempList).eq(j).find(".goodsSelect").removeClass("selectOk");
+                        $(tempList).eq(j).find(".goodsSelect").addClass("selectNo");
+                    }
+                }
+
+            }
+        }
+        sumFee();
+    }
+
+    //计算金额，运费等
+    function sumFee() {
+        //得到有效的goodsList
+        var SumFee = 0;
+        var SumExpressRate = 0;
+        var IdList = "";
+        var sSetectFlag = 2;
+        var sCount = 0;
+        try {
+            //计算金额运费
+            if ($(".goodsList").length > 0) {
+                for (var i = 0; i < $(".goodsList").length; i++) {
+                    if ($(".goodsList").eq(i).find(".goodsSelect").hasClass("selectOk")) {
+                        var tempCount = $(".goodsList").eq(i).find(".input_number").val();
+                        var tempFee = $(".goodsList").eq(i).find(".span_Rate").html();
+                        var tempExpressRate = $(".goodsList").eq(i).attr("L_ExpressRate");
+                        var tempIDList = $(".goodsList").eq(i).attr("L_ID");
+                        SumFee += Number(tempFee) * Number(tempCount);
+                        IdList += tempIDList.toString() + "_";
+                        sCount++;
+                        if (Number(tempExpressRate) > Number(SumExpressRate)) {
+                            SumExpressRate = tempExpressRate;
+                        }
+                    }
+                }
+            }
+            //处理选中select
+            if ($(".shopp").length > 0) {
+                var s_tempflag = 0;
+                for (var i = 0; i < $(".shopp").length; i++) {
+                    var tempList = $(".shopp").eq(i).find(".goodsList");
+                    var tempflag = 0;
+                    for (var j = 0; j < tempList.length; j++) {
+                        if (tempList.eq(j).find(".goodsSelect").hasClass("selectNo") && tempList.eq(j).attr("L_State") == "0" && tempflag == 0) {
+                            tempflag = 1;
+                            s_tempflag = 1;
+                        }
+                    }
+                    if (tempflag == 0) {
+                        $(".shopp").eq(i).find(".isSelected").removeClass("selectNo");
+                        $(".shopp").eq(i).find(".isSelected").addClass("selectOk");
+                    } else {
+                        $(".shopp").eq(i).find(".isSelected").removeClass("selectOk");
+                        $(".shopp").eq(i).find(".isSelected").addClass("selectNo");
+                    }
+                }
+                if (s_tempflag == 0) {
+                    sSetectFlag = 1;
+                }
+            }
+            //计算完成处理
+            if (Number(SumFee) > 0 || Number(SumExpressRate) > 0 || IdList != "") {
+                if (Number(SumFee) > 0) {
+                    SumFee = Number(SumFee).toFixed(2);
+                }
+                if (Number(SumExpressRate) > 0) {
+                    SumFee = (Number(SumFee) + Number(SumExpressRate)).toFixed(2);
+                    SumExpressRate = Number(SumExpressRate).toFixed(2);
+                }
+                IdList = IdList.substring(0, IdList.length - 1);
+            }
+        } catch (e) {
+            alert("遇到问题啦！请您稍后重试");
+        }
+
+        try {
+            var loaddatafun = 'setRate("' + SumFee + '","' + SumExpressRate + '","' + IdList + '","' + sCount + '","' + sSetectFlag + '");';
+            api.execScript({
+                name: 'shoppingCart_win',
+                script: loaddatafun
+            });
+        } catch (e) {
+            alert("遇到问题啦！请您稍后重试");
+        }
+
+
+    }
+</script>

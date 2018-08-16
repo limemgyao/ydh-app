@@ -1,0 +1,293 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title></title>
+    <link href="../css/applogin.css" rel="stylesheet" />
+    <link href="../css/public.css" rel="stylesheet" />
+    <script src="../script/jquery.js"></script>
+    <style>
+        #loading_layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        #loading_win {
+            position: absolute;
+            left: 45%;
+        }
+
+        #loading_win img {
+            border-radius: 40px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrapper">
+        <div class="content">
+            <div class="loginprompt">
+                <!-- <div class="logo"></div> -->
+                <div class="return" onclick="closeWin()"><span class="aui-iconfont aui-icon-left"></span></div>
+                <div class="logotype">
+                    <div class="pwdlogin active" onclick="LoginType(this);" ctype="1"><span>密码登入</span><span class="triangle"></span></div>
+                    <div class="vfclogin" onclick="LoginType(this);" ctype="2"><span>验证码登入</span><span class="triangle "></span></div>
+                </div>
+            </div>
+            <div class="promptcontent">
+                <input class="txt_user pwd" id="txt_name" type="tel" value="" placeholder="账号" /><img class="img_icon" src="../image/user.png" /><span id="span_sendcode" class="sendcode hide" onclick="sendcode();">发送验证码</span>
+                <input class="txt_pwd pwd" id="txt_pass" type="password" value="" placeholder="密码" /><img class="img_icon icon_pwd" src="../image/lock.png" />
+
+                <input type="button" value="登入" onclick="LoginSubmit()" />
+                <div class="loginfoot">
+                    <a href="#" onclick="register()">注册</a>
+                    <!-- <a href="#">忘记密码？</a> -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="loading_layer" class="hide"></div>
+    <div id="loading_win" class="hide"><img src="../image/93.gif" /></div>
+</body>
+
+</html>
+
+<script type="text/javascript" src="../script/config.js"></script>
+<script type="text/javascript" src="../script/api.js"></script>
+<script>
+    apiready = function() {
+      try {
+        // 阻止页面弹动
+        api.setWinAttr({
+            bounces: false
+        });
+        api.parseTapmode();
+
+        $api.addCls(loading_layer, 'hide');
+        $api.addCls(loading_win, 'hide');
+      } catch (e) {alert("请求失败,请检查网络是否正常");} finally {}
+
+    }
+    function LoginType(obj) {
+      try {
+        $(obj).parent().find("div").removeClass("active");
+        $(obj).addClass("active");
+
+        var type = $(".active").attr('ctype');
+        if (type == 2) {
+            $api.attr(txt_name, 'placeholder', '手机号');
+            $api.attr(txt_pass, 'placeholder', '验证码');
+            $api.removeCls(span_sendcode, 'hide');
+
+        } else {
+            $api.attr(txt_name, 'placeholder', '账号');
+            $api.attr(txt_pass, 'placeholder', '密码')
+            $api.addCls(span_sendcode, 'hide');
+
+        }
+      } catch (e) {alert("请求失败,请检查网络是否正常");} finally {}
+
+
+    }
+    //倒计时
+    var wait=60;
+    function time() {
+      if (wait == 0)
+      {
+        $api.html($api.byId('span_sendcode'), '获取验证码');
+        $api.removeCls(span_sendcode, 'enabled');
+       wait = 60;
+      }
+       else
+       {
+       $api.addCls(span_sendcode, 'enabled');
+       $api.html($api.byId('span_sendcode'), '获取中...('+wait+')');
+       wait--;
+       setTimeout(function() {
+        time()
+       },
+       1000)
+      }
+     }
+
+
+     function Refreshlogin(){
+
+         wait=0;
+         $api.val($api.byId('txt_name'),"");
+         $api.val($api.byId('txt_pass'),"");
+
+     }
+    //发送验证码
+    function sendcode() {
+      try {
+        var mobile = $api.val($api.byId('txt_name'));
+        var Regex = /^0?1[0-9]{10}$/;
+        if (!Regex.test(mobile)) {
+            alert("请输入正确的手机号码！");
+            return;
+        }
+        //$api.addCls(span_sendcode, 'enabled');
+        //$api.html($api.byId('span_sendcode'), '获取中...');
+        api.ajax({
+            url: app_apiconfig.SendCode + '?mobile=' + mobile,
+            method: 'get'
+        }, function(json, err) {
+            if (json) {
+                if (json.Data != null && json.Data!="") {
+                    if(json.Data>0){
+                    time();
+                    }else if(json.Data=="-99"){
+                      alert("正在发送验证码，请1分钟后再获取");
+                      $api.html($api.byId('span_sendcode'), '获取验证码');
+                      $api.removeCls(span_sendcode, 'enabled');
+                    }else {
+                      alert("获取验证码失败");
+                      $api.html($api.byId('span_sendcode'), '获取验证码');
+                      $api.removeCls(span_sendcode, 'enabled');
+                    }
+                }else {
+                    alert("获取验证码失败");
+                    $api.html($api.byId('span_sendcode'), '获取验证码');
+                    $api.removeCls(span_sendcode, 'enabled');
+                }
+              }else {
+                alert("获取验证码失败");
+                $api.html($api.byId('span_sendcode'), '获取验证码');
+                $api.removeCls(span_sendcode, 'enabled');
+              }
+        });
+      } catch (e) {alert("请求失败,请检查网络是否正常");
+      $api.html($api.byId('span_sendcode'), '获取验证码');
+      $api.removeCls(span_sendcode, 'enabled');
+    } finally {}
+
+    }
+
+    function LoginSubmit() {
+      try {
+        var type = $(".active").attr('ctype');
+        var user_name = $api.val($api.byId('txt_name'));
+        var user_pass = $api.val($api.byId('txt_pass'));
+        if ($api.trimAll(user_name) == "" || $api.trimAll(user_pass) == "") {
+            alert("您还未输入用户名或者密码信息");
+            return;
+        }
+
+        $api.removeCls(loading_layer, 'hide');
+        $api.removeCls(loading_win, 'hide');
+        api.ajax({
+            url: app_apiconfig.LoginAPI + "username=" + encodeURIComponent(user_name) +
+                "&userpass=" + encodeURIComponent(user_pass) +
+                "&type=" + type ,
+            method: 'get',
+        }, function(json, err) {
+            if (json) {
+                if (json.Data != null && json.Data.ID != undefined) {
+                    var userData = json.Data;
+                    //设置用户缓存
+                    // $api.set_User_Storage(json.Data);
+                    //在此处设置一次就可以了
+                    $api.setStorage('loginUser', userData);
+                    $api.user.setInfo({
+                        "user_mobile": userData.Mobile,
+                        "user_id": userData.ID,
+                        "user_name": userData.MebName,
+                        "user_login": true,
+                        "user_type": userData.MebType,
+                        "user_ads": userData.Address
+                    });
+
+                      try {
+                        //更新个人中心页面信息
+                        var loaddatafun = 'StuffInfo('+$api.user.userid()+');';
+                        api.execScript({
+                            name: 'personalcenter_win',
+                            frameName: 'personalcenter_frm',
+                            script: loaddatafun
+                        });
+                      } catch (e) {}
+
+                      try {
+                        //更新个人资料页面
+                        var loaddatafun = 'userInfo('+$api.user.userid()+');';
+                        api.execScript({
+                            name: 'userInfo_win',
+                            frameName: 'userInfo_frm',
+                            script: loaddatafun
+                        });
+                      } catch (e) {}
+
+
+                    api.openWin({
+                        name: 'personalcenter_win',
+                        url: 'personalcenter_win.html',
+                        pageParam: {
+                            "name": userData.MebName,
+                            "pass": userData.Password,
+                            "id": userData.ID,
+                            "PhotoPath": userData.PhotoPath,
+                        },
+                        rect: {
+                            x: 0,
+                            y: 0,
+                            w: 'auto',
+                            h: 'auto'
+                        }
+                    });
+                } else {
+                    alert("登入失败:账号或密码错误,请重新输入。")
+                }
+            }
+            $api.addCls(loading_layer, 'hide');
+            $api.addCls(loading_win, 'hide');
+
+        });
+      } catch (e) {alert("请求失败,请检查网络是否正常");} finally {}
+
+    }
+
+    function register() {
+      try {
+        api.openWin({
+            name: 'register_frm',
+            url: 'register_frm.html',
+            rect: {
+                x: 0,
+                y: 0,
+                w: 'auto',
+                h: 'auto'
+            }
+        });
+      } catch (e) {alert("请求失败,请检查网络是否正常");} finally {}
+
+
+    }
+
+    function closeWin() {
+      try {
+        // api.closeWin({});
+        api.openWin({
+            name: 'appindex',
+            url: '../appindex.html',
+            bounces: true,
+            animation: {
+                type: 'none'
+            },
+            rect: {
+                x: 0,
+                y: 0,
+                w: 'auto',
+                h: 'auto'
+            }
+        });
+      } catch (e) {alert("请求失败,请检查网络是否正常");} finally {}
+
+    }
+</script>

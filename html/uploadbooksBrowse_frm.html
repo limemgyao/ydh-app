@@ -1,0 +1,117 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <link href="../css/bookInfo.css" rel="stylesheet" />
+    <title></title>
+</head>
+
+<body>
+    <div class="bookInfo">
+        <div class="content">
+            <div class="contentTop" style="width:100%;overflow:hidden;">
+              <div style="float:left;width:35%;height:180px;"><div class="BookImg" style="height:150px;width:110px;float:left;" id="bkimage"></div></div>
+              <div style="float:left;width:65%;word-break: break-all; text-overflow: ellipsis;display: -webkit-box;-webkit-box-orient: vertical;-webkit-line-clamp: 2;overflow: hidden;" id="txt_BookName"></div>
+              <div style="float:left;width:65%;font-size:14px;font-weight:200;margin-top:15px;" id="txt_AuthorName" ></div>
+              <div style="float:left;width:65%;font-size:14px;font-weight:200;" id="txt_PubHouse" ></div>
+              <div style="float:left;width:65%;font-size:14px;font-weight:200;" id="txt_PrintTime" ></div>
+              <div style="float:left;width:65%;font-size:18px;font-weight:bold;text-align:right;" id="txt_LikeRate"></div>
+            </div>
+            <!-- <div class="bookAttribute" style="border:none;">
+                <span class="bookNeme" id="bookname"></span><br />
+                <span class="bookAuthor" id="authname"></span><br />
+                <span class="bookPress"></span><br />
+            </div> -->
+            <div class="contentSummary">
+                <div class="contentSummaryInfo" style="" id="info" bookid='0'>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+<script type="text/javascript" src="../script/jquery.js"></script>
+<script type="text/javascript" src="../script/config.js"></script>
+<script type="text/javascript" src="../script/api.js"></script>
+
+<script type="text/javascript">
+    // app_apiconfig.singnbkServerAP
+    //加载图文列表信息
+
+    apiready = function() {
+        try {
+            $api.rmStorage('sharedata');
+            //输出Log，Log将显示在APICloud Studio控制台
+            api.parseTapmode();
+            var uuid =api.pageParam.booksTempId;
+            showinfo(uuid);
+        } catch (e) {
+            alert("请求失败,请检查网络是否正常");
+        } finally {}
+
+    }
+
+    function showinfo(uuid) {
+
+        try {
+            if (uuid==undefined || uuid==null || uuid=="" || Number(uuid) <= 0) return;
+            api.ajax({
+                url: app_apiconfig.getBooksTemp + '?id=' + uuid,
+                method: 'get',
+            }, function(json, err) {
+                if (json) {
+                    if (json.State == 1) {
+                        if (json.Data != null && json.Data != "") {
+                            var htmldata = json.Data;
+                            var bkname = htmldata.BookName;
+                            var authname = htmldata.Author;
+                            var content = htmldata.Contect;
+                            var BookRev=htmldata.BookRev;
+                            var Press=htmldata.Press;
+                            var LikeRate=htmldata.LikeRate;
+                            var imageurl_1 = htmldata.CoverImg != "" ?app_apiconfig.imageServer + htmldata.CoverImg:"";
+                            // var imageurl_2 = htmldata.BottomImg != "" ?app_apiconfig.imageServer + htmldata.BottomImg:"";
+                            // var imageurl_3 = htmldata.SignImg != "" ?app_apiconfig.imageServer + htmldata.SignImg:"";
+                            // var imageurl_4 = htmldata.OtherImg != "" ?app_apiconfig.imageServer + htmldata.OtherImg:"";
+
+                            if(content!=""){
+                              content='<br/><div style="color:#808080; line-height:22px;font-size:14px;font-family: PingFangSC-Regular, sans-serif;">'+content+'<br/>　</div>'
+                            }
+                            titleName(bkname);
+                            $("#bkimage").css("background","url("+imageurl_1+")");
+                            $("#bkimage").css("background-size","100% 100%");
+                            $("#txt_BookName").html(bkname);
+                            $("#txt_AuthorName").html("作者："+authname);
+                            $("#txt_PrintTime").html("出版时间："+BookRev);
+                            $("#txt_PubHouse").html(Press);
+                            $("#txt_LikeRate").html("￥"+LikeRate+"　");
+                            //$("#bookname").html(bkname);
+                            $("#info").append(content);
+
+                        }
+                    }
+                }
+            });
+        } catch (e) {
+            alert('哦？似乎我们的应用开小差了,请稍等片刻!');
+        }
+    }
+
+    function titleName(objName) {
+      try {
+          //让后台加载数据信息
+          var loaddatafun = 'getBookName('+objName+');';
+          api.execScript({
+              name: 'uploadbooksBrowse_win',
+              script: loaddatafun
+          });
+      } catch (e) {}
+    }
+</script>
+
+
+</html>

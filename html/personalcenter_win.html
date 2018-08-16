@@ -1,0 +1,124 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title></title>
+    <link href="../css/aui.css" rel="stylesheet" />
+    <link href="../css/public.css" rel="stylesheet" />
+    <!-- <link href="../css/aui.css" rel="stylesheet" /> -->
+    <!-- <link rel="stylesheet" href="../css/appindex.css" rel="stylesheet" /> -->
+</head>
+
+<body>
+    <footer id="footer" class="operation">
+        <div class="homepage" tapmode onclick="opwindows_tag(1)">
+            <img src="../image/homepage_gray.png" />
+            <span>首页</span>
+        </div>
+        <div class="find " tapmode onclick="opwindows_tag(2)">
+            <img src="../image/find_gray.png" />
+            <span>全球推荐</span>
+        </div>
+        <div class="underwrite" tapmode onclick="opwindows_tag(3)">
+            <img src="../image/underwrite_gray.png" />
+            <span>签名书</span>
+        </div>
+        <div class="personal active" tapmode onclick="opwindows_tag(4)">
+            <img src="../image/personal.png" />
+            <span>我的</span>
+        </div>
+    </footer>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript">
+    apiready = function() {
+      try {
+        // 阻止页面弹动
+        api.setWinAttr({
+            bounces: false
+        });
+        //输出Log，Log将显示在APICloud Studio控制台
+        api.parseTapmode();
+
+        var f_footer = $api.byId('footer');
+        //var headerH = $api.offset(header).h;
+        var footerH = $api.offset(f_footer).h;
+        //frame的高度为当前window高度减去header和footer的高度
+        var frameH = api.winHeight - 0 - footerH;
+        api.openFrame({
+            name: 'personalcenter_frm',
+            url: 'personalcenter_frm.html',
+            bounces: true,
+            pageParam: api.pageParam,
+            rect: {
+                x: 0,
+                y: 0,
+                w: 'auto',
+                h: frameH
+            }
+        });
+      } catch (e) {alert("请求失败,请检查网络是否正常");} finally {}
+
+
+    }
+
+    ///关闭系统窗口，返回到上一层
+    function closewindows() {
+        api.closeWin({});
+    }
+
+    //打开菜单
+    function opwindows_tag(objs) {
+      try {
+        var fname = '';
+        var fnameurl = '';
+        switch (objs) {
+            case 1:
+                fname = 'appindex';
+                fnameurl = '../appindex.html';
+                break;
+            case 2:
+                fname = 'found_win';
+                fnameurl = 'found_win.html';
+                break;
+
+            case 3:
+                fname = 'signbk_win';
+                fnameurl = 'signbk_win.html';
+                break;
+            case 4:
+                if (!$api.user.islogin()) {
+                    fname = 'login';
+                    fnameurl = 'login.html';
+                } else {
+                    fname = 'personalcenter_win';
+                    fnameurl = 'personalcenter_win.html';
+                }
+                break;
+            default:
+                break;
+        }
+
+        api.openWin({
+            name: fname,
+            url: fnameurl,
+            bounces: true,
+            animation: {
+                type: 'none'
+            },
+            rect: {
+                x: 0,
+                y: 0,
+                w: 'auto',
+                h: 'auto'
+            }
+        });
+            } catch (e) {alert("请求失败,请检查网络是否正常");} finally {}
+
+    }
+</script>
+
+</html>

@@ -1,0 +1,228 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title></title>
+    <link href="../css/aui.css" rel="stylesheet" />
+    <link href="../css/animate.min.css" rel="stylesheet" />
+    <link href="../css/userInfo.css" rel="stylesheet" />
+</head>
+
+<body class="body_editPwd">
+    <div class="content">
+
+        <div class="Next_a" style="display:block;">
+            <input class="user_code" id="txt_code" type="tel" value="" placeholder="请输入已注册的账号/手机号" />
+            <div class="user_checkCode" id="span_sendcode" tapmode onclick="checkcode_on();">验证</div>
+            <input class="user_Smscode" id="txt_smsCode" type="tel" type="text" value="" placeholder="请输入收到的短信验证码" />
+            <div class="user_errMsg user_errMsg_a">*您输入的验证码错误　　</div>
+            <div class="user_Next" id="div_checkCode" onclick="checkCode()">下一步</div>
+        </div>
+
+        <div class="animated Next_b" style="display:none;">
+            <input class="user_code" style="width:100%;" id="txt_pwd_a" type="Password" value="" placeholder="请输入新密码" />
+            <input class="user_Smscode" id="txt_pwd_b" type="Password" value="" placeholder="请确认新密码" />
+            <div class="user_errMsg user_errMsg_b">*两次密码不一致，请重新输入　　</div>
+            <div class="user_Next" id="div_editPwd" onclick="edit_PwdOn();">下一步</div>
+        </div>
+
+    </div>
+</body>
+
+</html>
+<script type="text/javascript" src="../script/jquery.js"></script>
+<script type="text/javascript" src="../script/jquery-ui.js"></script>
+<script type="text/javascript" src="../script/config.js"></script>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type='text/javascript'>
+    apiready = function() {
+        //userInfo($api.user.userid());
+    }
+
+    //获取验证码倒计时
+    var _countdown = 60;
+
+    function settime() {
+        if (_countdown == 0) {
+            $("#span_sendcode").html("重新获取");
+            _countdown = 60;
+        } else {
+            $("#span_sendcode").html("重新发送(" + _countdown + ")")
+            _countdown--;
+            setTimeout(function() {
+                settime()
+            }, 1000)
+        }
+    }
+
+    //发送验证码
+    function checkcode_on() {
+        try {
+            if ($("#span_sendcode").html() != "验证" && $("#span_sendcode").html()!="重新获取") {
+                return;
+            }
+            var mobile = $("#txt_code").val();
+            var Regex = /^0?1[0-9]{10}$/;
+            if (!Regex.test(mobile)) {
+                alert("请输入正确的手机号码！");
+                return;
+            }
+            $("#span_sendcode").html("获取中...");
+            api.ajax({
+                url: app_apiconfig.SendCode + '?mobile=' + mobile,
+                method: 'get'
+            }, function(json, err) {
+                settime();
+                if (json) {
+                    if (json.Data != null && json.Data != "") {
+                        if (json.Data > 0) {
+                          //发送成功
+                        } else if (json.Data == "-99") {
+                          alert("正在发送验证码，请1分钟后再获取");
+                        } else {
+                            alert("获取验证码失败");
+                        }
+                    } else {
+                        alert("获取验证码失败");
+                    }
+                } else {
+                    alert("获取验证码失败");
+                }
+            });
+        } catch (e) {
+           $("#span_sendcode").html("重新获取");
+            alert("请求失败,请检查网络是否正常");
+        }
+
+    }
+
+    //验证码验证
+    function checkCode() {
+      try {
+          if ($("#div_checkCode").html() != "下一步") {
+              return;
+          }
+          var mobile = $("#txt_code").val();
+          var code=$("#txt_smsCode").val();
+          var Regex = /^0?1[0-9]{10}$/;
+          if (!Regex.test(mobile)) {
+              alert("请输入正确的手机号码！");
+              return;
+          }else if($("#txt_smsCode").val()==""){
+             alert("请输入验证码！");
+             return;
+          }
+          $("#div_checkCode").html("验证中...");
+          api.ajax({
+              url: app_apiconfig.checkSendCode + '?mobile=' + mobile+'&code='+code,
+              method: 'get'
+          }, function(json, err) {
+              if (json) {
+                  if (json.Data != null && json.Data != "") {
+                      if (json.Data > 0) {
+                        //验证成功，进入修改密码界面
+                        Next_b_show();
+                        $("#div_checkCode").html("下一步");
+                      } else if (json.Data == "-99") {
+                        $("#div_checkCode").html("下一步");
+                        $(".user_errMsg_a").show();
+                      } else {
+                        $("#div_checkCode").html("下一步");
+                          alert("验证失败");
+                      }
+                  } else {
+                    $("#div_checkCode").html("下一步");
+                      alert("验证失败");
+                  }
+              } else {
+                $("#div_checkCode").html("下一步");
+                  alert("验证失败");
+              }
+          });
+      } catch (e) {
+          $("#div_checkCode").html("下一步");
+          alert("请求失败,请检查网络是否正常");
+      }
+    }
+
+    //验证成功后修改密码
+    function edit_PwdOn(){
+      if ($("#div_editPwd").html() != "下一步") {
+          return;
+      }
+      var txt_pwd_a=$("#txt_pwd_a").val().trim();
+      var txt_pwd_b=$("#txt_pwd_b").val().trim();
+      if(txt_pwd_a.length<6){
+          alert("密码长度不能小于6位");
+          return;
+      }else if(txt_pwd_a!=txt_pwd_b){
+          $(".user_errMsg_b").show();
+          return;
+      }
+      //修改密码
+      //获取数据保存
+      var userData = {
+          "MebID": $api.user.userid(),
+          "Password":txt_pwd_a.toString()
+      }
+      $("#div_editPwd").html("请稍等...");
+      $.ajax({
+          type: 'POST',
+          url: app_apiconfig.modifyMebInfo,
+          data: userData,
+          dataType: 'json',
+          success: function(ret) {
+              if (parseInt(ret.Data) > 0) {
+                      alert("修改成功");
+                      refreshUserPwd();
+                      setTimeout(function() {
+                        api.openWin({
+                            name: 'personalcenter_win',
+                            url: 'personalcenter_win.html',
+                            bounces: true,
+                            rect: {
+                                x: 0,
+                                y: 0,
+                                w: 'auto',
+                                h: 'auto'
+                            }
+                        });
+                      }, 1000)
+                      //修改成功。跳转到个人中心
+              } else {
+                  alert("遇到问题啦！请您稍后重试");
+              }
+          }
+
+      });
+
+
+
+    }
+
+    //初始化页面状态
+    function refreshUserPwd(){
+      $(".Next_a").css("display", "block");
+      $(".Next_b").css("display", "none");
+      $(".user_errMsg").hide();
+      $("#txt_code").val("");
+      $("#txt_smsCode").val("");
+      $("#txt_pwd_a").val("");
+      $("#txt_pwd_b").val("");
+      $("#div_checkCode").html("下一步");
+      $("#div_editPwd").html("下一步");
+      $("#span_sendcode").html("验证");
+    }
+    //显示下一步内容
+    function Next_b_show() {
+        $(".Next_a").css("display", "none");
+        $(".Next_b").css("display", "block");
+        try {
+          //显示动画
+          $('.Next_b').addClass('bounceInRight');
+        } catch (e) {}
+    }
+</script>

@@ -1,0 +1,457 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title></title>
+    <link href="../css/aui.css" rel="stylesheet" />
+    <link href="../css/userInfo.css" rel="stylesheet" />
+    <link href="../css/jquery.mobile-1.4.5.min.css" rel="stylesheet" />
+    <style>
+        #loading_layer {
+            position: fixed;
+            z-index: 10;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        #loading_win {
+            position: absolute;
+            left: 45%;
+            margin: 0 auto;
+            top: 40%;
+        }
+
+        #loading_win img {
+            border-radius: 40px;
+        }
+
+        .hide {
+            display: none;
+        }
+
+        .ui-input-text {
+            border: 0px;
+        }
+    </style>
+
+</head>
+
+<body class="body_userInfo">
+    <div class="wrapper" style="background:#F4F4F4;">
+        <div class="content">
+            <div class="personalcenter_plate">
+                <div class="personalcenter_plate_content user_Img" tapmode onclick="edit_userimg();">
+                    <div>头像</div>
+                    <div><img id="avatar" class="avatar" name="avatar" /></div>
+                    <div><span class="aui-iconfont aui-icon-right"></span></div>
+                </div>
+                <div class="personalcenter_plate_content">
+                    <div>姓名</div>
+                    <div><input id="MebName" type="text" value="" onclick="input_focus('MebName')" /></div>
+                    <div><span class="aui-iconfont aui-icon-right"></span></div>
+                </div>
+                <div class="personalcenter_plate_content" tapmode onclick="edit_Sex();">
+                    <div>性别</div>
+                    <div id="div_sex" sex=""></div>
+                    <div><span class="aui-iconfont aui-icon-right"></span></div>
+                </div>
+                <div class="personalcenter_plate_content">
+                    <div>出生年月</div>
+                    <div style="padding-right:0%;"><input id="Birthday" type="date" value="" style="width:150px;padding-right:0px;text-align:right;font-size: 16px;" /></div>
+                    <div><span class="aui-iconfont aui-icon-right"></span></div>
+                </div>
+                <div class="personalcenter_plate_content" tapmode onclick="edit_Ads()">
+                    <div>管理收货地址</div>
+                    <div></div>
+                    <div><span class="aui-iconfont aui-icon-right"></span></div>
+                </div>
+            </div>
+
+            <div class="personalcenter_plate">
+                <div class="personalcenter_plate_content">
+                    <div>身份证绑定</div>
+                    <div id="doc_no" doc=""></div>
+                    <div><span class="aui-iconfont aui-icon-right"></span></div>
+                </div>
+                <div class="personalcenter_plate_content" tapmode onclick="edit_pwd()">
+                    <div>修改密码</div>
+                    <div></div>
+                    <div><span class="aui-iconfont aui-icon-right"></span></div>
+                </div>
+            </div>
+            <input id="Hid_MebName" type="hidden" />
+            <input id="Hid_Sex" type="hidden" />
+            <input id="Hid_Birthday" type="hidden" />
+            <input id="Hid_DocNo" type="hidden" />
+            <div class="personalcenter_plate">
+                <div class="personalcenter_plate_content" tapmode onclick="loginout()">
+                    <div style="width:100%;text-align: center;color:#00ae67;">退出登录</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 加载 -->
+    <div id="loading_layer" class="hide"></div>
+    <div id="loading_win" class="hide"><img src="../image/93.gif" /></div>
+    <!-- <div class="usercenter_cover"></div> -->
+    <!-- 选择性别 -->
+    <!-- <div class="usercenter_sex">
+      <div tapmode onclick="set_Sex(1,'男')">男</div>
+      <div tapmode onclick="set_Sex(2,'女')">女</div>
+      <div tapmode onclick="cancel_Sex()">取消</div>
+    </div> -->
+
+</body>
+
+</html>
+<script type="text/javascript" src="../script/jquery.js"></script>
+<script type="text/javascript" src="../script/jquery.mobile-1.4.5.min.js"></script>
+<script type="text/javascript" src="../script/config.js"></script>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type='text/javascript'>
+    apiready = function() {
+        try {
+            //修改日期控件样式
+            $(".ui-input-text").removeClass("ui-shadow-inset ui-corner-all ui-btn-shadow ui-body-c");
+        } catch (e) {}
+        userInfo($api.user.userid());
+    }
+
+    //获取个人信息
+    function userInfo(user_id) {
+        try {
+            $api.removeCls(loading_layer, 'hide');
+            $api.removeCls(loading_win, 'hide');
+            api.ajax({
+                url: app_apiconfig.getMember + "?mebid=" + user_id,
+                method: 'get',
+            }, function(json, err) {
+                $api.addCls(loading_layer, 'hide');
+                $api.addCls(loading_win, 'hide');
+                var data = null;
+                if (json) {
+                    if (json.ErrCode == 200) {
+                        if (json.Data != null && json.Data != "") {
+                            data = json.Data;
+                            var userImag = data.PhotoPath;
+                            var MebName = data.MebName;
+                            var sex = data.Sex;
+                            var v_BeginDate = "";
+                            var doc_no = data.DocNo;
+                            var doc_no_show = data.DocNo;
+
+                            if (userImag == "" || userImag == null || userImag == undefined) {
+                                userImag = "" + app_apiconfig.imageServer + "/" + "Skin/images/user_pic_def.png";
+                            } else {
+                                userImag = app_apiconfig.imageServer + "/" + data.PhotoPath;
+                            }
+                            if (doc_no != "" && doc_no != null && doc_no != undefined) {
+                                if (doc_no_show.length > 7) {
+                                    doc_no_show = doc_no.substring(0, 3);
+                                    doc_no_show += "****"
+                                    doc_no_show += doc_no.substring(doc_no.length - 4, doc_no.length);
+                                }
+                            }
+
+                            $("#avatar").attr('src', userImag);
+                            $("#MebName").val(MebName);
+                            if (data.Sex == '1') {
+                                $("#div_sex").attr('sex', data.Sex);
+                                $("#div_sex").html('男');
+                            } else if (data.Sex == '2') {
+                                $("#div_sex").attr('sex', data.Sex);
+                                $("#div_sex").html('女');
+                            } else {
+                                $("#div_sex").attr('sex', 0);
+                                $("#div_sex").html('');
+                            }
+                            if (typeof(data.Birthday) == "string") {
+                                v_BeginDate = new Date(data.Birthday.split(" ")[0]);
+                                v_BeginDate = v_BeginDate.Format("yyyy-MM-dd");
+                            } else {
+                                v_BeginDate = data.BeginDate;
+                            }
+                            $("#Birthday").val(v_BeginDate);
+                            $("#doc_no").html(doc_no_show);
+                            $("#doc_no").attr('doc', doc_no);
+
+                            //保存隐藏值
+                            assign_hid();
+
+                        }
+                    }
+                }
+
+            });
+        } catch (e) {
+            $api.addCls(loading_layer, 'hide');
+            $api.addCls(loading_win, 'hide');
+            alert('哦？似乎我们的应用开小差了,请稍等片刻!');
+        }
+    }
+
+    //赋值隐藏值
+    function assign_hid() {
+        $("#Hid_MebName").val($("#MebName").val());
+        $("#Hid_Sex").val($("#div_sex").attr('sex'));
+        $("#Hid_Birthday").val($("#Birthday").val());
+        $("#Hid_DocNo").val($("#doc_no").attr('doc'));
+    }
+
+    //选择性别弹出
+    function edit_Sex() {
+        try {
+            api.actionSheet({
+                title: '',
+                cancelTitle: '取消',
+                buttons: ['男', '女']
+            }, function(ret, err) {
+                if (ret) {
+                    set_Sex(ret.buttonIndex);
+                }
+            });
+        } catch (e) {
+            alert("请求失败,请检查网络是否正常");
+        } finally {}
+    }
+    //选择性别事件
+    function set_Sex(sourceType) {
+        if (sourceType == 1) {
+            $("#div_sex").attr('sex', '1');
+            $("#div_sex").html("男");
+        } else if (sourceType == 2) {
+            $("#div_sex").attr('sex', '2');
+            $("#div_sex").html("女");
+        }
+    }
+
+    //密码修改
+    function edit_pwd() {
+        try {
+            if (!$api.user.islogin()) {
+                gologin();
+                return;
+            }
+            api.openWin({
+                name: 'userPwd_win',
+                url: 'userPwd_win.html',
+                bounces: true,
+                rect: {
+                    x: 0,
+                    y: 0,
+                    w: 'auto',
+                    h: 'auto'
+                }
+            });
+        } catch (e) {
+            alert("请求失败,请检查网络是否正常");
+        } finally {}
+    }
+
+    //登录页跳转
+    function gologin() {
+        try {
+            api.openWin({
+                name: 'login',
+                url: 'login.html',
+                bounces: true,
+                animation: {
+                    type: 'userInfo_win'
+                },
+                rect: {
+                    x: 0,
+                    y: 0,
+                    w: 'auto',
+                    h: 'auto'
+                }
+            });
+        } catch (e) {
+            alert("请求失败,请检查网络是否正常");
+        } finally {}
+
+
+    }
+
+    //管理收货地址
+    function edit_Ads() {
+        try {
+            api.openWin({
+                name: 'managementAds',
+                url: 'managementAds.html',
+                bounces: true,
+                rect: {
+                    x: 0,
+                    y: 0,
+                    w: 'auto',
+                    h: 'auto'
+                }
+            });
+        } catch (e) {
+            alert("请求失败,请检查网络是否正常");
+        } finally {}
+    }
+
+    //修改头像，跳转
+    function edit_userimg() {
+      try {
+          if (!$api.user.islogin()) {
+              gologin();
+              return;
+          }
+          api.openWin({
+              name: 'cropperImage',
+              url: 'cropperImage.html',
+              bounces: true,
+              rect: {
+                  x: 0,
+                  y: 0,
+                  w: 'auto',
+                  h: 'auto'
+              }
+          });
+      } catch (e) {
+          alert("请求失败,请检查网络是否正常");
+      } finally {}
+    }
+
+    //当标移动到容器的最后
+    function input_focus(input_id) {
+        var t = $("#" + input_id).val();
+        $("#" + input_id).val("").focus().val(t);
+    }
+
+    //保存信息
+    function Save() {
+
+        try {
+            $api.removeCls(loading_layer, 'hide');
+            $api.removeCls(loading_win, 'hide');
+            //验证数据是否有改动
+            var edit_flag = 0;
+            var userImag = "";
+            var MebName = $("#MebName").val();
+            var sex = $("#div_sex").attr('sex');
+            var Birthday = $("#Birthday").val();
+            //var doc_no =$("#doc_no").attr('doc');
+            if ($("#Hid_MebName").val() != $("#MebName").val() && edit_flag == 0) {
+                edit_flag = 1;
+            } else if ($("#Hid_Sex").val() != $("#div_sex").attr('sex') && edit_flag == 0) {
+                edit_flag = 1;
+            } else if ($("#Hid_Birthday").val() != $("#Birthday").val() && edit_flag == 0) {
+                edit_flag = 1;
+            }
+            // else if($("#Hid_DocNo").val()!=$("#doc_no").attr('doc') && edit_flag==0){
+            //   edit_flag=1;
+            // }
+            if (edit_flag == 0) {
+                $api.addCls(loading_layer, 'hide');
+                $api.addCls(loading_win, 'hide');
+                alert("没有修改，无需保存");
+                return false;
+            }
+            //获取数据保存
+            Birthday = Birthday.replace("年", "-");
+            Birthday = Birthday.replace("月", "-");
+            Birthday = Birthday.replace("日", "");
+            var userData = {
+                "MebID": $api.user.userid(),
+                "MebName": MebName,
+                "DocNo": "",
+                "Mobile": "",
+                "Birthday": Birthday,
+                "Sex": sex,
+                "PhotoImg": ""//此页面不做头像修改
+            }
+            $.ajax({
+                type: 'POST',
+                url: app_apiconfig.modifyMebInfo,
+                data: userData,
+                dataType: 'json',
+                success: function(ret) {
+                    $api.addCls(loading_layer, 'hide');
+                    $api.addCls(loading_win, 'hide');
+                    if (parseInt(ret.Data) > 0) {
+                        assign_hid();
+                            //修改成功，重新设置缓存
+                        try {
+                            var Stor_user = $api.getStorage("user");
+                            $api.user.setInfo({
+                                "user_mobile": Stor_user.user_mobile,
+                                "user_id": Stor_user.user_id,
+                                "user_name": MebName,
+                                "user_login": true,
+                                "user_type": Stor_user.user_type,
+                                "user_ads": Stor_user.user_ads
+                            });
+                            //更新个人中心页面信息
+                            var loaddatafun = 'StuffInfo(' + $api.user.userid() + ');';
+                            api.execScript({
+                                name: 'personalcenter_win',
+                                frameName: 'personalcenter_frm',
+                                script: loaddatafun
+                            });
+                            //跳转到个人中心
+                            api.openWin({
+                                name: 'personalcenter_win',
+                                url: 'personalcenter_win.html',
+                                bounces: true,
+                                rect: {
+                                    x: 0,
+                                    y: 0,
+                                    w: 'auto',
+                                    h: 'auto'
+                                }
+                            });
+
+                        } catch (e) {}
+                        //alert("保存成功");
+                    } else {
+                        alert("遇到问题啦！请您稍后重试");
+                    }
+                }
+
+            });
+        } catch (e) {
+            $api.addCls(loading_layer, 'hide');
+            $api.addCls(loading_win, 'hide');
+        }
+    }
+
+    //退出登录
+    function loginout() {
+        try {
+            //清楚用户缓存
+            $api.clearStorage();
+            $api.setStorage('user_id', 1);
+            api.openWin({
+                name: 'login',
+                url: 'login.html',
+                rect: {
+                    x: 0,
+                    y: 0,
+                    w: 'auto',
+                    h: 'auto'
+                }
+            });
+
+            //刷新登入页面
+            try {
+                var loaddatafun = 'Refreshlogin();';
+                api.execScript({
+                    name: 'login',
+                    script: loaddatafun
+                });
+            } catch (e) {}
+
+        } catch (e) {
+            alert("请求失败,请检查网络是否正常");
+        } finally {}
+
+    }
+</script>

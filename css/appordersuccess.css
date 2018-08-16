@@ -1,0 +1,50 @@
+﻿.wrapper{background-color:#F4F4F4;font-family: "Microsoft YaHei" ! important;}
+
+.bookinfo{width:100%;background:#fff;margin:15px 0;border-radius:5px;}
+.bookinfo .imgtext{width:100%; padding-bottom: 10px; display: inline-flex;font-size: 1em;border: 1px solid #F3F3F3;border-style: none none solid none;position: relative;}
+.bookinfo .imgtext .imgtext_img{width:30%;text-align:center;}
+.bookinfo .imgtext .imgtext_img img{width: 80px; height: 90px; margin: auto;}
+.bookinfo .imgtext .imgtext_text{width:70%;position:relative;}
+.bookinfo .imgtext .imgtext_text div{display:-webkit-box;height: 40px;padding-right: 10px;}
+.bookinfo .imgtext .imgtext_text div:nth-child(1){overflow: hidden;-webkit-line-clamp: 2; -webkit-box-orient: vertical;word-break: break-all;font-size:0.9em;height: 45px;}
+.bookinfo .imgtext .imgtext_text .imgtext_price{display:table;width: 100%;position: absolute;bottom: -10px;}
+.bookinfo .imgtext .imgtext_text div:nth-child(2) span{display:table-cell;}
+.bookinfo .imgtext .imgtext_text div:nth-child(2) span:nth-child(1){text-align:left;font-size:1.1em;color:#ff435a;}
+.bookinfo .imgtext .imgtext_text div:nth-child(2) span:nth-child(2){text-align:right;font-size:0.8em;color:#666666;padding-right: 10px;}
+
+.bookinfo .total_imgtext{width:100%;border: 1px solid #F3F3F3;border-style: none none solid none;}
+.bookinfo .total_imgtext div{text-align: right;margin: 5px 0 25px 0;padding-right: 10px;}
+.bookinfo .total_imgtext div span:nth-child(1){font-size:0.8em;color:#666666;}
+.bookinfo .total_imgtext div span:nth-child(2){font-size:1.1em;color:#ff435a;}
+.bookinfo .receiving_info{width:100%;padding:5px 0 20px 0;}
+.bookinfo .receiving_info div{width:100%;text-align: right;padding-right: 10px;display:table;line-height: 25px;color:#ccc;font-size:0.8em;}
+.bookinfo .receiving_info div span{display:table-cell;padding-left: 10px;}
+.bookinfo .receiving_info div:nth-child(1) span:nth-child(1){text-align: left;}
+.bookinfo .receiving_info div:nth-child(1) span:nth-child(2){text-align: right;color:#999;}
+.bookinfo .receiving_info div:nth-child(2) span:nth-child(1){text-align: left;}
+.bookinfo .receiving_info div:nth-child(2) span:nth-child(2){text-align: right;color:#999;}
+
+.consigneeinfo{width:100%;background:#fff;margin:15px 0;border-radius:5px;}
+.consigneeinfo .consignee{width:100%;border: 1px solid #F3F3F3;border-style: none none solid none;}
+.consigneeinfo .consignee div{text-align: left;padding: 7px 0px 10px 10px;}
+.consigneeinfo .consignee div span:nth-child(1){font-size:0.85em;color:#d8d8d8 ;}
+.consigneeinfo .consignee div span:nth-child(2){font-size:0.85em;color:#999;}
+.consigneeinfo .consignee_info{width:100%;padding:5px 0 20px 0;}
+.consigneeinfo .consignee_info div{width:100%;text-align: right;padding-right: 10px;display:table;line-height: 30px;color:#ccc;font-size:0.9em;}
+.consigneeinfo .consignee_info div span{display:table-cell;padding-left: 10px;color:#666;}
+.consigneeinfo .consignee_info div:nth-child(1) span:nth-child(1){text-align: left;}
+.consigneeinfo .consignee_info div:nth-child(1) span:nth-child(2){text-align: right;}
+.consigneeinfo .consignee_info div:nth-child(2) span:nth-child(1){text-align: left;}
+
+.logisticsinfo{width:100%;background:#fff;margin:15px 0;border-radius:5px;}
+.logisticsinfo .logistics{width:100%;border: 1px solid #F3F3F3;border-style: none none solid none;}
+.logisticsinfo .logistics div{text-align: left;padding: 7px 0px 10px 10px;}
+.logisticsinfo .logistics div span:nth-child(1){font-size:0.85em;color:#d8d8d8 ;}
+.logisticsinfo .logistics div span:nth-child(2){font-size:0.85em;color:#999;}
+.logisticsinfo .logistics_info{width:100%;padding:5px 0 20px 0;}
+.logisticsinfo .logistics_info div{width:100%;text-align: right;padding-right: 10px;display:table;line-height: 30px;color:#ccc;font-size:0.9em;}
+.logisticsinfo .logistics_info div span{display:table-cell;padding-left: 10px;color:#666;}
+.logisticsinfo .logistics_info div:nth-child(1) span:nth-child(1){text-align: left;}
+.logisticsinfo .logistics_info div:nth-child(1) span:nth-child(2){text-align: right;color:#ccc;font-size:0.8em;}
+.logisticsinfo .logistics_info div:nth-child(2) span:nth-child(1){text-align: left;}
+.logisticsinfo .logistics_info div:nth-child(2) input{color: #ccc;width: 48px;line-height: 5px;height: 20px;font-size: 11px;margin-right: 10px;background: #fff;outline: none;-webkit-appearance: none;border: 1px solid #DFDFDF;}

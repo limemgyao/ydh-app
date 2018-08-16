@@ -1,0 +1,80 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <link rel="stylesheet" type="text/css" href="../css/aui.css" />
+    <style>
+        .headerinfo {
+            color: #fff;
+            background-color: #00AF68;
+        }
+
+        .inconn {
+            color: #fff !important;
+        }
+    </style>
+
+
+</head>
+
+<body>
+    <header class="aui-bar aui-bar-nav aui-bar-light headerinfo" id="aui-header">
+        <a class="aui-btn aui-pull-left" onclick="closeWin()">
+            <span class="aui-iconfont aui-icon-left inconn"></span>
+        </a>
+        <div class="aui-title">我的订单</div>
+    </header>
+
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript">
+    apiready = function() {
+        try {
+          // 阻止页面弹动
+          api.setWinAttr({
+              bounces: false
+          });
+            api.parseTapmode();
+            var header = $api.byId('aui-header');
+            //适配iOS7+，Android4.4+状态栏沉浸式效果，详见config文档statusBarAppearance字段
+            $api.fixStatusBar(header);
+            var headerH = $api.offset(header).h;
+            var frameH = api.winHeight - headerH - 0;
+            api.openFrame({
+                name: 'orderList_frm',
+                url: 'orderList_frm.html',
+                bounces: true,
+                pageParam: {
+                    "type": api.pageParam.type
+                },
+                rect: {
+                    x: 0,
+                    y: headerH,
+                    w: 'auto',
+                    h: frameH
+                }
+            });
+        } catch (e) {
+            alert("请求失败,请检查网络是否正常");
+        } finally {}
+
+    };
+
+    function closeWin() {
+      //关闭订单支付页
+      try {
+        if(api.pageParam.pageName=='shCartOrder_win'){
+          api.closeWin({name:"shCartOrder_win"});
+        }else if(api.pageParam.pageName=='payCartOrder_win'){
+          api.closeWin({name:"payCartOrder_win"})
+        }
+      } catch (eex) {}
+
+      api.closeWin();
+    }
+</script>
+
+</html>

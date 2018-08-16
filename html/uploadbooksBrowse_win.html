@@ -1,0 +1,76 @@
+<!doctype html>
+<html>
+<!-- 自上传浏览页面 -->
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <link rel="stylesheet" type="text/css" href="../css/aui.css" />
+    <style>
+        .headerinfo {color: #fff;background-color: #00AF68;}
+        .inconn {color: #fff !important;}
+        .shopCart_img{float:right;width: 35px;height:35;margin-right: 15px;margin-top:5px;}
+        .shopCart_img img{width: 25px;height: 25px;margin:5px;}
+        .shopCart_count{display:none; width: 1.5em;height: 1.5em;font-size: 0.5em;padding: 0.2em 0em;position: absolute;top: 25px;color: #fff;border-radius: 21px;line-height: 1.2em;background-color: red;right: 15px;}
+    </style>
+</head>
+
+<body>
+    <header class="aui-bar aui-bar-nav aui-bar-light headerinfo" id="aui-header">
+        <a class="aui-btn aui-pull-left" tapmode onclick="closeWin()">
+            <span class="aui-iconfont aui-icon-left inconn"></span>
+        </a>
+        <div class="aui-title" id="bookTitle" style="width:60%;"></div>
+    </header>
+</body>
+<script type="text/javascript" src="../script/jquery.js"></script>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/config.js"></script>
+<script type="text/javascript">
+
+apiready = function() {
+        try {
+            // 阻止页面弹动
+            api.setWinAttr({
+                bounces: false
+            });
+            api.parseTapmode();
+            var header = $api.byId('aui-header');
+            $api.fixStatusBar(header);
+            var headerPos = $api.offset(header);
+            var body_h = $api.offset($api.dom('body')).h;
+            var pageParam = api.pageParam.booksTempId;
+            api.openFrame({
+                name: 'uploadbooksBrowse_frm',
+                url: 'uploadbooksBrowse_frm.html',
+                bounces: true,
+                pageParam: {
+                    "booksTempId": pageParam
+                },
+                rect: {
+                    x: 0,
+                    y: headerPos.h,
+                    w: 'auto',
+                    h: api.winHeight - headerPos.h
+                }
+            })
+        } catch (e) {
+            alert("请求失败,请检查网络是否正常");
+        } finally {}
+
+    };
+
+    function getBookName(objName) {
+      if(objName!=""){
+        $("#bookTitle").html(objName);
+      }else {
+        $("#bookTitle").html("签名书");
+      }
+    }
+
+    function closeWin() {
+        api.closeToWin({name:'uploadbooksSi_win'});
+    }
+</script>
+
+</html>

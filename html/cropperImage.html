@@ -1,0 +1,446 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title></title>
+    <link href="../css/aui.css" rel="stylesheet" />
+    <link href="../css/cropper.min.css" rel="stylesheet" />
+    <style>
+        #loading_layer {
+            position: fixed;
+            z-index: 10;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        #loading_win {
+            position: absolute;
+            left: 45%;
+            margin: 0 auto;
+            top: 40%;
+        }
+
+        #loading_win img {
+            border-radius: 40px;
+        }
+
+        .hide {
+            display: none;
+        }
+    </style>
+</head>
+
+<body class="body_cropperImage">
+  <!-- 头像截取 -->
+  <img id="avatar" class="avatar" name="avatar" style="height:65px;width:65px;display:none;" />
+  <div id="div_croppImg" style="position: fixed;top: 0;left: 0;width: 100%;height: 100%;background-color:#000;" class="hide">
+     <div id="div_croppImgCon" class="container js-container" style="background-color:#000;height: 100%;">
+         <img id="cropperImg"  class="js-image"  src="" />
+     </div>
+     <div style="opacity: 0.7; filter: alpha(opacity=80);background:#1E1E1E; position:absolute;bottom:0px; width: 100%;font-weight:500;font-size:16px;color:#ffffff;">
+        <div style="width:25%;height:50px;line-height:50px;float:left;text-align:center;" onclick="cancel_img()">取消</div>
+        <!-- <div style="width:25%;height:50px;float:left;margin-left:12.5%;" onclick="Refresh_img()">
+          <div style="background:url(../image/Refresh_img.png);background-size:100% 100%;width:25px;height:25px;margin:0 auto;margin-top:12.5px;"></div>
+        </div> -->
+        <div style="width:25%;height:50px;line-height:50px;float:right;text-align:center;" onclick="shear_img()">完成</div>
+     </div>
+  </div>
+
+  <!-- 加载 -->
+  <div id="loading_layer" class="hide"></div>
+  <div id="loading_win" class="hide"><img src="../image/93.gif" /></div>
+
+</body>
+
+</html>
+<script type="text/javascript" src="../script/jquery.js"></script>
+<script type="text/javascript" src="../script/cropper.min.js"></script>
+<script type="text/javascript" src="../script/config.js"></script>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type='text/javascript'>
+
+  apiready = function() {
+      try {
+          // 阻止页面弹动
+          api.setWinAttr({
+              bounces: false
+          });
+          edit_userimg();
+      } catch (e) {
+          alert("请求失败,请检查网络是否正常");
+      } finally {}
+
+  };
+  //修改头像
+  function edit_userimg() {
+      try {
+          api.actionSheet({
+              title: '',
+              cancelTitle: '取消',
+              buttons: ['拍照', '从手机相册选择']
+          }, function(ret, err) {
+              if (ret) {             
+                  getPicture(ret.buttonIndex);
+              }else {
+                //关闭当前页
+                api.closeWin({name:"cropperImage"});
+              }
+          }); 
+      } catch (e) {
+          alert("请求失败,请检查网络是否正常");
+          //关闭当前页
+          api.closeWin({name:"cropperImage"});
+      } finally {}
+  }
+  //头像选择和拍照处理
+  function getPicture(sourceType) {
+      try {
+          if (sourceType == 1) { // 拍照
+              //获取一张图片
+              api.getPicture({
+                  sourceType: 'camera',
+                  encodingType: 'png',
+                  mediaValue: 'pic',
+                  destinationType: 'base64',
+                  allowEdit: false,
+                  quality: 50,
+                  targetWidth: 1080,
+                  targetHeight: 1080,
+                  saveToPhotoAlbum: true
+              }, function(ret, err) {
+                  // 获取拍照数据并处理
+                  if (ret) {
+                      var imgSrc = ret.base64Data;
+                      if (imgSrc != "") {
+                          $("#cropperImg").attr('src', imgSrc);
+                          $api.removeCls(div_croppImg, 'hide');
+                          iniCropper();
+                      }else {
+                        //关闭当前页
+                        api.closeWin({name:"cropperImage"});
+                      }
+                  }else {
+                    //关闭当前页
+                    api.closeWin({name:"cropperImage"});
+                  }
+              });
+          } else if (sourceType == 2) { // 从相机中选择
+              api.getPicture({
+                  sourceType: 'library',
+                  encodingType: 'jpg',
+                  mediaValue: 'pic',
+                  destinationType: 'base64',
+                  quality: 50,
+                  targetWidth: 1080,
+                  targetHeight: 1080
+              }, function(ret, err) {
+                  if (ret) {
+                      var imgSrc = ret.base64Data;
+                      if (imgSrc != "") {
+                        $("#cropperImg").attr('src', imgSrc);
+                        $api.removeCls(div_croppImg, 'hide');
+                        iniCropper();
+                      }else {
+                        //关闭当前页
+                        api.closeWin({name:"cropperImage"});
+                      }
+                  } else {
+                    //关闭当前页
+                    api.closeWin({name:"cropperImage"});
+                  }
+              });
+          }else {
+            //关闭当前页
+            api.closeWin({name:"cropperImage"});
+          }
+      } catch (e) {
+          alert("请求失败,请检查网络是否正常");
+          //关闭当前页
+          api.closeWin({name:"cropperImage"});
+      } finally {}
+
+  }
+
+  //图片裁剪
+  var _cropper=null;
+  var _croppable = false;
+  function iniCropper() {
+    try {
+      var clientW=(window.innerWidth > 0) ? window.innerWidth : screen.width;
+      var ClientH=(window.innerHeight > 0) ? window.innerHeight : screen.height;
+      //图片画面片处理
+      var $image = $('#cropperImg'),
+        image = $image[0];
+      _cropper = new Cropper(image, {
+          dragMode: 'move',//拖动模式
+          aspectRatio: 1/1,//裁剪框比例  默认NaN   例如：: 1 / 1,//裁剪框比例 1：1
+          autoCropArea: 1,//裁剪框比例 默认值0.8（图片的80%）。0-1之间的数值，定义自动剪裁框的大小
+          restore: false,//默认值true  是否调整窗口大小后恢复裁剪区域
+          viewMode: 1,//0裁剪框可以在画布外，1只能画布内
+          guides: false,//裁剪框虚线 默认true有
+          center: false,//默认true  是否显示裁剪框 中间的+
+          highlight: false,//默认值true。是否在剪裁框上显示白色的模态窗口
+          toggleDragModeOnDblclick: false,//默认true .是否允许 拖动模式 “crop” 跟“move” 的切换状态。。即当点下为crop 模式，如果未松开拖动这时就是“move”模式。放开后又为“crop”模式
+          movable: true,//是否能移动图片
+          zoomable: true,//默认true, 是否允许缩放图片
+          cropBoxMovable: false,//是否允许拖动裁剪框
+          cropBoxResizable: false,//是否允许拖动 改变裁剪框大小
+          minCropBoxWidth:clientW,//裁剪框的宽度，此项不生效时 由autoCropArea 属性代替
+          ready: function () {
+              _croppable = true;//默认值true。是否允许在初始化时自动出现裁剪框
+              var data=null;
+              var CropWdata=null;
+              //计算图片高度和宽度
+               var imgH=_cropper.getCanvasData().height;
+               var imgW=_cropper.getCanvasData().width;
+               var leftT=0;
+               var topT=0;
+               //计算底图距顶部高度
+               var avgH=Number(Number(ClientH)-Number(clientW))/2;
+              try {
+                if(Number(imgW)>0 && Number(imgH)>0){
+                  if(Number(imgW)>=Number(imgH)){
+                     //图片右移的距离为 （（（屏宽/图高）*图宽）-屏宽）/2
+                     leftT=Number(Number(Number(Number(clientW)/Number(imgH))*Number(imgW))-Number(clientW))/2;
+                     //调整底图位置Top
+                     var imgTop=_cropper.getCanvasData().top;
+                     if(Number(ClientH)>0 && Number(imgTop)>0){
+                       if(Number(imgTop)>Number(Number(ClientH)-Number(clientW))){imgTop=Number(Number(ClientH)-Number(clientW));}
+                         topT=Number(imgTop)-Number(avgH);
+                         topT=Number(topT)*0.94;
+                     }
+                     //获得JSON
+                     data={
+                      "top":topT,
+                      "left":-leftT,
+                      "height":clientW
+                    };
+                    CropWdata={"width":clientW};
+                    _cropper.setCanvasData(data);
+                    _cropper.setCropBoxData(CropWdata);
+                  }
+                  else {
+                    data={
+                     "left":0,
+                     "width":clientW
+                   };
+
+                   CropWdata={"top":avgH,"width":clientW};
+                   _cropper.setCanvasData(data);
+                   _cropper.setCropBoxData(CropWdata);
+                  }
+                }else {
+                  data={
+                   "height":clientW
+                 };
+                 CropWdata={"width":clientW};
+                 _cropper.setCanvasData(data);
+                 _cropper.setCropBoxData(CropWdata);
+                }
+
+
+              } catch (ex) {}
+
+
+          },
+          build: function (e) { //加载开始
+              //可以放你的过渡 效果
+          },
+          built: function (e) { //加载完成
+            //完成事件
+          }
+      });
+    } catch (e) {
+      alert("获取图片失败，请稍后再试");
+      //关闭当前页
+      api.closeWin({name:"cropperImage"});
+    }
+  }
+
+  //获取图像高宽度
+  function getImagW() {
+    var croppedCanvas;
+    var rectCanvas;
+    var rectImage;
+
+    if (!_croppable) {
+        return false;
+    }
+    // Crop
+    croppedCanvas = _cropper.getCroppedCanvas();
+    //Rect
+    rectCanvas = getRectCanvas(croppedCanvas);
+  }
+
+  //完成裁剪
+  function shear_img(){
+    try {
+      var croppedCanvas;
+      var rectCanvas;
+      var rectImage;
+
+      if (!_croppable) {
+          return false;
+      }
+      // Crop
+      croppedCanvas = _cropper.getCroppedCanvas();
+      //Rect
+      rectCanvas = getRectCanvas(croppedCanvas);
+      $("#avatar").attr('src', rectCanvas.toDataURL());
+      //保存图片
+      Save();
+
+
+    } catch (e) {
+    alert("图片初始化失败");
+    api.closeWin({name:"cropperImage"});
+  }
+
+}
+   //绘制矩形canvas
+  function getRectCanvas(sourceCanvas) {
+    try {
+      var canvas = document.createElement('canvas');
+      var context = canvas.getContext('2d');
+      var width = sourceCanvas.width;
+      var height = sourceCanvas.height;
+
+      canvas.width = width;
+      canvas.height = height;
+
+      context.imageSmoothingEnabled = true;
+      context.drawImage(sourceCanvas, 0, 0, width, height);
+      context.globalCompositeOperation = 'destination-in';
+      context.beginPath();
+      context.rect(0, 0, width, height);
+      context.fill();
+
+      return canvas;
+    } catch (e) {
+      alert("图片上传失败");
+      api.closeWin({name:"cropperImage"});
+    }
+
+  }
+  //取消裁剪
+  function cancel_img(){
+    var tempImagHtml='<img id="cropperImg" class="js-image" src="" />';
+    $("#div_croppImgCon").html('');
+    $("#div_croppImgCon").html(tempImagHtml);
+    $("#cropperImg").attr('src', '');
+    $api.addCls(div_croppImg, 'hide');
+    //关闭当前页
+    api.closeWin({name:"cropperImage"});
+  }
+
+  //刷新，成初始状态
+  // function Refresh_img() {
+  //   try {
+  //       _cropper.reset();
+  //   } catch (e) {}
+  // }
+
+  //保存头像
+  function Save() {
+
+      try {
+        if (!$api.user.islogin()) {
+            gologin();
+            return;
+        }
+        $api.removeCls(loading_layer, 'hide');
+        $api.removeCls(loading_win, 'hide');
+          //验证数据是否有改动
+          var edit_flag = 0;
+          var userImag = $("#avatar").attr('src');
+          var userData = {
+              "MebID": $api.user.userid(),
+              "MebName": "",
+              "DocNo": "",
+              "Mobile": "",
+              "Birthday": "1900-01-01",
+              "Sex": "",
+              "PhotoImg": userImag
+          }
+          $.ajax({
+              type: 'POST',
+              url: app_apiconfig.modifyMebInfo,
+              data: userData,
+              dataType: 'json',
+              error: function(error){
+                alert("图片上传失败");
+                api.closeWin({name:"cropperImage"});
+              },
+              success: function(ret) {
+                  $api.addCls(loading_layer, 'hide');
+                  $api.addCls(loading_win, 'hide');
+                  if (parseInt(ret.Data) > 0) {
+                          //更新个人中心页面信息
+                          try {
+                            var loaddatafun = 'StuffInfo(' + $api.user.userid() + ');';
+                            api.execScript({
+                                name: 'personalcenter_win',
+                                frameName: 'personalcenter_frm',
+                                script: loaddatafun
+                            });
+                          } catch (exx) {}
+
+                          //更新个人信息修改页
+                          try {
+                            var loaddatafunUser = 'userInfo(' + $api.user.userid() + ');';
+                            api.execScript({
+                                name: 'userInfo_win',
+                                frameName: 'userInfo_frm',
+                                script: loaddatafunUser
+                            });
+                          } catch (exxx) { }
+
+                          //关闭当前页
+                          api.closeWin({name:"cropperImage"});
+
+                    } else {
+                      alert("遇到问题啦！请您稍后重试");
+                      api.closeWin({name:"cropperImage"});
+                  }
+              }
+
+          });
+      } catch (e) {
+          $api.addCls(loading_layer, 'hide');
+          $api.addCls(loading_win, 'hide');
+          api.closeWin({name:"cropperImage"});
+      }
+  }
+
+  //登录页跳转
+  function gologin() {
+      try {
+          api.openWin({
+              name: 'login',
+              url: 'login.html',
+              bounces: true,
+              animation: {
+                  type: 'cropperImage'
+              },
+              rect: {
+                  x: 0,
+                  y: 0,
+                  w: 'auto',
+                  h: 'auto'
+              }
+          });
+      } catch (e) {
+          alert("请求失败,请检查网络是否正常");
+          api.closeWin({name:"cropperImage"});
+      } finally {}
+
+
+  }
+
+
+</script>

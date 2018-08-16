@@ -1,0 +1,100 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title></title>
+    <link href="../css/aui.css" rel="stylesheet" />
+    <link href="../css/public.css" rel="stylesheet" />
+    <link href="../css/appsetup.css" rel="stylesheet" />
+
+</head>
+
+<body>
+
+    <div class="wrapper">
+        <div class="content">
+            <div class="order_plate">
+                <!-- <div class="order_content_other">
+                    <div>关于游读会</div>
+                    <div><span class="aui-iconfont aui-icon-right"></span></div>
+                </div>
+                <div class="order_content_other">
+                    <div>用户协议</div>
+                    <div><span class="aui-iconfont aui-icon-right"></span></div>
+                </div>
+                <div class="order_content_other">
+                    <div>服务协议</div>
+                    <div><span class="aui-iconfont aui-icon-right"></span></div>
+                </div>
+                <div class="order_content_other">
+                    <div>反馈建议</div>
+                    <div><span class="aui-iconfont aui-icon-right"></span></div>
+                </div>
+                <div class="order_content_other">
+                    <div>APP评价<span style="float:right;padding-right:10px;">爱我你就评评我</span></div>
+                    <div><span class="aui-iconfont aui-icon-right"></span></div>
+                </div> -->
+                <div class="order_content">
+                    <div>清理缓存<span style="float:right;"><a href="javascript:void(0)" onClick="alert('清理成功')">清除缓存</a></span></div>
+                </div>
+                <div class="order_content_other">
+                    <div>版本信息<span style="float:right;">V1.6</span></div>
+                </div>
+
+                <div class="logout">
+                    <input type="button" value="退出账号" onclick="loginout()" />
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/config.js"></script>
+<script src="../script/jquery.js"></script>
+<script type="text/javascript">
+    apiready = function() {}
+        ///关闭系统窗口，返回到上一层
+    function closewindows() {
+        api.closeWin({});
+    }
+
+    function loginout() {
+        try {
+            //清楚用户缓存
+            $api.clearStorage();
+            $api.setStorage('user_id', 1);
+            //
+            // try {
+            //     //发送请求
+            //     api.ajax({
+            //         url: app_apiconfig.Logout,
+            //         method: 'get',
+            //     }, function(json, err) {});
+            // } catch (e) {
+            //     alert('哦？似乎我们的应用开小差了,请稍等片刻!');
+            // }
+
+
+            api.openWin({
+                name: 'login',
+                url: 'login.html',
+                rect: {
+                    x: 0,
+                    y: 0,
+                    w: 'auto',
+                    h: 'auto'
+                }
+            });
+        } catch (e) {
+            alert("请求失败,请检查网络是否正常");
+        } finally {}
+
+    }
+</script>
+
+</html>

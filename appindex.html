@@ -1,0 +1,151 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,initial-scale=1.0,width=device-width"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>Hello APP</title>
+    <link href="css/aui.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="css/appindex.css" />
+
+    <link rel="stylesheet" type="text/css" href="css/public.css" />
+    <style type="text/css">
+    html,body{
+        height: 100%;
+    }
+    #wrap{
+        height: 100%;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-flex-flow: column;
+    }
+
+    </style>
+
+</head>
+<body>
+        <footer id="footer" class="operation">
+              <div class="homepage active" >
+                  <img src="image/homepage.png" />
+                  <span>首页</span>               
+              </div>
+              <div class="find" onclick="opwindows_tag(2)">
+                      <img src="image/find_gray.png" />
+                  <span>全球推荐</span>
+              </div>
+              <div class="underwrite" onclick="opwindows_tag(3)">
+                      <img src="image/underwrite_gray.png" />
+                  <span>签名书</span>
+              </div>
+              <div class="personal"  onclick="opwindows_tag(4)">
+                  <img src="image/personal_gray.png" />
+                  <span>我的</span>
+              </div>
+        </footer>
+</body>
+
+<script type="text/javascript" src="./script/api.js"></script>
+<script type="text/javascript">
+    apiready = function(){
+      try {
+        // 阻止页面弹动
+        api.setWinAttr({
+            bounces: false
+        });
+        api.parseTapmode();
+  		//输出Log，Log将显示在APICloud Studio控制台
+
+        //localStorage.names =108;
+
+          //var header = $api.byId('header');
+          //适配iOS7+，Android4.4+状态栏沉浸式效果，详见config文档statusBarAppearance字段
+          //$api.fixStatusBar(header);
+  		//动态计算header的高度，因iOS7+和Android4.4+上支持沉浸式效果，
+  		//因此header的实际高度可能为css样式中声明的44px加上设备状态栏高度
+  		//其中，IOS状态栏高度为20px，Android为25px
+          //var headerH = $api.offset(header).h;
+  		//footer高度为css样式中声明的30px
+
+
+      //清理所有的缓存
+      //清理所有的缓存
+      var user = {};
+      user = $api.user.info();
+      $api.clearStorage();
+      $api.user.setInfo(user);
+
+
+    var f_footer = $api.byId('footer');
+  	var footerH =  $api.offset(f_footer).h;
+      var headerH =0;
+  		//frame的高度为当前window高度减去header和footer的高度
+  		var frameH = api.winHeight - headerH - footerH;
+          api.openFrame({
+              name: 'main',
+              url: 'html/index_frm.html',
+              bounces: true,
+              rect: {
+                  x: 0,
+                  y: headerH,
+                  w: 'auto',
+                  h: frameH
+              }
+          });
+          // var year = $api.byId('year');
+          // year.innerHTML = new Date().getFullYear();
+      } catch (e) {
+
+      } finally {
+
+      }
+
+    }
+
+
+
+    //打开菜单
+    function opwindows_tag(objs) {
+
+        var fname = 'appindex';
+        var fnameurl = 'appindex.html';
+        switch (objs) {
+            case 1:
+                break;
+            case 2:
+                fname = 'found_win';
+                fnameurl = 'html/found_win.html';
+                break;
+            case 3:
+                fname = 'signbk_win';
+                fnameurl = 'html/signbk_win.html';
+                break;
+            case 4:
+                if (!$api.user.islogin()) {
+                    fname = 'login';
+                    fnameurl = 'html/login.html';
+                } else {
+                    fname = 'personalcenter_win';
+                    fnameurl = 'html/personalcenter_win.html';
+                }
+            default:
+                break;
+        }
+
+        api.openWin({
+            name: fname,
+            url: fnameurl,
+            bounces: true,
+            animation: {
+                type: 'none'
+            },
+            rect: {
+                x: 0,
+                y: 0,
+                w: 'auto',
+                h: 'auto'
+            }
+        });
+    }
+
+</script>
+</html>

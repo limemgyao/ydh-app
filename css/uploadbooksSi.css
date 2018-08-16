@@ -1,0 +1,212 @@
+.body_uploadbooksSi{background:#F4F4F4;}
+/*上传图文样式*/
+.uploadbooksSi .div_basicInfo{padding: 0 10px;background:#fff;}
+.uploadbooksSi .basicInfo{width:100%;padding: 5px 0;border:1px solid #F0F0F0;border-style:solid none none none;display:table;}
+.uploadbooksSi .basicInfo div:nth-child(1){display: table-cell;font-size: 0.9em;background-color: #ffffff;padding-top:12px; color:#5B5B5B;text-align:left;vertical-align: -webkit-baseline-middle;}
+.uploadbooksSi .basicInfo input{text-align:right;padding-right: 10px;float: right;}
+.uploadbooksSi .basicInfoOther{width:100%;padding: 5px 0;border:1px solid #F0F0F0;border-style:solid none none none;color:#5B5B5B;font-size: 0.9em;height: 80px;}
+.uploadbooksSi .basicInfoOther .Other{float:left;width:40%;background-color: #ffffff;padding-top:12px; text-align:left;vertical-align: -webkit-baseline-middle;}
+.uploadbooksSi .basicInfoOther .OtherCheck{width:60%;height:100%;float:left;}
+.uploadbooksSi .basicInfoOther .OtherCheck div:nth-child(1){display:block;width:70%;text-align:right;float:left;margin-top:10px;}
+.uploadbooksSi .basicInfoOther .OtherCheck div:nth-child(2){display:block;width:25px;height:25px;float:right;margin-right:10px;margin-top:5px;}
+.uploadbooksSi .basicInfoOther .OtherCheck div:nth-child(3){display:block;width:70%; margin-top:10px; text-align:right; float:left;}
+.uploadbooksSi .basicInfoOther .OtherCheck div:nth-child(4){display:block;width:25px;height:25px;float:right;margin-right:10px;margin-top:10px;}
+.uploadbooksSi .basicInfoOther .OtherCheck .CheckOk{background:url(../image/CombinedShape_1.png);background-size:100% 100%;}
+.uploadbooksSi .basicInfoOther .OtherCheck .CheckNo{background:url(../image/Rectangle_1.png);background-size:100% 100%;}
+.uploadbooksSi .fontInfo{width:100%;padding: 12px 0;background-color:#f4f4f4;color:#C0C0C0;padding-left: 10px;border-style:none none none none;}
+.uploadbooksSi .div_BookImg{width:100%;background-color:#ffffff;overflow:hidden;}
+.uploadbooksSi .div_BookImg .div_bookImg_list{background-color: #f4f4f4;float:left;width:20%;height:75.2px; margin-top:15px;margin-bottom:15px;margin-left:4%;font-size: 13px;text-align:center;}
+.uploadbooksSi .div_BookImg .div_bookImg_list .del_books{position:absolute;width:25px;height:25px;margin-top:-5px;margin-left:-5px;}
+.uploadbooksSi .div_BookImg .div_bookImg_list .del_books div{background:url(../image/img_delete_1.png);background-size:100% 100%;width:25px;height:25px;}
+.uploadbooksSi .div_BookImg .div_bookImg_list .imgtext_text{position:absolute;width:75px;height:20px;margin-top:55px; color: #ffffff; background: #C2B27E;opacity: 0.8;}
+.uploadbooksSi .div_BookImg .div_bookImg_list .backg_img{background:url(../image/add_2.png);background-size:100% 100%;width:30px;height:30px;margin: 0 auto;margin-top: 15px;}
+.uploadbooksSi .div_BookImg .div_bookImg_list .imgtext_text_No{margin-top:3px;color:#C0C0C0;}
+.uploadbooksSi .div_basicInfo .div_Share{font-size:12px;color:#ccc;margin-top:-10px;margin-bottom:15px;}
+.body_uploadbooksSi .logout{ width: 100%;text-align: center;height: 65px;background: #fff;position: fixed; bottom: 0;}
+.body_uploadbooksSi .logout input[type=button]:nth-child(1){width:29%; float:left;margin-left:4%;height:46px;background:#C2B27E;font-size:18px;color:#ffffff; margin-top: 10px;border-radius:0px;border-style:none;outline:none; -webkit-appearance: none;}
+.body_uploadbooksSi .logout input[type=button]:nth-child(2){width:60%;float:right; margin-right: 4%;height:46px;background:#444444;font-size:18px;color:#C2B27E; margin-top: 10px;border-radius:0px;border-style:none;outline:none; -webkit-appearance: none;}
+
+/*我要寄书*/
+.body_uploadbooksSi .SendbooksSis{background:#F4F4F4;font-size:16px;}
+.body_uploadbooksSi .Sendbooks_div {background:#fff;padding: 0 10px; border:1px solid #F0F0F0;border-style:solid none none none;height:60px;}
+.body_uploadbooksSi .Sendbooks_div .SendbooksSon_div{width:100%;height:35px;float:left;}
+.body_uploadbooksSi .Sendbooks_div .SendbooksSon_div input{width:100%;height:100%;}
+.body_uploadbooksSi .Sendbooks_div .SendbooksSon_div select{width:100%;height:100%;}
+.body_uploadbooksSi .Sendbooks_div .div_inputName{float:left;font-size:12px;color:#B3B3B3; height:12px; top:5px;width:50%;}
+.body_uploadbooksSi .Sendbooks_div .div_inputName span{display: none;}
+
+/*共享图书选择图标 start*/
+.uploadbooksSi .basicInfo .uiswitch {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  -ms-appearance: none;
+  -o-appearance: none;
+  appearance: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  height: 31px;
+  width: 51px;
+  position: relative;
+  border-radius: 16px;
+  cursor: pointer;
+  outline: 0;
+  z-index: 0;
+  margin: 0;
+  padding: 0;
+  margin-top: 8px;
+  float:right;
+  margin-right: 10px;
+  margin-bottom: 8px;
+  border: none;
+  background-color: #e5e5e5;
+  -webkit-transition-duration: 600ms;
+  -moz-transition-duration: 600ms;
+  transition-duration: 600ms;
+  -webkit-transition-timing-function: ease-in-out;
+  -moz-transition-timing-function: ease-in-out;
+  transition-timing-function: ease-in-out;
+  -webkit-touch-callout: none;
+  -webkit-text-size-adjust: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+}
+.uploadbooksSi .basicInfo .uiswitch::before {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  height: 27px;
+  width: 47px;
+  content: ' ';
+  position: absolute;
+  left: 2px;
+  top: 2px;
+  background-color: #ffffff;
+  border-radius: 16px;
+  z-index: 1;
+  -webkit-transition-duration: 300ms;
+  -moz-transition-duration: 300ms;
+  transition-duration: 300ms;
+  -webkit-transform: scale(1);
+  -moz-transform: scale(1);
+  -ms-transform: scale(1);
+  -o-transform: scale(1);
+  transform: scale(1);
+}
+.uploadbooksSi .basicInfo .uiswitch::after {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  height: 27px;
+  width: 27px;
+  content: ' ';
+  position: absolute;
+  border-radius: 27px;
+  background: #ffffff;
+  z-index: 2;
+  top: 2px;
+  left: 2px;
+  box-shadow: 0px 0px 1px 0px rgba(0, 0, 0, 0.25), 0px 4px 11px 0px rgba(0, 0, 0, 0.08), -1px 3px 3px 0px rgba(0, 0, 0, 0.14);
+  -webkit-transition: -webkit-transform 300ms, width 280ms;
+  -moz-transition: -moz-transform 300ms, width 280ms;
+  transition: transform 300ms, width 280ms;
+  -webkit-transform: translate3d(0, 0, 0);
+  -moz-transform: translate3d(0, 0, 0);
+  -ms-transform: translate3d(0, 0, 0);
+  -o-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+  -webkit-transition-timing-function: cubic-bezier(0.42, 0.8, 0.58, 1.2);
+  -moz-transition-timing-function: cubic-bezier(0.42, 0.8, 0.58, 1.2);
+  transition-timing-function: cubic-bezier(0.42, 0.8, 0.58, 1.2);
+}
+.uploadbooksSi .basicInfo .uiswitch:checked {
+  background-color: #4CD964;
+  background-image: -webkit-linear-gradient(-90deg, #4CD964 0%, #4dd865 100%);
+  background-image: linear-gradient(-180deg,#4CD964 0%, #4dd865 100%);
+}
+.uploadbooksSi .basicInfo .uiswitch:checked::after {
+  -webkit-transform: translate3d(16px, 0, 0);
+  -moz-transform: translate3d(16px, 0, 0);
+  -ms-transform: translate3d(16px, 0, 0);
+  -o-transform: translate3d(16px, 0, 0);
+  transform: translate3d(16px, 0, 0);
+  right: 18px;
+  left: inherit;
+}
+.uploadbooksSi .basicInfo .uiswitch:active::after {
+  width: 35px;
+}
+.uploadbooksSi .basicInfo .uiswitch:checked::before, .uiswitch:active::before {
+  -webkit-transform: scale(0);
+  -moz-transform: scale(0);
+  -ms-transform: scale(0);
+  -o-transform: scale(0);
+  transform: scale(0);
+}
+.uploadbooksSi .basicInfo .uiswitch:disabled {
+  opacity: 0.5;
+  cursor: default;
+  -webkit-transition: none;
+  -moz-transition: none;
+  transition: none;
+}
+.uploadbooksSi .basicInfo .uiswitch:disabled:active::before, .uiswitch:disabled:active::after, .uiswitch:disabled:checked:active::before, .uiswitch:disabled:checked::before {
+  width: 27px;
+  -webkit-transition: none;
+  -moz-transition: none;
+  transition: none;
+}
+.uploadbooksSi .basicInfo .uiswitch:disabled:active::before {
+  height: 27px;
+  width: 41px;
+  -webkit-transform: translate3d(6px, 0, 0);
+  -moz-transform: translate3d(6px, 0, 0);
+  -ms-transform: translate3d(6px, 0, 0);
+  -o-transform: translate3d(6px, 0, 0);
+  transform: translate3d(6px, 0, 0);
+}
+.uploadbooksSi .basicInfo .uiswitch:disabled:checked:active::before {
+  height: 27px;
+  width: 27px;
+  -webkit-transform: scale(0);
+  -moz-transform: scale(0);
+  -ms-transform: scale(0);
+  -o-transform: scale(0);
+  transform: scale(0);
+}
+
+.uploadbooksSi .basicInfo .uiswitch {
+  background-color: #e5e5e5;
+}
+.uploadbooksSi .basicInfo .uiswitch::before {
+  background-color: #ffffff;
+}
+.uploadbooksSi .basicInfo .uiswitch::after {
+  background: #ffffff;
+}
+.uploadbooksSi .basicInfo .uiswitch:checked {
+  background-color: #C2B27E;
+  background-image: -webkit-linear-gradient(-90deg, #4CD964 0%, #4dd865 100%);
+  background-image: linear-gradient(-180deg,#4CD964 0%, #4dd865 100%);
+}
+.uploadbooksSi .basicInfo .custom {
+  background-color: #C2B27E;
+}
+
+.uploadbooksSi .basicInfo .custom::before {
+  background-color: #ffffff;
+}
+
+.uploadbooksSi .basicInfo .custom::after {
+  background: #ffffff;
+}
+
+.uploadbooksSi .basicInfo .custom:checked {
+  background-color: #C2B27E;
+  background-image: linear-gradient(-180deg, #C2B27E 0%, #C2B27E 100%);
+}
+/*共享图书选择图标 End*/

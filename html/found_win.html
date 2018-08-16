@@ -1,0 +1,161 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title></title>
+    <link href="../css/aui.css" rel="stylesheet" />
+    <link href="../css/public.css" rel="stylesheet" />
+    <!-- <link href="../css/aui.css" rel="stylesheet" /> -->
+    <!-- <link rel="stylesheet" href="../css/appindex.css" rel="stylesheet" /> -->
+</head>
+
+<body>
+    <header class="aui-bar aui-bar-nav" id="header">
+        <div class="aui-pull-left aui-btn" onclick="closewindows()">
+            <span class="aui-iconfont aui-icon-left"></span>
+        </div>
+        <div class="aui-title" style="left:2rem; right: 0.5rem;">
+            <div class="aui-searchbar">
+              <form action="javascript:search();">
+                <div class="aui-searchbar-input aui-border-radius">
+                    <i class="aui-iconfont aui-icon-search" onclick="search();"></i>
+                    <input type="search" placeholder="请输入搜索内容" id="search-input">
+                    <div class="aui-searchbar-clear-btn">
+                        <i class="aui-iconfont aui-icon-close"></i>
+                    </div>
+                </div>
+              </form>
+            </div>
+        </div>
+    </header>
+    <footer id="footer" class="operation">
+        <div class="homepage" onclick="opwindows_tag(1)">
+            <img src="../image/homepage_gray.png" />
+            <span>首页</span>
+        </div>
+        <div class="find active">
+            <img src="../image/find.png" />
+            <span>全球推荐</span>
+        </div>
+        <div class="underwrite" onclick="opwindows_tag(3)">
+            <img src="../image/underwrite_gray.png" />
+            <span>签名书</span>
+        </div>
+        <div class="personal" onclick="opwindows_tag(4)">
+            <img src="../image/personal_gray.png" />
+            <span>我的</span>
+        </div>
+    </footer>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript">
+    apiready = function() {
+      try {
+        // 阻止页面弹动
+        api.setWinAttr({
+            bounces: false
+        });
+        $api.val($api.byId('search-input'),"");
+        //输出Log，Log将显示在APICloud Studio控制台
+        var header = $api.byId('header');
+        //适配iOS7+，Android4.4+状态栏沉浸式效果，详见config文档statusBarAppearance字段
+        $api.fixStatusBar(header);
+        // //动态计算header的高度，因iOS7+和Android4.4+上支持沉浸式效果，
+        // //因此header的实际高度可能为css样式中声明的44px加上设备状态栏高度
+        // //其中，IOS状态栏高度为20px，Android为25px
+        //     var headerH = $api.offset(header).h;
+        var f_footer = $api.byId('footer');
+        var headerH = $api.offset(header).h;
+        var footerH = $api.offset(f_footer).h;
+        //frame的高度为当前window高度减去header和footer的高度
+        var frameH = api.winHeight - headerH - footerH;
+        api.openFrame({
+            name: 'appfind',
+            url: 'found_frm.html',
+            bounces: true,
+            rect: {
+                x: 0,
+                y: headerH,
+                w: 'auto',
+                h: frameH
+            }
+        });
+      } catch (e) {alert("请求失败,请检查网络是否正常");} finally {}
+
+
+    }
+
+    ///关闭系统窗口，返回到上一层
+    function closewindows() {
+      api.closeWin({
+      });
+    }
+    //打开菜单
+    function opwindows_tag(objs) {
+      try {
+        var fname = 'appfind';
+        var fnameurl = 'appfind.html';
+        switch (objs) {
+            case 1:
+                fname = 'appindex';
+                fnameurl = '../appindex.html';
+                break;
+            case 2:
+                fname = 'found_win';
+                fnameurl = 'found_win.html';
+                break;
+            case 3:
+                fname = 'signbk_win';
+                fnameurl = 'signbk_win.html';
+                break;
+            case 4:
+            // var login = window.localStorage.getItem("user_login");
+            // var name = window.localStorage.getItem("user_name");
+            if (!$api.user.islogin()) {
+                fname = 'login';
+                fnameurl = 'login.html';
+            } else {
+              fname = 'personalcenter_win';
+              fnameurl = 'personalcenter_win.html';
+            }
+            break;
+            default:
+                break;
+        }
+
+        api.openWin({
+            name: fname,
+            url: fnameurl,
+            bounces: true,
+            animation: {
+                type: 'none'
+            },
+            rect: {
+                x: 0,
+                y: 0,
+                w: 'auto',
+                h: 'auto'
+            }
+        });
+        } catch (e) {alert("请求失败,请检查网络是否正常");} finally {}
+
+    }
+
+    function search(){
+      try {
+        var str_Search=$api.val($api.byId('search-input'));
+        //让后台加载数据信息
+        var loaddatafun = 'getfoundinfo("'+str_Search+'");';
+        api.execScript({
+            frameName: 'appfind',
+            script: loaddatafun
+        });
+      } catch (e) {alert("请求失败,请检查网络是否正常");} finally {}
+
+    }
+</script>
+
+</html>

@@ -1,0 +1,31 @@
+﻿
+.nav_orderdeteils{width:100%;height:55px;background:#00AF68;display:table;}
+.nav_orderdeteils div{display:table-cell;vertical-align:middle;color:#fff;text-align:center;}
+
+.order_number{width:100%;height:30px;border:1px solid #D4D4D4;border-style:none none solid none;display:table;}
+.order_number span{display:table-cell;font-size:12px; color:#A7A7A7; line-height: 30px;padding: 0 10px;}
+.order_number span:nth-child(1){text-align:left;}
+.order_number span:nth-child(2){text-align:right;}
+
+.order_content{width:100%;border:1px solid #D4D4D4;border-style:none none solid none;padding: 10px 0;background: #fff;}
+.order_content div{display: table-cell;font-size: 16px;padding: 0 10px;line-height: 20px;}
+.order_content div:nth-child(1){width:95%;}
+.order_content div:nth-child(2){width:5%;vertical-align:middle;color:#A7A7A7;}
+
+.order_date{width:100%;border:1px solid #D4D4D4;border-style:none none solid none;padding: 10px 0;background: #fff;}
+.order_date span{font-size: 14px;color: #D8D7D6;padding: 0 5px;}
+
+.order_price{width: 100%; height: 50px; border: 1px solid #D4D4D4;border-style: none none solid none;display: table;background: #fff;}
+.order_price span{display: table-cell; font-size: 18px;color: #FF435A;line-height: 50px;padding: 0 10px;}
+.order_price span:nth-child(1){text-align:left;}
+.order_price span:nth-child(2){text-align:right;}
+
+.order_contactsinfo{width: 100%; border: 1px solid #D4D4D4;border-style: none none solid none;background: #fff;font-size:14px;padding: 0 10px;}
+.order_contactsinfo span,b{display:block;}
+.order_contactsinfo b{padding:20px 0;}
+.order_contactsinfo span:nth-child(5){padding:20px 0;}
+
+.order_foot{width:100%;height:65px;display:flex;text-align:center;position:fixed;bottom:0;left:0;border: 1px solid #D4D4D4;border-style:solid none none none;}
+.order_foot div{line-height:65px}
+.order_foot div:nth-child(1){width:30%;}
+.order_foot div:nth-child(2){width:70%;background:#00AE67;color:#fff;}

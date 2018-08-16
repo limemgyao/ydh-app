@@ -1,0 +1,329 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <link rel="stylesheet" type="text/css" href="../css/aui.css" />
+    <link href="../css/public.css" rel="stylesheet" />
+    <link href="../css/uploadbooksSi.css" rel="stylesheet" />
+    <style>
+        #loading_layer {
+            position: fixed;
+            z-index: 999;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        #loading_win {
+            position: fixed;
+            left: 45%;
+            margin: 0 auto;
+            top: 40%;
+        }
+
+        #loading_win img {
+            border-radius: 40px;
+        }
+
+        .hide {
+            display: none;
+        }
+
+        .headerinfo {
+            color: #fff;
+            background-color: #00AF68;
+        }
+
+        .inconn {
+            color: #fff !important;
+        }
+    </style>
+</head>
+
+<body class="body_uploadbooksSi">
+    <!-- 自上传 -->
+    <div class="uploadbooksSi" id="div_uploadbooksSi">
+        <div class="content">
+            <div class="fontInfo">基本信息</div>
+            <div class="div_basicInfo">
+                <div class="basicInfo" style="border-top:0px solid #F0F0F0;">
+                    <div>书名<span style="color:red;">*</span></div>
+                    <input readonly="readonly" type="text" id="bookName" placeholder="请输入书名" />
+                </div>
+                <div class="basicInfo">
+                    <div>作者<span style="color:red;">*</span></div>
+                    <input readonly="readonly" type="text" id="Author" placeholder="请输入作者" />
+                </div>
+                <div class="basicInfo">
+                    <div>译者</div>
+                    <input readonly="readonly" type="text" id="Translator" placeholder="请输入译者" />
+                </div>
+            </div>
+
+            <div class="fontInfo">上传图片</div>
+            <div class="div_BookImg">
+                <div class="div_bookImg_list" id="div_bookImg_1">
+                    <div class="backg_img" onclick="showAction(1);"></div>
+                    <div class="imgtext_text_No" onclick="showAction(1);">上传封面</div>
+                </div>
+                <div class="div_bookImg_list" id="div_bookImg_2">
+                    <div class="backg_img" onclick="showAction(2);"></div>
+                    <div class="imgtext_text_No" onclick="showAction(2);">上传封底</div>
+                </div>
+                <div class="div_bookImg_list" id="div_bookImg_3">
+                    <div class="backg_img" onclick="showAction(3);"></div>
+                    <div class="imgtext_text_No" onclick="showAction(3);">上传签名页</div>
+                </div>
+                <div class="div_bookImg_list" id="div_bookImg_4">
+                    <div class="backg_img" onclick="showAction(4);"></div>
+                    <div class="imgtext_text_No" onclick="showAction(4);">上传其它</div>
+                </div>
+            </div>
+
+            <div class="fontInfo">出版信息</div>
+            <div class="div_basicInfo">
+                <div class="basicInfo" style="border-top:0px solid #F0F0F0;">
+                    <div>版次</div>
+                    <input readonly="readonly" type="text" id="BookRev" placeholder="请输入版次" />
+                </div>
+                <div class="basicInfo">
+                    <div>书号<span style="color:red;">*</span><span style="color:#ccc;font-size:11px;">(ISBN)</span></div>
+                    <input readonly="readonly" type="text" id="ISBN" placeholder="请输入书号" />
+                </div>
+                <div class="basicInfo">
+                    <div>出版社<span style="color:red;">*</span></div>
+                    <input readonly="readonly" type="text" id="Press" placeholder="请输入出版社" />
+                </div>
+                <div class="basicInfo">
+                    <div>CIP数据核字</div>
+                    <input readonly="readonly" type="text" id="Cip" placeholder="请输入核字字数" />
+                </div>
+                <div class="basicInfo">
+                    <div>内容简介</div>
+                    <input readonly="readonly" type="text" id="Contect" placeholder="请输入内容简介" />
+                </div>
+            </div>
+
+            <div class="fontInfo">售卖信息</div>
+            <div class="div_basicInfo">
+                <div class="basicInfo" style="border-top:0px solid #F0F0F0;">
+                    <div>图书定价<span style="color:red;">*</span></div>
+                    <input readonly="readonly" type="text" id="BookRate" placeholder="0.00" style="width:90%;float: left;padding-right:5px;" />
+                    <div style="float: left;margin-right:0px;margin-top:10px;color:#A6A6A6;">￥</div>
+                </div>
+                <div class="basicInfo">
+                    <div>期望售价<span style="color:red;">*</span></div>
+                    <input readonly="readonly" type="text" id="LikeRate" placeholder="0.00" style="width:90%;float: left;padding-right:5px;" />
+                    <div style="float: left;margin-right:0px;margin-top:10px;color:#A6A6A6;">￥</div>
+                </div>
+                <div class="basicInfo">
+                    <div>给游读会折扣价</div>
+                    <input readonly="readonly" type="text" id="YdhDiscountRate" placeholder="0.00" style="width:90%;float: left;padding-right:5px;" />
+                    <div style="float: left;margin-right:0px;margin-top:10px;color:#A6A6A6;">￥</div>
+                </div>
+                <div class="basicInfo">
+                    <div>参与共享图书</div>
+                    <input readonly="readonly" type="checkbox"  id="ShareBook" class="uiswitch custom">
+                </div>
+                <div class="basicInfo">
+                    <div>共享图书价</div>
+                    <input readonly="readonly" type="text" id="ShareRate" placeholder="0.00" disabled="true" style="width:90%;float: left;padding-right:5px;" />
+                    <div style="float: left;margin-right:0px;margin-top:10px;color:#A6A6A6;">￥</div>
+                </div>
+                <div class="div_Share">参与共享图书每次收费的70%打到您的储值里，可自行提取。</div>
+
+                <div class="basicInfo">
+                    <div>数量<span style="color:red;">*</span></div>
+                    <input readonly="readonly" type="tel" id="Count" placeholder="本/套" />
+                </div>
+                <div class="basicInfoOther" style="height:80px;display:block;">
+                    <div class="Other">其它<span style="color:red;">*</span></div>
+                    <div class="OtherCheck" style="">
+                        <div>签名书</div>
+                        <div class="CheckNo" id="SigBook" ></div>
+                        <div>收藏级别</div>
+                        <div class="CheckNo" id="ColBook"></div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div style="height:85px;background-color:#F4F4F4;width:100%;"></div>
+        </div>
+    </div>
+
+    <!-- 加载 -->
+    <div id="loading_layer" class="hide"></div>
+    <div id="loading_win" class="hide"><img src="../image/93.gif" /></div>
+</body>
+<script type="text/javascript" src="../script/jquery.js"></script>
+<script type="text/javascript" src="../script/jquery.cityselect.js"></script>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/config.js"></script>
+<script type="text/javascript">
+    apiready = function() {
+        try {
+            var bookId = api.pageParam.bookId;
+            uploadBookinfo(bookId);
+        } catch (e) {
+            $api.addCls(loading_layer, 'hide');
+            $api.addCls(loading_win, 'hide');
+            alert("请求失败,请检查网络是否正常");
+        }
+
+        //计算宽高度
+        // try {
+        //     var clientW = (window.innerWidth > 0) ? window.innerWidth : screen.width;
+        //     if (Number(clientW) > 0) {
+        //         var div_ImgHeight = Number(Number(clientW) * 0.2);
+        //         $(".div_bookImg_list").css("height", "" + div_ImgHeight + "px");
+        //         var div_backImgTop = (div_ImgHeight - 45) / 2;
+        //         $(".backg_img").css("margin-top", "" + div_backImgTop + "px");
+        //     }
+        // } catch (eex) {}
+
+
+
+    };
+
+    //获取图书信息
+    function uploadBookinfo(id) {
+        try {
+            refreshMyPage();
+            if (id <= 0 || id == null) return;
+            $api.removeCls(loading_layer, 'hide');
+            $api.removeCls(loading_win, 'hide');
+
+            api.ajax({
+                url: app_apiconfig.getBooksNew + '?id=' + id+"&userid="+$api.user.userid(),
+                method: 'get',
+            }, function(json, err) {
+                $api.addCls(loading_layer, 'hide');
+                $api.addCls(loading_win, 'hide');
+                if (json) {
+                  if(json.ErrCode=="201"){
+                    alert(json.ErrMsg);
+                    return;
+                  }
+                if (json.Data != null) {
+                        var data = json.Data;
+                        //显示数据
+                        if(data.pdBook==null || data.pdBook=="" || data.pdBook==undefined){return;}
+                        var dataPdBook=data.pdBook;
+                        $("#bookName").val(dataPdBook.BookName); //书名
+                        $("#Author").val(dataPdBook.AuthorName); //作者
+                        //$("#BookRev").val(dataPdBook.pubdate); //版次
+                        $("#ISBN").val(dataPdBook.ISBN); //ISBN
+                        $("#Press").val(dataPdBook.PubHouse); //出版社
+                        $("#Cip").val(dataPdBook.ChartCount);
+                        $("#Count").val(dataPdBook.OrginStock);
+                        //$("#Cip").val();//核字字数
+                        //$("#Contect").val(data.context_html); //图书简介
+                        $("#BookRate").val(dataPdBook.Price); //图书定价
+                        $("#LikeRate").val(dataPdBook.salePrice);
+                        $("#YdhDiscountRate").val(dataPdBook.OriginalRate);
+
+                          if(data.PicMain==null || data.PicMain=="" || data.PicMain==undefined){return;}
+                          var picMain=data.PicMain;
+                          for(var i=0;i<picMain.length;i++){
+
+                            if(picMain[i].PicTitle=="封面图"){
+                              add_BookImg(1,app_apiconfig.imageServer + "/"+picMain[i].PicRelative);
+                            }else if(picMain[i].PicTitle=="底图") {
+                              add_BookImg(2,app_apiconfig.imageServer + "/"+picMain[i].PicRelative);
+                            }else if(picMain[i].PicTitle=="签名图") {
+                              add_BookImg(3,app_apiconfig.imageServer + "/"+picMain[i].PicRelative);
+                            }else if(picMain[i].PicTitle=="其它图") {
+                              add_BookImg(4,app_apiconfig.imageServer + "/"+picMain[i].PicRelative);
+                            }
+                          }
+                    } else {
+                        alert('未获取到书籍信息！');
+                    }
+                }
+            });
+        } catch (e) {
+            $api.addCls(loading_layer, 'hide');
+            $api.addCls(loading_win, 'hide');
+            alert('哦？似乎我们的应用开小差了,请稍等片刻!');
+        }
+    }
+    //初始化页面内容
+    function refreshMyPage() {
+        $("#bookName").val(""); //书名
+        $("#Author").val(""); //作者
+        $("#Translator").val(""); //译者
+        $("#BookRev").val(""); //版次
+        $("#ISBN").val(""); //书号
+        $("#Press").val(""); //出版社
+        $("#Cip").val(""); //核字字数
+        $("#Contect").val(""); //简介
+        $("#BookRate").val(""); //图书定价
+        $("#LikeRate").val(""); //期望售价
+        $("#YdhDiscountRate").val(""); //给游读会折扣价
+        $("#ShareBook").attr("checked", false); //是否参与共享图书1参与，2不参与
+        $("#ShareRate").val(""); //共享图书价
+        $('#ShareRate').attr('disabled', 'true');
+        $("#Count").val(""); //数量
+        $('#SigBook').removeClass('CheckOk'); //图书级别：1签名书，2收藏级别
+        $('#SigBook').addClass('CheckNo'); //图书级别：1签名书，2收藏级别
+        $('#ColBook').removeClass('CheckOk'); //图书级别：1签名书，2收藏级别
+        $('#ColBook').addClass('CheckNo'); //图书级别：1签名书，2收藏级别
+        //清空图片
+        del_BookImg(1);
+        del_BookImg(2);
+        del_BookImg(3);
+        del_BookImg(4);
+    }
+
+    //添加图片
+    function add_BookImg(obj,imgSrc){
+    if (imgSrc != "") {
+        if (obj == "1") {
+            var imgHtml = '<div class="del_books"><div></div></div><div class="imgtext_text">封面图</div>';
+            imgHtml += '<img  id="bookImg_1" style="width:100%;height:100%;" src="' + imgSrc + '" />';
+            $("#div_bookImg_1").html(imgHtml);
+        } else if (obj == "2") {
+            var imgHtml = '<div class="del_books"><div></div></div><div class="imgtext_text">封底图</div>';
+            imgHtml += '<img  id="bookImg_2" style="width:100%;height:100%;" src="' + imgSrc + '" />';
+            $("#div_bookImg_2").html(imgHtml);
+        } else if (obj == "3") {
+            var imgHtml = '<div class="del_books"><div></div></div><div class="imgtext_text">签名图</div>';
+            imgHtml += '<img  id="bookImg_3" style="width:100%;height:100%;" src="' + imgSrc + '" />';
+            $("#div_bookImg_3").html(imgHtml);
+        } else if (obj == "4") {
+            var imgHtml = '<div class="del_books"><div></div></div><div class="imgtext_text">其它图</div>';
+            imgHtml += '<img  id="bookImg_4" style="width:100%;height:100%;" src="' + imgSrc + '" />';
+            $("#div_bookImg_4").html(imgHtml);
+        }
+    }
+    }
+    //移除图片
+    function del_BookImg(obj) {
+        if (obj == "1") {
+            var imgHtml = '<div class="backg_img" onclick="showAction(1);"></div>';
+            imgHtml += '<div class="imgtext_text_No" onclick="showAction(1);">上传封面</div>';
+            $("#div_bookImg_1").html(imgHtml);
+        } else if (obj == "2") {
+            var imgHtml = '<div class="backg_img" onclick="showAction(2);"></div>';
+            imgHtml += '<div class="imgtext_text_No" onclick="showAction(2);">上传封底</div>';
+            $("#div_bookImg_2").html(imgHtml);
+        } else if (obj == "3") {
+            var imgHtml = '<div class="backg_img" onclick="showAction(3);"></div>';
+            imgHtml += '<div class="imgtext_text_No" onclick="showAction(3);">上传签名页</div>';
+            $("#div_bookImg_3").html(imgHtml);
+        } else if (obj == "4") {
+            var imgHtml = '<div class="backg_img" onclick="showAction(4);"></div>';
+            imgHtml += '<div class="imgtext_text_No" onclick="showAction(4);">上传其它</div>';
+            $("#div_bookImg_4").html(imgHtml);
+        }
+
+    }
+
+</script>
+
+</html>

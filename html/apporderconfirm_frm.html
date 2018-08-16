@@ -1,0 +1,487 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title></title>
+    <link href="../css/public.css" rel="stylesheet" />
+    <link href="../css/apporderconfirm.css" rel="stylesheet" />
+    <link href="../css/aui.css" rel="stylesheet" />
+    <link href="../css/aui.css" rel="stylesheet" />
+
+</head>
+
+<body style="background-color: #F4F4F4;">
+    <div class="wrapper">
+        <div class="content">
+            <div class="order_plate_details">
+                <div class="order_content_details">
+                    <div>
+                        <span id="travel_name"></span>
+                        <span id="travel_date"></span>
+                        <span id="travel_leader"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="order_plate">
+                <div class="order_content">
+                    <div>报名人数</div>
+                    <div>
+                        <img class="icon" src="../image/reduce.png" tapmode onclick="numberMinus()" />
+                        <input class="input_number" type="tel" id="number" value="1" tapmode onBlur="number_On()" onkeyup="value=(parseInt((value=value.replace(/\D/g,''))==''||parseInt((value=value.replace(/\D/g,''))==0)?'1':value,10))" onafterpaste="value=(parseInt((value=value.replace(/\D/g,''))==''||parseInt((value=value.replace(/\D/g,''))==0)?'1':value,10))"
+                        /><input id="span_maxcount" style="display:none;" value="0" />
+                        <img class="icon" src="../image/plus.png" tapmode onclick="numberAdd()" style="margin-right:5px;" />
+                    </div>
+                </div>
+            </div>
+            <div class="order_plate">
+                <div class="order_content">
+                    <div>姓名</div>
+                    <div><input type="text" id="txt_UserName" /></div>
+                    <div class="aui-iconfont aui-icon-my icon_color"></div>
+                </div>
+                <div class="order_content_block">
+                    <div>手机</div>
+                    <div><input type="text" id="txt_Mobile" /></div>
+                    <div class="aui-iconfont aui-icon-plus icon_color"></div>
+                </div>
+                <div class="order_content_block" style="display:none;">
+                    <div>身份证号码</div>
+                    <div><input type="text" id="ID_number" value="" /></div>
+                    <div class="aui-iconfont aui-icon-plus icon_color"></div>
+                </div>
+            </div>
+            <!-- 支付方式 -->
+            <div class="order_plate_type">
+                <div class="order_plate_content">
+                    <div><img src="../image/weixin.jpg" />微信支付</div>
+                    <label class="icon-radio">
+                             <input type="radio" tapmode   name="pay_type" paytype="1"/>
+                             <i class="icon-radio__placeholder"></i>
+                     </label>
+                </div>
+                <div class="order_plate_content">
+                    <div><img src="../image/alipay.png" />支付宝支付</div>
+                    <label class="icon-radio">
+                             <input type="radio" tapmode   name="pay_type" paytype="2"/>
+                             <i class="icon-radio__placeholder"></i>
+                         </label>
+                </div>
+            </div>
+
+            <div class="order_plate">
+                <div class="order_content" style="margin-bottom: 10px;">
+                    <div>备注</div>
+                    <div><textarea type="text" id="txt_Remark" placeholder="如有特殊情况，请在这里留言" id="txt_Remark" value="哈哈哈哈或或"></textarea></div>
+                </div>
+            </div>
+            <div style="width:100%;height:70px;"></div>
+            <!--  <div class="order_plate_prompt">
+               <span>注意事项：订单一经预订不可取消</span>
+            </div>-->
+            <div class="order_foot">
+                <div id="footer_rate" discountRate=0>￥1930</div>
+                <div tapmode onclick="detailshow()">费用明细</div>
+                <div onclick="apply()">去付款</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 费用明细按钮显示 -->
+    <div id="cost_detail">
+        <div class="cost_detail_title">费用明细</div>
+        <div class="cost_detail_content">
+            <span>成人票</span>
+            <span id="span_Count">1张</span>
+        </div>
+        <div class="cost_detail_total">总额：<span id="span_footer_rate"></span></div>
+        <div class="aui-iconfont aui-icon-close cost_detail_close" tapmode onclick="detailshide()"></div>
+    </div>
+    <div id="layer_cost_detail"></div>
+
+    <input class="hide" id="txt_ApplyID" />
+    <input class="hide" id="txt_ID" />
+    <input class="hide" id="txt_MaxJionNo" />
+
+    <!--支付成功显示 -->
+    <div id="success">
+        <div class="success_title">
+            <img src="../image/paysuccess.png" />
+        </div>
+        <div class="success_content">
+            <span>您的订单已支付成功！</span>
+            <span>我们将以最快的速度为您发货～</span>
+        </div>
+        <div class="success_foot">
+            <label> <i class="aui-iconfont aui-icon-share share"></i> <input type="button" value="分享" /></label>
+            <label> <input id="vieworder" type="button" value="查看订单" tapmode  onclick="Vieworder(this)" /></label>
+        </div>
+    </div>
+    <div id="layer_success"></div>
+</body>
+
+</html>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/config.js"></script>
+<script type="text/javascript" src="../script/jquery.js"></script>
+<script type="text/javascript" src="../script/payhelper.js"></script>
+<script type="text/javascript" src="../script/paycallback.js"></script>
+<script type="text/javascript" src="../script/public.js"></script>
+<script type="text/javascript">
+    apiready = function() {
+        try {
+            var mobile = $api.user.mobile(); // $api.getStorage("user_mobile");
+            var name = $api.user.username(); //$api.getStorage("user_name");
+
+            $api.val(txt_UserName, name);
+            $api.val(txt_Mobile, mobile);
+            $('input[name="pay_type"]:eq(0)').click();
+            var id = api.pageParam.TravelId;
+            successhide();
+            ListLogic(id);
+        } catch (e) {
+            alert("请求失败,请检查网络是否正常");
+        } finally {}
+
+
+    }
+
+    function ListLogic(id) {
+        try {
+            //发送请求
+            api.ajax({
+                url: app_apiconfig.TravelList + "id=" + id,
+                method: 'get',
+            }, function(json, err) {
+                var data = null;
+                if (json) {
+                    if (json.State == 1) {
+                        if (json.Data != null) {
+                            data = json.Data;
+                            //判断导师是否为空
+                            var Leader = data.Leader;
+                            if (Leader == "点击选择") {
+                                //Leader = "游读会签名作家";
+                                Leader = "";
+                            }
+                            var v_BeginDate = null;
+                            if (typeof(data.BeginDate) == "string") {
+                                //v_BeginDate = new Date(parseInt(data.BeginDate.replace(/[^\d\-]/g, "")));
+                                v_BeginDate = data.BeginDate.replace(/-/g, "/");
+                                v_BeginDate = new Date(v_BeginDate).Format("yyyy年MM月dd日");
+
+                            } else {
+                                v_BeginDate = data.BeginDate;
+                            }
+
+                            $api.val(txt_ID, data.ID); //活动id
+                            $api.val(txt_MaxJionNo, data.MaxJionNo); //最大参与人数
+                            $api.attr(vieworder, "orderid", data.ID); //查看订单
+                            $api.html(travel_name, data.Title); //活动标题
+                            $api.html(footer_rate, "￥" + data.DiscountRate); //价格
+                            $api.attr(footer_rate, 'DiscountRate', data.DiscountRate);
+                            $api.html(span_footer_rate, "￥" + data.DiscountRate);
+                            $api.html(travel_date, "出行时间：" + v_BeginDate); //出行日期
+                            $api.html(travel_leader, "带队老师：" + Leader);
+                            if (parseInt(json.Data.MaxJionNo) - parseInt(json.Data.HadJionNo) > 0) {
+                                //最大数量
+                                var tempCount=parseInt(json.Data.MaxJionNo) - parseInt(json.Data.HadJionNo)
+                                $("#span_maxcount").val(tempCount);
+                            }
+                        }
+                    }
+                }
+
+            });
+
+        } catch (e) {
+            alert('哦？似乎我们的应用开小差了,请稍等片刻!');
+        }
+    }
+
+
+
+
+    var ordering = false;
+
+    function apply() {
+        try {
+            if (ordering) {
+                return false;
+            } else {
+                ordering = true;
+            }
+
+            var username = $api.val(txt_UserName).trim(), // $("#txt_UserName").val().trim(),
+                mobile = $api.val(txt_Mobile).trim(), //$("#txt_Mobile").val().trim(),
+                count = $api.val(number).trim(), // $("#txt_Count").val().trim(),
+                maxcount = $api.val(span_maxcount).trim(), //$(".span_maxcount").html(),
+                address = "无", //$("#txt_Address").val().trim(),
+                //prov = $(".prov").val().trim(),
+                //city = $(".city").val().trim(),
+                //dist = $(".dist").val() ? $(".dist").val() : "",
+                code = "", //$("#txt_Code").val().trim(),
+                remark = $api.val(txt_Remark).trim(),
+                idnumber = $api.val(ID_number).trim(), //$("#txt_Remark").val().trim(),
+                applyid = $api.val(txt_ApplyID).trim() || 0, // $("#txt_ApplyID").val().trim() || 0,
+                id = $api.val(txt_ID).trim(); //$("#txt_ID").val().trim();
+
+
+            if (!$api.val(txt_ID)) {
+                alert({
+                    content: "请稍等...",
+                    time: 1
+                });
+                ordering = false;
+                return false;
+            }
+            if (!(parseInt(count) > 0)) {
+                alert("请输入正确的数量！");
+                ordering = false;
+                return false;
+            }
+            if (parseInt(count) > parseInt(maxcount)) {
+                alert("数量超过最大报名量！(最大数量" + maxcount + ")");
+                ordering = false;
+                return false;
+            }
+            var Regex = /[\u4e00-\u9fa5]+/;
+            if (username == "" || username.indexOf("&") >= 0) {
+                alert("联系人不正确！");
+                ordering = false;
+                return false;
+            }
+            Regex = /^0?1[0-9]{10}$/;
+            //if (!Common.Utils.Logined() && !code) { layer.alert("请输入验证码！"); ordering = false; return false; }
+            if (!Regex.test(mobile)) {
+                alert("请输入正确的联系手机！");
+                ordering = false;
+                return false;
+            }
+
+            // if (idnumber != "") {
+            //     if (!public.check_id(idnumber)) {
+            //         alert("请输入正确的身份证号码！");
+            //         ordering = false;
+            //         return false;
+            //     }
+            //     if (remark == "") {
+            //         remark = "【身份证号：" + idnumber + "】";
+            //     } else {
+            //         remark += " =>【身份证号：" + idnumber + "】";
+            //     }
+            // }
+
+            try {
+                var data = {
+                    'MebName': username,
+                    'Mobile': mobile,
+                    'Count': count,
+                    'Address': address,
+                    'Remark': remark,
+                    'TravelID': id,
+                    'ChainID': 0,
+                    'MebID': $api.user.userid(),
+                    'NeedMeb': 1
+                }
+                $.ajax({
+                    type: 'POST',
+                    url: app_apiconfig.Apply,
+                    data: data,
+                    dataType: 'json',
+                    success: function(ret) {
+                        if (ret.State == 1 && ret.Data != null) {
+                            var apply = ret.Data;
+                            ordering = false;
+                            //$api.setStorage("User", JSON.stringify(ret.Data['user']));
+
+                            var title = encodeURIComponent("游读报名支付：" + $('#travel_name').html().slice(0, 10));
+                            var Gname = $('#travel_name').html();
+                            if (Gname != "") Gname = Gname.slice(0, 20) + '...';
+                            var fee = apply.ApplyRate;
+                            var attach = {
+                                "type": 3,
+                                "mebid": apply.MebID,
+                                "busid": apply.ID,
+                                "mebtype": 1,
+                                "orderno": apply.ID
+                            };
+
+                            var paytype = $('input[name="pay_type"]:checked').attr('paytype');
+
+                            //===============微信支付=========================
+                            if (paytype == 1) {
+                                var data = {
+                                    "description": Gname.toString(),
+                                    "totalFee": (fee * 100).toString(), //微信需要转成字符串形式
+                                    "attach": JSON.stringify(attach),
+                                    "tradeNo": attach.orderno,
+                                };
+                                if (!fee || fee == "0") {
+                                    successshow();
+                                } else {
+                                    weixingpay(data);
+                                }
+                            }
+                            //===================END=========================
+
+                            //===============支付宝支付=========================
+                            if (paytype == 2) {
+                                var data = {
+                                    "subject": Gname.toString(),
+                                    "body": title,
+                                    "amount": fee,
+                                    "tradeNO": attach.orderno,
+                                };
+                                if (!fee || fee == "0") {
+                                    successshow();
+                                } else {
+                                    alipay(data);
+                                }
+                            }
+                            //===================END=========================
+                        }
+                        if (ret.State == "201") {
+                            alert(ret.ErrMsg)
+                        }
+                    }
+                });
+
+            } catch (e) {
+                alert("请求失败,请检查网络是否正常");
+            } finally {}
+        } catch (e) {
+            alert("请求失败,请检查网络是否正常");
+        }
+    }
+
+    //支付宝支付
+    function alipay(data, orderid) {
+        try {
+            $payObject.aliPayHelper(data, alipay_paycallback);
+        } catch (e) {
+            alert("请求失败,请检查网络是否正常");
+        } finally {}
+
+    }
+    //支付宝支付回调函数
+    function alipay_paycallback(ret, err) {
+        try {
+            var data = paycallback.alipPay_callback(ret, err);
+            if (data.status == "200") {
+                successshow();
+            } else {
+                alert(data.msg);
+            }
+        } catch (e) {
+            alert("请求失败,请检查网络是否正常");
+        } finally {}
+
+    }
+    // 微信支付
+    function weixingpay(data) {
+        try {
+            $payObject.wxPayHelper(data, weixingpay_paycallback);
+        } catch (e) {
+            alert("请求失败,请检查网络是否正常");
+        } finally {}
+
+
+    }
+    //微信支付回调函数
+    function weixingpay_paycallback(ret, err) {
+        try {
+            var data = paycallback.wxPay_callback(ret, err);
+            if (data.status == "200") {
+                successshow();
+            } else {
+                alert(data.msg);
+            }
+        } catch (e) {
+            alert("请求失败,请检查网络是否正常");
+        } finally {}
+
+    }
+
+    var login = $api.byId("cost_detail");
+    var over = $api.byId("layer_cost_detail");
+    var success = $api.byId("success");
+    var success_over = $api.byId("layer_success");
+
+    function detailshow() {
+        login.style.display = "block";
+        over.style.display = "block";
+    }
+
+    function detailshide() {
+        login.style.display = "none";
+        over.style.display = "none";
+    }
+
+    function successshow() {
+        success.style.display = "block";
+        success_over.style.display = "block";
+    }
+
+    function successhide() {
+        success.style.display = "none";
+        success_over.style.display = "none";
+    }
+
+    function Vieworder(obj) {
+        try {
+            api.openFrame({
+                name: 'travelList_win',
+                url: 'travelList_win.html',
+                bounces: true,
+                rect: {
+                    x: 0,
+                    y: 0,
+                    w: 'auto',
+                    h: 'auto'
+                }
+            })
+        } catch (e) {
+            alert("请求失败,请检查网络是否正常");
+        } finally {}
+
+    }
+
+    function numberAdd() {
+        var nummber = Number($("#number").val());
+        var maxJionNo = $api.val(txt_MaxJionNo);
+        if (nummber < Number(maxJionNo)) {
+            $("#number").val(nummber + 1);
+            $("#span_Count").html($("#number").val() + "张");
+
+            var discountRate = Number($api.attr(footer_rate, 'DiscountRate')) * Number($api.val(number));
+            $api.html(footer_rate, "￥" + discountRate); //价格
+            $api.html(span_footer_rate, "￥" + discountRate);
+        }
+    }
+
+    function numberMinus() {
+        var nummber = Number($("#number").val());
+        if (nummber > 1) {
+            $("#number").val(nummber - 1);
+            $("#span_Count").html($("#number").val() + "张");
+
+            var discountRate = Number($api.attr(footer_rate, 'DiscountRate')) * Number($api.val(number));
+            $api.html(footer_rate, "￥" + discountRate); //价格
+            $api.html(span_footer_rate, "￥" + discountRate);
+        }
+    }
+    //修改完后计算金额
+    function number_On() {
+      var nummber = Number($("#number").val());
+      if (nummber > 1) {
+          $("#span_Count").html($("#number").val() + "张");
+
+          var discountRate = Number($api.attr(footer_rate, 'DiscountRate')) * Number($api.val(number));
+          $api.html(footer_rate, "￥" + discountRate); //价格
+          $api.html(span_footer_rate, "￥" + discountRate);
+      }
+    }
+</script>

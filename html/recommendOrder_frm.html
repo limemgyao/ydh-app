@@ -1,0 +1,141 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <link href="../css/bookInfo.css" rel="stylesheet" />
+    <title></title>
+</head>
+
+<body>
+    <div class="orderConfirm">
+        <div class="content">
+            <div class="bookAttribute">
+                <span class="bookNeme" id="bookname"></span><br />
+                <!--<span class="bookRecommend">推荐理由</span><br />
+                <span class="bookRecommendInfo" id="bookRecommendInfo"></span><br />!-->
+                <span class="bookPress"></span><br />
+                <span class="bookPrice" id="price"></span>
+            </div>
+            <div class="OrderTable">
+              <table>
+                <tr>
+                  <td width="60">数量:</td>
+                  <td>
+                    <input id="txt_Count" class="txtCount"type="text" />
+                  </td>
+                </tr>
+                <tr>
+                  <td>地址:</td>
+                <td>
+                  <div id="city">
+                     <select class="prov" style="width: 32%;"></select>
+                     <select class="city" disabled="disabled" style="width: 32%;"></select>
+                     <select class="dist" disabled="disabled" style="width: 32%;"></select>
+                  </div>
+                </td>
+                </tr>
+                <tr>
+                  <td>详细地址:</td>
+                  <td><input id="txt_Address" type="text" /></td>
+                </tr>
+                <tr>
+                  <td>联系人:</td>
+                  <td><input id="txt_UserName" type="text" /></td>
+                </tr>
+                <tr>
+                  <td>联系手机:</td>
+                  <td><input id="txt_Mobile" type="text" /></td>
+                </tr>
+                <tr>
+                  <td>备注留言:</td>
+                  <td><input id="txt_Remark" placeholder="您的一些要求可以填写在这里" type="text" /></td>
+                </tr>
+                <tr>
+                  <td>支付方式:</td>
+                  <td>
+              <div class="order_plate">
+                <input id="Hid_PayType" type="hidden" />
+                <div class="order_content PayTypeZ"  tapmode onclick="payMethod(1)">
+                    <div><img src="../image/alipay.png" />支付宝支付</div>
+                </div>
+                <div class="order_content PayTypeW"  tapmode onclick="payMethod(2)">
+                    <div><img src="../image/weixin.jpg" />微信支付</div>
+                </div>
+            </div>
+          </td>
+                </tr>
+              </table>
+            </div>
+            <div style="height: 40px;"></div>
+        </div>
+    </div>
+</body>
+
+<script type="text/javascript" src="../script/jquery.js"></script>
+<script type="text/javascript" src="../script/jquery.cityselect.js"></script>
+<script type="text/javascript" src="../script/config.js"></script>
+<script type="text/javascript" src="../script/api.js"></script>
+
+<script type="text/javascript">
+    // app_apiconfig.singnbkServerAP
+    //加载图文列表信息
+
+    apiready = function() {
+      try {
+        $("#city").citySelect({ url: "../script/city.min.js", prov: "北京", nodata: "none" });
+          //输出Log，Log将显示在APICloud Studio控制台
+          api.parseTapmode();
+          var uuid = api.pageParam.bookid;
+          showinfo(uuid);
+            } catch (e) {alert("请求失败,请检查网络是否正常");} finally {}
+
+    }
+
+    function showinfo(uuid) {
+
+
+        try {
+            if (uuid <= 0) return;
+            api.ajax({
+                url:app_apiconfig.singnbkdetailAPI+'id=' + uuid,
+                method: 'get',
+            }, function(json, err) {
+                var divinfo = $api.byId('bklist');
+                if (json) {
+                    if (json.State == 1) {
+                        if (json.Data != null) {
+                            var htmldata = json.Data;
+                            var bkname = htmldata.Name;
+                            var imageurl = htmldata.Cover;
+                            var price = htmldata.DiscountRate;
+                            $api.html($api.byId('bookname'), bkname);
+                            $api.html($api.byId('price'), '<span>¥</span>' + price+' +0(运费)');
+                        }
+                    }
+                }
+            });
+        } catch (e) {
+            alert('哦？似乎我们的应用开小差了,请稍等片刻!');
+        }
+    }
+
+  function  payMethod(PayType){
+    if(PayType==1){
+      $(".PayTypeW").css("background-color","white");
+      $(".PayTypeZ").css("background-color","#02ABF0");
+      $("#Hid_PayType").val(PayType);
+    }else if(PayType==2){
+      $(".PayTypeZ").css("background-color","white");
+      $(".PayTypeW").css("background-color","#00C700");
+      $("#Hid_PayType").val(PayType);
+    }else {
+      $("#Hid_PayType").val("");
+    }
+  }
+</script>
+
+
+</html>

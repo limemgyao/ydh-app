@@ -1,0 +1,104 @@
+<!doctype html>
+<html>
+<!-- 游读活动 -->
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <link rel="stylesheet" type="text/css" href="../css/aui.css" />
+    <style>
+    .headerinfo {color: #fff;background-color: #00AF68;top: 0px;z-index: 2px;position:fixed;}
+    .inconn {color: #fff !important;}
+    .div_movies{background-color: #f4f4f4;width: 100%;}
+    .div_movies .content{width: 100%;background-color: #f4f4f4;}
+    .div_movies .content .div_content1{width: 100%;margin:0 auto;background-color:#ffffff;padding: 3%;line-height: 25px;}
+    .div_movies .content .div_content1 .div_Title{margin-top: 5%;color:#333333;font-size: 22px;font-family:PingFangSC-Regular;}
+    .div_movies .content .div_content1 .div_Title_bnt{margin-top: 1%;background-color: #ffda44;height: 2px;width: 12%;}
+    .div_movies .content .div_content1 .div_image{max-width:100%;padding-top: 4%;margin:0 auto;}
+    .div_movies .content .div_content1 .div_Title1{margin-top:4%;color:#333333;font-size: 14px;font-family:PingFangSC-Medium;}
+    .div_movies .content .div_content1 .div_Title_bnt1{margin-top: 1%;background-color: #ffda44;height: 2px;width: 6%;}
+    .div_movies .content .div_content1 .div_movies_content{margin-top: 3%;font-size: 14px;color: #666666;}
+    .div_movies .content .div_content1 .div_image1{max-width:100%;padding-top: 3%;margin:0 auto;}
+    </style>
+
+</head>
+
+<body style="position:absolute;">
+    <header class="aui-bar aui-bar-nav aui-bar-light headerinfo" id="aui-header">
+        <a class="aui-btn aui-pull-left" tapmode onclick="closeWin()">
+            <span class="aui-iconfont aui-icon-left inconn"></span>
+        </a>
+        <div class="aui-title">影视</div>
+    </header>
+    <div class="div_movies" id="movies">
+      <div class="div_header" style="width:100%;"></div>
+      <div class="content">
+        <!-- 上海王 -->
+        <div class="div_content1">
+          <div class="div_Title">《上海王》粉丝见面会</div>
+          <div class="div_Title_bnt"></div>
+          <div class="div_image"><img src="../image/movies_img1.png"/></div>
+          <div class="div_Title1">游读会：电影《上海王》粉丝见面会</div>
+          <div class="div_Title_bnt1"></div>
+          <div class="div_movies_content">电影简介：《上海王》由胡雪桦执导，胡军、余男、凤小岳、秦昊联合主演的动作片。该片根据作家虹影同名小说改编，讲述了20世纪初上海滩十里洋场黑帮势力的角逐纷争，纷杂乱世中奇女子筱月桂与三代上海王之间充满传奇色彩的爱恨情仇的故事。</div>
+          </br>
+          <div class="div_image1"><img src="../image/movies_img2.png"/></div>
+          <div class="div_image1"><img src="../image/movies_img3.png"/></div>
+          </br>
+        </div>
+        <!-- 雇来的爸爸 -->
+        <div class="div_content1" style="margin-top:3%;">
+          <div class="div_Title">《雇来的爸爸》电影首映发布会</div>
+          <div class="div_Title_bnt"></div>
+          <div class="div_image"><img src="../image/movies_img4.png"/></div>
+          <div class="div_Title1">游读会联合出品的电影《雇来的爸爸》新闻发布会</div>
+          <div class="div_Title_bnt1"></div>
+          <div class="div_movies_content">电影《雇来的爸爸》是一部由刘晓蕾编剧的电影作品，影片主要讲述了小东从小和外婆一起生活，外婆的希望是在去世前为小东找到爸爸。心疼外婆的小东雇佣马路假冒自己的爸爸以讨外婆欢心,不明真相的外婆将遗产留给了马路，这对冒牌父子在生活中闹出很多笑话的故事。</div>
+          </br>
+        </div>
+
+        <!-- 游读会衍生品 -->
+        <div class="div_content1" style="margin-top:3%;">
+          <div class="div_Title">游读会衍生品</div>
+          <div class="div_Title_bnt"></div>
+          <div class="div_image"><img src="../image/movies_img5.png"/></div>
+          <div class="div_image1"><img src="../image/movies_img6.png"/></div>
+          <div class="div_Title1">游读三件套</div>
+          <div class="div_Title_bnt1"></div>
+          </br>
+        </div>
+
+      </div>
+    </div>
+</body>
+
+<script type="text/javascript" src="../script/jquery.js"></script>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript">
+    apiready = function() {
+      try {
+        // 阻止页面弹动
+        api.setWinAttr({
+            bounces: false
+        });
+
+        var header = $api.byId('aui-header');
+        $api.fixStatusBar(header);
+        var headerH = $api.offset(header).h;
+        var body_h = $api.offset($api.dom('body')).h;
+        //计算头部页内Top，并赋值
+        var div_header=headerH+"px";
+        $(".div_header").css("height",""+div_header+"");
+
+      } catch (e) {alert("请求失败,请检查网络是否正常");} finally {}
+
+    }
+
+
+    function closeWin() {
+        api.closeWin();
+    }
+
+</script>
+
+</html>

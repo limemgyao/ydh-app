@@ -1,0 +1,395 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <link rel="stylesheet" type="text/css" href="../css/aui.css" />
+    <link href="../css/public.css" rel="stylesheet" />
+    <link href="../css/appUploadBooks.css" rel="stylesheet" />
+    <style>
+    #loading_layer {position: fixed;z-index: 10;;top: 0;left: 0;width: 100%;height: 100%;}
+    #loading_win {position: absolute;left: 45%; margin: 0 auto;top:40%;}
+    #loading_win img {border-radius: 40px;}
+    .hide{display: none;}
+        .headerinfo {
+            color: #fff;
+            background-color: #00AF68;
+        }
+
+        .inconn {
+            color: #fff !important;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="wrapper">
+        <div class="content">
+            <div class="order_plate_manual">
+                <div class="order_content_other_manual">
+                    <div>书名</div>
+                    <div><input type="text" id="Name" placeholder="请填写书籍名称" /></div>
+                </div>
+                <div class="order_content_other_manual">
+                    <div>作者</div>
+                    <div><input type="text" id="Author" placeholder="请填写作者名称" /></div>
+                </div>
+                <div class="order_content_other_manual">
+                    <div>出版社</div>
+                    <div><input type="text" id="Press" placeholder="请填写出版社名称" /></div>
+                </div>
+                <div class="order_content_other_manual">
+                    <div>书号(ISBN)</div>
+                    <div><input type="tel" id="ISBN" placeholder="请输入封底的书号(ISBN)" /></div>
+                </div>
+                <div class="order_content_other_manual">
+                    <div>书籍简介</div>
+                    <div><input type="text" id="Detail" placeholder="请输入描述一下您的书~" />
+                        <!--<textarea  placeholder="请输入描述一下您的书~"></textarea>-->
+                    </div>
+                </div>
+                <div class="order_content_other_manual_img">
+                    <canvas style="display:none;" id="mycanvas" width="100" height="100"></canvas>
+                    <div id="manualupload" style="margin-left: 10px;"> </div>
+                    <label class="order_content_other_manual_img_plate_add" onclick="showAction();"><img class="manual_img_add" src="../image/img_add.jpg" /></label>
+
+                </div>
+
+            </div>
+
+
+            <div class="order_plate_price_manual">
+                <div class="order_content_price_manual">
+                    <div style="line-height: 50px;">价格</div>
+                    <div><input type="tel" id="DiscountRate" placeholder="请输入书籍的定价" /><span style="line-height: 45px;font-size: 1em;">￥</span></div>
+                </div>
+            </div>
+
+            <div style="height:110px;">
+            </div>
+
+        </div>
+    </div>
+
+    <footer>
+        <div class="logout">
+            <input type="button" value="确认上传" onclick="UploadBooks()" />
+        </div>
+
+    </footer>
+
+    <!-- 加载 -->
+    <div id="loading_layer" class="hide"></div>
+    <div id="loading_win"  class="hide"><img src="../image/93.gif" /></div>
+</body>
+<script type="text/javascript" src="../script/jquery.js"></script>
+<script type="text/javascript" src="../script/config.js"></script>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript">
+    apiready = function() {
+      try {
+          api.parseTapmode();
+      } catch (e) {
+          alert("请求失败,请检查网络是否正常");
+      } finally {}
+    };
+
+    function showAction() {
+        try {
+            api.actionSheet({
+                title: '选择图片',
+                cancelTitle: '取消',
+                buttons: ['拍照', '从手机相册选择']
+            }, function(ret, err) {
+                if (ret) {
+                    getPicture(ret.buttonIndex);
+                }
+            });
+        } catch (e) {
+            alert("请求失败,请检查网络是否正常");
+        } finally {}
+
+    }
+
+    function getPicture(sourceType) {
+        try {
+            if (sourceType == 1) { // 拍照
+                //获取一张图片
+                api.getPicture({
+                    sourceType: 'camera',
+                    encodingType: 'png',
+                    mediaValue: 'pic',
+                    destinationType: 'base64',
+                    allowEdit: false,
+                    quality: 50,
+                    targetWidth:750,
+                    targetHeight:750,
+                    saveToPhotoAlbum: true
+                }, function(ret, err) {
+                    // 获取拍照数据并处理
+                    if (ret) {
+                        var imgSrc = ret.base64Data;
+                        if (imgSrc != "") {
+                            var manualupload = $api.byId('manualupload');
+                            $api.html(manualupload, '');
+                            var temp = '<label  class="order_content_other_manual_img_plate"><img  id="Cover"  class="manual_img" src="' + imgSrc +
+                                '" /><img class="img_delete" src="../image/img_delete.png"  onclick="img_delete(this)"/></label>';
+                            $api.append(manualupload, temp);
+                        }
+                    }
+                });
+            } else if (sourceType == 2) { // 从相机中选择
+                api.getPicture({
+                    sourceType: 'library',
+                    encodingType: 'jpg',
+                    mediaValue: 'pic',
+                    destinationType: 'base64',
+                    quality: 50,
+                    targetWidth: 750,
+                    targetHeight: 750
+                }, function(ret, err) {
+                    if (ret) {
+                        // $(‘#imgUp‘).attr(‘src‘, ret.base64Data)
+                        var aa = ret.base64Data;
+                        var manualupload = $api.byId('manualupload');
+                        $api.html(manualupload, '');
+                        var temp = '<label  class="order_content_other_manual_img_plate"><img id="Cover" class="manual_img" src="' + aa +
+                            '" /><img class="img_delete" src="../image/img_delete.png" onclick="img_delete(this)"/></label>';
+                        $api.append(manualupload, temp);
+                    } else {
+                        alert(JSON.stringify(err));
+                    }
+                });
+                // //UIMediaScanner 是一个多媒体扫描器，可扫描系统的图片、视频等多媒体资源
+                // var obj = api.require('UIMediaScanner');
+                // obj.open({
+                //     //返回的资源种类,picture（图片）,video（视频）,all（图片和视频）
+                //     type: 'picture',
+                //     //（可选项）图片显示的列数，须大于1
+                //     column: 4,
+                //     max: 1,
+                //     //（可选项）图片排序方式,asc（旧->新）,desc（新->旧）
+                //     sort: {
+                //         key: 'time',
+                //         order: 'desc'
+                //     },
+                //     //（可选项）模块各部分的文字内容
+                //     texts: {
+                //         stateText: '已选择*项',
+                //         cancelText: '取消',
+                //         finishText: '完成'
+                //     },
+                //     styles: {
+                //         bg: '#fff',
+                //         mark: {
+                //             icon: '',
+                //             position: 'bottom_right',
+                //             size: 20
+                //         },
+                //         nav: {
+                //             bg: '#eee',
+                //             stateColor: '#000',
+                //             stateSize: 18,
+                //             cancleBg: 'rgba(0,0,0,0)',
+                //             cancelColor: '#000',
+                //             cancelSize: 18,
+                //             finishBg: 'rgba(0,0,0,0)',
+                //             finishColor: '#000',
+                //             finishSize: 18
+                //         }
+                //     }
+                // }, function(ret) {
+                //     // 获取图片数据并处理
+                //     if (ret) {
+                //         if (ret.list != 0 && ret.list != undefined) {
+                //             var manualupload = $api.byId('manualupload');
+                //             $api.html(manualupload, '');
+                //             var temp = '<label  class="order_content_other_manual_img_plate"><img id="Cover" class="manual_img" src="' + ret.list[0].path +
+                //                 '" /><img class="img_delete" src="../image/img_delete.png" onclick="img_delete(this)"/></label>';
+                //             $api.append(manualupload, temp);
+                //
+                //         }
+                //     }
+                // });
+            }
+
+        } catch (e) {
+            alert("请求失败,请检查网络是否正常");
+        } finally {}
+
+    }
+
+    function UploadBooks() {
+        var txt_Name = $api.val($api.byId('Name'));
+        var txt_Detail = $api.val($api.byId('Detail'));
+        var txt_Press = $api.val($api.byId('Press'));
+        var txt_Author = $api.val($api.byId('Author'));
+        var txt_ISBN = $api.val($api.byId('ISBN'));
+        var txt_DiscountRate = $api.val($api.byId('DiscountRate'));
+        var img_Cover = $api.attr(Cover, 'src');
+        var LoginUseriD = $api.user.userid();
+        var LoginUsername = $api.user.username();
+        if (!txt_Name || $api.trimAll(txt_Name) == '') {
+            alert('请填写书籍名称!');
+            return;
+        }
+        if (!txt_Press || $api.trimAll(txt_Press) == '') {
+            alert('请填写出版社名称!');
+            return;
+        }
+        if (!txt_Author || $api.trimAll(txt_Author) == '') {
+            alert('请填写作者名称!');
+            return;
+        }
+        if (!txt_Detail || $api.trimAll(txt_Detail) == '') {
+            alert('请输入书籍简介!');
+            return;
+        }
+        if (!txt_ISBN || $api.trimAll(txt_ISBN) == '') {
+            alert('请输入书籍背面的数字条形码!');
+            return;
+        }
+        if (!txt_DiscountRate || $api.trimAll(txt_DiscountRate) == '') {
+            alert('请输入书籍的定价!');
+            return;
+        }
+        $api.removeCls(loading_layer, 'hide');
+        $api.removeCls(loading_win, 'hide');
+       // State=="1"?"上架":State=="2"?"下架":State=="3"?"审核中":State=="4"?"不通过"
+        var BooksData = {
+            "Name": txt_Name,
+            "Detail": txt_Detail,
+            "Press": txt_Press,
+            "Author": txt_Author,
+            "ISBN": txt_ISBN,
+            "Cover": img_Cover,
+            "DiscountRate": txt_DiscountRate,
+            "ModifyMebID": LoginUseriD,
+            "ModifyMebName": LoginUsername
+
+        }
+        try {
+            //开始异步执行异步增加信息
+            $.ajax({
+                type: 'POST',
+                url: app_apiconfig.UploadBooks,
+                data: BooksData,
+                success: function(ret) {
+                  $api.addCls(loading_layer, 'hide');
+                  $api.addCls(loading_win, 'hide');
+                  if (parseInt(ret.Data) > 0) {
+                        refreshMyBooks();
+                        UploadBook_success();
+                    }else if(parseInt(ret.Data)==-99){
+                        alert("您已经上传过此书！请不要重复上传");
+
+                    }
+                    else {
+                        alert("遇到问题啦！请您稍后重试");
+                    }
+                },
+                dataType: 'json'
+            });
+
+        } catch (e) {
+          $api.addCls(loading_layer, 'hide');
+          $api.addCls(loading_win, 'hide');
+            alert("遇到问题啦！请您稍后重试");
+            clickflag = false;
+        }
+    }
+
+    function UploadBook_success() {
+        try {
+            var dialogBox = api.require('dialogBox');
+            dialogBox.alert({
+                texts: {
+                    content: '上传成功!',
+                    leftBtnTitle: '确认',
+                },
+                styles: {
+                    bg: '#fff',
+                    w: 300,
+                    content: {
+                        marginT: 5,
+                        size: 14,
+                        color: '#000'
+                    },
+                    left: {
+                        marginT: 0,
+                        marginB: 7,
+                        marginL: 85,
+                        w: 130,
+                        h: 35,
+                        corner: 1,
+                        bg: '#00AE67',
+                        size: 12,
+                        color: '#fff'
+                    }
+                }
+            }, function(ret) {
+                if (ret.eventType == 'left') {
+                    var dialogBox = api.require('dialogBox');
+                    dialogBox.close({
+                        dialogName: 'alert'
+                    });
+                    api.openWin({
+                        name: 'myBooksList_win',
+                        url: 'myBooksList_win.html',
+                        bounces: true,
+                        rect: {
+                            x: 0,
+                            y: 0,
+                            w: 'auto',
+                            h: 'auto'
+                        }
+                    });
+                }
+            });
+        } catch (e) {
+            alert("请求失败,请检查网络是否正常");
+        } finally {}
+    };
+
+    function closeWin() {
+        api.closeWin({});
+    }
+
+    function img_delete(obj) {
+        var prev = $api.closest(obj, "label");
+        $api.remove(prev);
+
+    }
+
+    //刷新本页面方法
+    function refreshUpload(id) {
+        try {
+          $api.val($api.byId('Name'),'');
+          $api.val($api.byId('Detail'),'');
+          $api.val($api.byId('Press'),'');
+          $api.val($api.byId('Author'),'');
+          $api.val($api.byId('ISBN'),'');
+          $api.val($api.byId('DiscountRate'),'');
+          $api.html($api.byId('manualupload'), '');
+        } catch (e) {}
+    }
+
+    //刷新我的书架页面
+    function refreshMyBooks() {
+        try {
+            //让后台加载数据信息
+            var loaddatafun = 'refreshMyBooks();';
+            api.execScript({
+                name: 'myBooksList_win',
+                frameName: 'myBooksList_frm',
+                script: loaddatafun
+            });
+        } catch (e) {}
+    }
+
+</script>
+
+</html>

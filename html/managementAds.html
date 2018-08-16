@@ -1,0 +1,581 @@
+<!doctype html>
+<html>
+<!-- 地址列表  -->
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <link rel="stylesheet" type="text/css" href="../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../css/bookInfo.css" />
+    <style>
+        #loading_layer {position: fixed;z-index: 10;top: 0;left: 0;width: 100%;height: 100%;}
+        #loading_win {position: absolute;left: 45%;margin: 0 auto;top: 40%;}
+        #loading_win img {border-radius: 40px;}
+        .hide {display: none;}
+        .headerinfo {color: #fff;background-color: #00AF68;}
+        .inconn {color: #fff !important;}
+    </style>
+</head>
+
+<body class="managementAds_body">
+    <header class="aui-bar aui-bar-nav aui-bar-light headerinfo" id="aui-header" style="position: fixed;top: 0px;table-layout: fixed;font-weight:bold;font-size:18px;">
+        <a class="aui-btn aui-pull-left" tapmode onclick="closeWin()">
+            <span class="aui-iconfont aui-icon-left inconn"></span>
+        </a>
+        <div class="aui-title" id="EditTitle">地址管理</div>
+        <div style="float:right;font-weight:400;font-size:16px;" tapmode onclick="add_Ads()">新增地址　</div>
+    </header>
+    <div style="background-color: #F2F2F2;width:100%;height:65px;"></div>
+    <div class="managementAds" id="wrapper">
+        <div class="content" id="tabContact">
+
+        </div>
+    </div>
+
+
+    <!-- 页面遮盖层 -->
+    <div class="add_adsCenter_cover"></div>
+    <!-- 新增收货地址弹出层 -->
+    <div class="add_adsCenter">
+        <div class="ads_divName" style="height:15%;border:0px;">
+          <div style="width:100%;text-align:center;">请输入收货人地址</div>
+          <div class="add_adsClose" onclick="add_close();"></div>
+        </div>
+        <div class="ads_divName">
+            <div>收货人</div>
+            <input id="txt_Name" placeholder="请输入收货人的姓名" type="text" value="" />
+        </div>
+        <div class="ads_divName">
+            <div>联系电话</div>
+            <input id="txt_Mobile" placeholder="请输入收货人手机号码" type="text" value="" />
+        </div>
+        <div class="ads_divName">
+            <div>省市区</div>
+            <div id="city" style="width:70%;float:left;margin-top:2%;">
+                <select id="selp" class="prov" style="width: 33%;float:left;"></select>
+                <select id="selc" class="city" style="width: 33%;float:left;"></select>
+                <select id="sela" class="dist" style="width: 33%;float:left;"></select>
+            </div>
+        </div>
+        <div class="ads_divName">
+            <div>详细地址</div>
+            <input id="txt_adsInfo" placeholder="请输入详细地址" type="text" value="" />
+        </div>
+        <div class="ads_divName" style="height:10%;"></div>
+        <div class="ads_divName sub_sev" style="background-color:#00ae67;" >
+            <input id="Hid_IsMain" type="hidden" />
+            <input id="Hid_contactID" type="hidden" />
+            <div tapmode onclick="addEditSave();" style="font-size: 18px;color: #ffffff;width:100%;text-align:center;line-height:55px;">保 存</div>
+        </div>
+    </div>
+
+    <!-- 加载 -->
+    <div id="loading_layer" class="hide"></div>
+    <div id="loading_win" class="hide"><img src="../image/93.gif" /></div>
+    <!-- <div style="background-color: #F2F2F2;width:100%;height:75px;margin-top:4%;"></div>
+    <footer class="aui-bar aui-bar-tab" id="footer" style="height:75px;">
+        <input id="Hid_TravelId" type="hidden" />
+        <div class="footerSubmit" tapmode onclick="addSubmit()">新增收货地址</div>
+    </footer> -->
+</body>
+<script type="text/javascript" src="../script/jquery.js"></script>
+<script type="text/javascript" src="../script/jquery.cityselect.js"></script>
+<script type="text/javascript" src="../script/config.js"></script>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript">
+    var _EditAddFlag=0;//0为新增 1为修改
+    var _pageID="";
+    var _idList="";
+    apiready = function() {
+        try {
+            // 阻止页面弹动
+            api.setWinAttr({
+                bounces: false
+            });
+            api.parseTapmode();
+            _pageID=api.pageParam.pageID;
+            _idList=api.pageParam.idList;
+            try {
+              if (/Android [4-6]/.test(navigator.appVersion)) {
+                    $(".add_adsCenter").css("top","12%");
+                    $(".ads_divName").css("height","55");
+                    $(".sub_sev").css("margin-top","32%");
+                    $(".sub_sev").css("z-index","9");
+                    $(".add_adsCenter").css("height","100%");
+               }
+            } catch (e) {}
+
+
+            $("#city").citySelect({
+                url: "../script/city.min.js",
+                prov: "北京",
+                nodata: "none"
+            });
+
+            var header = $api.byId('aui-header');
+            $api.fixStatusBar(header);
+            var headerPos = $api.offset(header);
+            var body_h = $api.offset($api.dom('body')).h;
+            //var footerH = $api.offset($api.byId('footer')).h;
+
+
+            loadAjaxMebContactData();
+
+        } catch (e) {
+            alert("请求失败,请检查网络是否正常");
+        } finally {}
+
+
+        //viewdisappear
+    };
+
+    //设置默认选项
+    function setMasterContact(obj) {
+        try {
+            $(".Defaultflag").removeClass("Defaultflag_OK");
+            $(".Defaultflag").addClass("Defaultflag_No");
+            $(obj).removeClass("Defaultflag_No");
+            $(obj).addClass("Defaultflag_OK");
+            var contactID = $(obj).attr('data');
+            var data = {
+                "ContactID": contactID
+            };
+            //异步调用设置
+            $.ajax({
+                type: 'POST',
+                url: app_apiconfig.MebContact.setMaster,
+                data: data,
+                success: function(ret) {},
+                dataType: 'json'
+            });
+        } catch (e) {}
+
+    }
+
+    //删除
+    function del(contactid) {
+        try {
+            // console.log('------------del--------------');
+            //var flag = getTabledata(tableid);
+            var tableid = contactid;
+            //console.log('DEL');
+            if (contactid > 0) {
+                var data = {
+                    "ContactID": contactid
+                };
+                $.ajax({
+                    type: 'POST',
+                    url: app_apiconfig.MebContact.delContact,
+                    data: data,
+                    success: function(ret) {
+                        //console.log($api.jsonToStr(ret));
+                        if (ret && ret.Data && ret.Data > 0) {
+                            var tablename = "#table" + tableid;
+                            $(tablename).slideUp(300, function() {
+                                $(this).remove()
+                            });
+                        }else {
+                          alert("删除失败，请注意不能直接删除默认地址");
+                        }
+                    },
+                    dataType: 'json'
+                });
+            }
+        } catch (e) {
+            alert("请求失败,请检查网络是否正常");
+        } finally {}
+
+    }
+    //异步加载数据，加载来自服务器上的数据信息
+    function loadAjaxMebContactData() {
+        try {
+          $api.removeCls(loading_layer, 'hide');
+          $api.removeCls(loading_win, 'hide');
+            var mebid = $api.user.userid();
+            $api.get(app_apiconfig.MebContact.querylistbymebid + "?mebid=" + mebid,
+                function(ret) {
+                    try {
+                      $api.addCls(loading_layer, 'hide');
+                      $api.addCls(loading_win, 'hide');
+                        if (ret) {
+                            //  console.log(JSON.stringify(ret));
+                            var jsonRet = $api.strToJson(ret);
+                            if (jsonRet && jsonRet.ErrCode == 200 && jsonRet.Data && jsonRet.Data != '' && jsonRet.Data.length > 0) {
+                                var data = jsonRet.Data;
+                                if (!data) {
+                                    return;
+                                }
+                                var objdiv = $api.byId('tabContact');
+                                for (var i = 0; i < data.length; i++) {
+                                    var item = data[i];
+                                    //console.log($api.jsonToStr('item.ismaster:'+ item.ContactName +'__'+ item.IsMain));
+                                    try {
+                                        var temp = '';
+                                        //第一行 收货人，手机号
+                                        temp += '<div class="tableInfo" id="table' + item.ContactID + '" mebcontact="' + item.ContactID + '" mebid="' + item.MebID + '"   data="' + $api.jsonToStr(item).replace(/"/g, "\'") + '">';
+                                        temp += '<div class="ConsigneeInfo" onclick="sel(' + item.ContactID + ')">';
+                                        temp += '<div class="isDefault ' + (item.IsMain == 1 ? 'isDefault_Ok' : 'isDefault_No') + '"></div>';
+                                        temp += '<div class="Consignee">收货人:' + item.ContactName + '</div>';
+                                        temp += '<div class="td_Mobile"><span>' + item.MobileNo + '</span></div>';
+                                        temp += '</div>';
+                                        //第二行 地址
+                                        temp += '<div class="td_Ads" onclick="sel(' + item.ContactID + ')"><span>' + item.Address + '</span></div>';
+                                        //第三行 设置（设为默认、编辑、删除）
+                                        temp += '<div class="DelEditInfo">';
+                                        temp += '<div style="margin-left:10px;background-color:#ccc;">';
+                                        temp += '<div class="Defaultflag ' + (item.IsMain == 1 ? 'Defaultflag_OK' : 'Defaultflag_No') + ' " onclick="setMasterContact(this);" data="' + item.ContactID + ' " ></div>';
+                                        temp += '<div class="Default_div" >设为默认</div>';
+                                        temp += '</div>';
+
+                                        temp += '<div style="float:right;" >';
+                                        temp += '<div class="td_Edit" onclick="editSubmit(' + item.ContactID + ')"></div>';
+                                        temp += '<div class="Div_DelEdit" onclick="editSubmit(' + item.ContactID + ')">编辑</div>';
+                                        temp += '<div class="td_Del" onclick="del(' + item.ContactID + ')"></div>';
+                                        temp += '<div class="Div_DelEdit" onclick="del(' + item.ContactID + ')">删除</div>';
+                                        temp += '</div>';
+                                        temp += '</div>';
+
+
+
+                                        $api.append(objdiv, temp);
+                                    } catch (e) {
+                                      $api.addCls(loading_layer, 'hide');
+                                      $api.addCls(loading_win, 'hide');
+                                        continue;
+                                    }
+
+                                }
+
+                            }
+                        }
+                    } catch (e) {}
+                    //mangerdiv(); //加载样式，请勿删除
+                });
+        } catch (e) {
+            alert("请求失败,请检查网络是否正常");
+        } finally {}
+
+    }
+
+    function sel(obj_id) {
+      if(_pageID!="shCartOrder_win"){return false;}
+      var tablename = "#table" + obj_id;
+      var contactdata=$(tablename).attr('data');
+      var TempJsonData=eval('(' + contactdata + ')');
+      var sContactName=TempJsonData.ContactName;
+      var sMobileNo=TempJsonData.MobileNo;
+      var sProviceName=TempJsonData.ProviceName;
+      var sCityName=TempJsonData.CityName;
+      var sAreaName=TempJsonData.AreaName;
+      var sAddress=TempJsonData.Address;
+      try {
+          var loaddatafun = 'add_adsinfo("' + sContactName + '","' + sMobileNo + '","' + sProviceName + '","' + sCityName + '","' + sAreaName + '","' + sAddress + '");';
+          api.execScript({
+              name: 'shCartOrder_win',
+              frameName: 'shCartOrder_frm',
+              script: loaddatafun
+          });
+      } catch (ee) {}
+
+      try {
+          api.openWin({
+              name: 'shCartOrder_win',
+              url: 'shCartOrder_win.html',
+              pageParam: {
+                  "idList":_idList
+              },
+              bounces: true,
+              rect: {
+                  x: 0,
+                  y: 0,
+                  w: 'auto',
+                  h: 'auto'
+              }
+          });
+      } catch (ex) {
+          alert("请求失败,请检查网络是否正常");
+      }
+
+    }
+    //编缉修改保存
+    function addEditSave(){
+      //新增 0 编缉 1
+      if(_EditAddFlag==0){
+          ads_Save();
+      }else if(_EditAddFlag==1){
+         Edit_Save();
+      }
+    }
+    //编缉
+    function Edit_Save() {
+
+       var  clickflag = true;
+
+        var mebname = $api.val($api.byId('txt_Name'));
+        var mebmobile = $api.val($api.byId('txt_Mobile'));
+        var pronive = $api.byId('selp').children.length > 0 ? $api.val($api.byId('selp')) : "";
+        var cityname = $api.byId('selc').children.length > 0 ? $api.val($api.byId('selc')) : "";
+        var arename = $api.byId('sela').children.length > 0 ? $api.val($api.byId('sela')) : "";
+        var address = $api.val($api.byId('txt_adsInfo'));
+        var  mebid = $api.user.userid();
+
+        if (!mebname || $api.trimAll(mebname) == '') {
+            alert('请填写收货人姓名');
+            clickflag = false;
+            return;
+        }
+        if (!mebmobile || $api.trimAll(mebmobile) == '') {
+            alert('请输入收货人的手机号码');
+            clickflag = false;
+            return;
+        }
+        if (!address || $api.trimAll(address) == '') {
+            alert('您需要填写详细的信息');
+            clickflag = false;
+            return;
+        }
+        if (mebid == 0 || mebid == 'str-1') {
+            alert('您还未登录，请重新登录');
+            clickflag = false;
+            return;
+        }
+
+        pageparam = {
+          "ContactID": $("#Hid_contactID").val(),
+          "MebID": mebid,
+          "ContactName": mebname,
+          "MobileNo": mebmobile,
+          "ProviceName": pronive,
+          "CityName": cityname,
+          "AreaName": arename == "" ? cityname : arename,
+          "Address": address,
+          "IsMain":$("#Hid_IsMain").val(),
+          "Flag": 1
+        }
+        //  return;
+        try {
+            //开始异步执行异步增加信息
+            $.ajax({
+                type: 'POST',
+                url: app_apiconfig.MebContact.modifycontact,
+                data: pageparam,
+                dataType: 'json',
+                success: function(ret) {
+                    if (ret && ret.ErrCode == "200" && ret.Data > 0) {
+                        $("#tabContact").html("");
+                          loadAjaxMebContactData();
+                          add_close();
+                    } else {
+                        alert("编缉联系人地址失败,请检查网络是否正常");
+                    }
+                }
+
+            });
+
+        } catch (e) {
+            alert("遇到问题啦！请您稍后重试");
+        }
+    }
+    //返回
+    function closeWin() {
+      if(_pageID=="shCartOrder_win"){
+        _pageID="";
+        try {
+          api.openWin({
+                name: 'shCartOrder_win',
+                url: 'shCartOrder_win.html',
+                pageParam: {
+                "idList":_idList
+                },
+                bounces: true,
+                rect: {
+                    x: 0,
+                    y: 0,
+                    w: 'auto',
+                    h: 'auto'
+                }
+            });
+        } catch (ex) {
+            alert("请求失败,请检查网络是否正常");
+        }
+      }else {
+          api.closeWin();
+      }
+
+
+    }
+    //编缉收货地址
+    function editSubmit(str_contactID) {
+        try {
+          _EditAddFlag=1;
+          //获取单个商品信息
+          get_Ads(str_contactID);
+
+        } catch (e) {
+            alert("请求失败,请检查网络是否正常");
+        } finally {}
+
+    }
+    //查询单个收货地址
+    function get_Ads(str_contactID) {
+      try {
+        if (!str_contactID) {
+            return;
+        }
+        $api.removeCls(loading_layer, 'hide');
+        $api.removeCls(loading_win, 'hide');
+        $("#Hid_contactID").val(str_contactID);
+        api.ajax({
+            url: app_apiconfig.MebContact.querycontectbyid + '?conid=' + str_contactID,
+            method: 'get',
+        }, function(json, err) {
+          $api.addCls(loading_layer, 'hide');
+          $api.addCls(loading_win, 'hide');
+            if (json) {
+                if (json.ErrCode == 200) {
+                    if (json.Data != null) {
+                      $(".add_adsCenter_cover").show();
+                      $(".add_adsCenter").show();
+                        var htmldata = json.Data;
+                        var ContactName = htmldata.ContactName;
+                        var MobileNo = htmldata.MobileNo;
+                        var selp = htmldata.ProviceName;
+                        var selc = htmldata.CityName;
+                        var sela = htmldata.AreaName;
+                        var Address = htmldata.Address;
+                        var isMain = htmldata.IsMain == "" ? "0" : htmldata.IsMain;
+                        $("#txt_Name").val(ContactName);
+                        $("#txt_Mobile").val(MobileNo);
+                        $("#city").citySelect({
+                            url: "../script/city.min.js",
+                            prov: selp,
+                            city: selc,
+                            dist: sela,
+                            nodata: "none"
+                        });
+                        $("#txt_adsInfo").val(Address);
+                        $("#Hid_IsMain").val(isMain);
+                    }else {
+                      alert("该地址不存在");
+                    }
+                }
+            }
+        });
+
+      } catch (e) {
+        $api.addCls(loading_layer, 'hide');
+        $api.addCls(loading_win, 'hide');
+      }
+
+    }
+    //新增收货地址
+    function add_Ads() {
+        $(".add_adsCenter_cover").show();
+        $(".add_adsCenter").show();
+        $("#txt_Name").val("");
+        $("#txt_Mobile").val("");
+        $("#txt_adsInfo").val("");
+        $("#city").citySelect({
+            url: "../script/city.min.js",
+            prov: "北京",
+            city: "东城区",
+            dist: "",
+            nodata: "none"
+        });
+        _EditAddFlag=0;
+    }
+
+    //新增地址提交
+    function ads_Save() {
+        try {
+           var clickflag = true;
+
+            var mebname = $api.val($api.byId('txt_Name'));
+            var mebmobile = $api.val($api.byId('txt_Mobile'));
+            var pronive = $api.byId('selp').children.length > 0 ? $api.val($api.byId('selp')) : "";
+            var cityname = $api.byId('selc').children.length > 0 ? $api.val($api.byId('selc')) : "";
+            var arename = $api.byId('sela').children.length > 0 ? $api.val($api.byId('sela')) : "";
+            var address = $api.val($api.byId('txt_adsInfo'));
+            var mebid = $api.user.userid();
+
+            if (!mebname || $api.trimAll(mebname) == '') {
+                alert('请填写收货人姓名');
+                clickflag = false;
+                return;
+            }
+            if (!mebmobile || $api.trimAll(mebmobile) == '') {
+                alert('请输入收货人的手机号码');
+                clickflag = false;
+                return;
+            }
+            if (!address || $api.trimAll(address) == '') {
+                alert('您需要填写更详细的信息');
+                clickflag = false;
+                return;
+            }
+            if (mebid == 0 || mebid == 'str-1') {
+                alert('登录信息已过期，请重新登录');
+                clickflag = false;
+                return;
+            }
+
+            var pageparam = {
+              "ContactID": 0,
+              "MebID": mebid,
+              "ContactName": mebname,
+              "MobileNo": mebmobile,
+              "ProviceName": pronive,
+              "CityName": cityname,
+              "AreaName": arename == "" ? cityname : arename,
+              "Address": address,
+              "IsMain": 0,
+              "Flag": 1
+            }
+            try {
+                //开始异步执行异步增加信息
+                $.ajax({
+                    type: 'POST',
+                    url: app_apiconfig.MebContact.addmebcontact,
+                    data: pageparam,
+                    dataType: 'json',
+                    success: function(ret) {
+
+                        if (ret && ret.ErrCode == "200" && ret.Data > 0) {
+                          $("#tabContact").html("");
+
+                                if(_pageID=="shCartOrder_win"){
+                                  var loaddatafun = 'add_adsinfo("' + pageparam.ContactName + '","' + pageparam.MobileNo + '","' + pageparam.ProviceName + '","' + pageparam.CityName + '","' + pageparam.AreaName + '","' + pageparam.Address + '");';
+                                  api.execScript({
+                                      name: 'shCartOrder_win',
+                                      frameName: 'shCartOrder_frm',
+                                      script: loaddatafun
+                                  });
+                                }
+
+                            loadAjaxMebContactData();
+                            add_close();
+                        } else {
+                            alert("新增联系人地址失败,请检查网络是否正常");
+                        }
+                    }
+
+                });
+
+            } catch (e) {
+                alert("遇到问题啦！请您稍后重试");
+            }
+        } catch (e) {
+            alert("请求失败,请检查网络是否正常");
+        } finally {}
+
+    }
+    //关闭地址添加
+    function add_close(){
+      $(".add_adsCenter_cover").hide();
+      $(".add_adsCenter").hide();
+      _EditAddFlag=0;
+    }
+</script>
+
+</html>

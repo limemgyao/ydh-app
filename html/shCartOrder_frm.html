@@ -1,0 +1,792 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <link rel="stylesheet" type="text/css" href="../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../css/public.css" />
+    <link rel="stylesheet" type="text/css" href="../css/shoppingCart.css" />
+    <style>
+        #loading_layer {
+            position: fixed;
+            z-index: 10;
+            ;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        #loading_win {
+            position: absolute;
+            left: 45%;
+            margin: 0 auto;
+            top: 40%;
+        }
+
+        #loading_win img {
+            border-radius: 40px;
+        }
+
+        .hide {
+            display: none;
+        }
+
+        .headerinfo {
+            color: #fff;
+            background-color: #00AF68;
+            position: fixed;
+        }
+
+        .inconn {
+            color: #fff !important;
+        }
+    </style>
+</head>
+
+<body class="ShCartOrder_body">
+    <div class="ShCartOrder">
+        <div class="content">
+            <!-- 收货信息 -->
+            <div class="ConsigneeInfo" tapmode onclick="Edit_ads()">
+                <div id="divDefault" class=""></div>
+                <div class="Consignee" id="divMebName"></div>
+                <div class="td_Mobile" id="divMobile"></div>
+                </br>
+                <div class="gps"></div>
+                <div class="td_Ads" id="divAds"></div>
+                <div class="img_Edit"></div>
+                </br>
+                <div class="ads_image"></div>
+            </div>
+            <!-- 商品信息 -->
+            <div class="goodsInfoList">
+                <!-- <div class="shopp">
+                    <div class="goodsType">
+                        <div class="shoCart_book"></div>
+                        <div>图书</div>
+                    </div>
+                    <div class="goodsList">
+                        <div class="goodsimginfo">
+                            <div class="goodsImg"><img src="../image/books_img2.png" /></div>
+                        </div>
+                        <div class="goodsinfo">
+                            <div style="overflow:hidden;height:45%;">
+                                <div class="bookName">摩尔人的最后叹息</div>
+                                <div class="bookRate">¥120</div>
+                            </div>
+
+                            <div style="overflow: hidden;height:40%;">
+                                <div class="bookauthor">林晓彤 著</div>
+                                <div class="bookCount">×1</div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="goodsList">
+                        <div class="goodsimginfo">
+                            <div class="goodsImg"><img src="../image/books_img2.png" /></div>
+                        </div>
+                        <div class="goodsinfo">
+                            <div style="overflow:hidden;height:45%;">
+                                <div class="bookName">摩尔人的最后叹息</div>
+                                <div class="bookRate">¥120</div>
+                            </div>
+
+                            <div style="overflow: hidden;height:40%;">
+                                <div class="bookauthor">林晓彤 著</div>
+                                <div class="bookCount">×1</div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="goodsExRate">
+                        <div>运费</div>
+                        <div>¥10</div>
+                    </div>
+                    <div class="goodsCount">
+                        <div>共2件商品　小计：</div>
+                        <div>¥120</div>
+                    </div>
+                </div>
+                <div class="shopp" style="margin-top:2%;">
+                    <div class="goodsType">
+                        <div class="shoCart_tourism"></div>
+                        <div>特产&其它</div>
+                    </div>
+                    <div class="goodsList">
+                        <div class="goodsimginfo">
+                            <div class="goodsImg"><img src="../image/books_img2.png" /></div>
+                        </div>
+                        <div class="goodsinfo">
+                            <div style="overflow:hidden;height:45%;">
+                                <div class="bookName">摩尔人的最后叹息</div>
+                                <div class="bookRate">¥120</div>
+                            </div>
+
+                            <div style="overflow: hidden;height:40%;">
+                                <div class="bookauthor">林晓彤 著</div>
+                                <div class="bookCount">×1</div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="goodsList">
+                        <div class="goodsimginfo">
+                            <div class="goodsImg"><img src="../image/books_img2.png" /></div>
+                        </div>
+                        <div class="goodsinfo">
+                            <div style="overflow:hidden;height:45%;">
+                                <div class="bookName">摩尔人的最后叹息</div>
+                                <div class="bookRate">¥120</div>
+                            </div>
+
+                            <div style="overflow: hidden;height:40%;">
+                                <div class="bookauthor">林晓彤 著</div>
+                                <div class="bookCount">×1</div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="goodsCount">
+                        <div>共2件商品　小计：</div>
+                        <div>¥120</div>
+                    </div>
+                </div> -->
+            </div>
+            <!-- 支付方式 -->
+            <div class="payType">
+                <input id="Hid_payType" type="hidden" />
+                <div class="div_payZ" tapmode onclick="payTypeOn(1)">
+                    <div class="payZ_image"></div>
+                    <div class="payZ_Name">支付宝支付</div>
+                    <div class="pay_type payZ_type pay_typeNo"></div>
+                </div>
+                <div class="payHr"></div>
+                <div class="div_payW" tapmode onclick="payTypeOn(2)">
+                    <div class="payW_image"></div>
+                    <div class="payW_Name">微信支付</div>
+                    <div class="pay_type payW_type pay_typeNo"></div>
+                </div>
+            </div>
+
+            <!-- 说明 -->
+            <div class="explainInfo">
+                <div class="explain_image"></div>
+                <div class="ex_Title">游读会说明：</div>
+                </br>
+                <div class="ex_content">&nbsp;&nbsp;订单支付成功后，我们会尽快安排发货，请确保信息填写正确!</div>
+            </div>
+
+        </div>
+    </div>
+    <!--隐藏值 -->
+    <input id="Hid_orderId" type="hidden" />
+    <!--支付成功显示 -->
+    <div id="success" style="height: 48%">
+        <div class="success_title">
+            <img src="../image/paysuccess.png" />
+        </div>
+        <div class="success_content">
+            <span>您的订单已支付成功！</span>
+            <span>我们将以最快的速度为您发货～</span>
+        </div>
+        <div class="success_foot">
+            <label> <i class="aui-iconfont aui-icon-share share"></i> <input type="button" value="分享" /></label>
+            <label> <input type="button" value="查看订单" onclick="shCartOrder.Vieworder()" /></label>
+        </div>
+    </div>
+    <div id="layer_success"></div>
+    <!-- 加载 -->
+    <div id="loading_layer"></div>
+    <div id="loading_win"><img src="../image/93.gif" /></div>
+</body>
+<script type="text/javascript" src="../script/jquery.js"></script>
+<script type="text/javascript" src="../script/config.js"></script>
+<script type="text/javascript" src="../script/payhelper.js"></script>
+<script type="text/javascript" src="../script/paycallback.js"></script>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript">
+    var _sumRate = 0;
+    var _sumExRate = 0;
+    var _OrderGoodList = [];
+    var _SubOrderFlag = false;
+    var idList="";
+    apiready = function() {
+        try {
+            api.parseTapmode();
+            //获取商品信息
+            idList = api.pageParam.idList;
+            getGoodsData(idList);
+        } catch (e) {
+            alert("请求失败,请检查网络是否正常");
+        } finally {}
+    };
+
+    //获取商品信息
+    function getGoodsData(idList) {
+        try {
+            $(".goodsInfoList").html("");
+            if (idList == undefined || idList == "" || idList == null) {
+                alert("未获取到商品信息");
+                return;
+            }
+            $api.removeCls(loading_layer, 'hide');
+            $api.removeCls(loading_win, 'hide');
+            api.ajax({
+                url: app_apiconfig.getUserShopcart + "?mebid=" + $api.user.userid() + "&idlist=" + idList,
+                method: 'get',
+            }, function(json, err) {
+                var data = null;
+                var Temp = '';
+                //图书
+                var bookTemp = '';
+                //其它
+                var OthersTemp = '';
+                //运费
+                var exRateTempHtml = "";
+                var exRateTemp = 0;
+                var exgoodTypeTemp = "";
+                //小计
+                var totalRateTempHtml = "";
+                var totalCount = 0;
+                var totalRateTemp = 0;
+
+                if (json) {
+                    if (json.ErrCode == 200) {
+                        if (json.Data != null && json.Data.length > 0) {
+                            //获得运费最高的商品,需要提交订单的商品list
+                            for (var i = 0; i < json.Data.length; i++) {
+                                data = json.Data[i];
+                                var jsongoodList = {
+                                    "ShopCartID": data.ID,
+                                    "goodID": data.BusID,
+                                    "count": data.Count
+                                }
+                                _OrderGoodList.push(jsongoodList);
+                                if (exgoodTypeTemp == "" || Number(exRateTemp) < Number(data.ExpressRate)) {
+                                    exgoodTypeTemp = data.Type;
+                                    exRateTemp = data.ExpressRate;
+                                    _sumExRate = data.ExpressRate;
+                                    exRateTempHtml = '<div class="goodsExRate"><div>运费</div><div><span style="font-size:12px;">¥</span><span style="font-size:14px;">' + Number(exRateTemp).toFixed(2) + '</span></div></div>';
+                                }
+                            }
+                            //商品列表处理
+                            for (var i = 0; i < json.Data.length; i++) {
+                                data = json.Data[i];
+                                var Cover = data.Cover;
+                                var Author = data.Author;
+                                //图片处理
+                                if (Cover == "" || Cover == null || Cover == undefined) {
+                                    Cover = "" + app_apiconfig.imageServer + "/" + "Skin/images/goods_pic_def.jpg";
+                                } else {
+                                    Cover = app_apiconfig.imageServer + "/" + data.Cover;
+                                }
+                                //作者显示处理
+                                if (Author != "" && Author != null && Author != undefined) {
+                                    Author = data.Author + "  著";
+                                } else {
+                                    Author = "";
+                                }
+                                Temp += '<div class="goodsList">';
+                                Temp += '<div class="goodsimginfo">';
+                                Temp += '<div class="goodsImg"><img src="' + Cover + '" /></div>';
+                                Temp += '</div>';
+                                Temp += '<div class="goodsinfo">';
+                                Temp += '<div style="overflow:hidden;height:45%;">';
+                                Temp += '<div class="bookName">' + data.Name + '</div>';
+                                Temp += '<div class="bookRate" ><span style="font-size:12px;">¥</span><span style="font-size:14px;">' + data.Rate + '</span></div>';
+                                Temp += '</div>';
+                                Temp += '<div style="overflow: hidden;height:40%;">';
+                                Temp += '<div class="bookauthor">' + Author + '</div>';
+                                Temp += '<div class="bookCount">×' + data.Count + '</div>';
+                                Temp += '</div>';
+                                Temp += '</div>';
+                                Temp += '</div>';
+                                //计算总计
+                                _sumRate = Number(_sumRate) + (Number(data.Rate) * Number(data.Count))
+                                    //计算小计
+                                totalCount++;
+                                totalRateTemp = Number(totalRateTemp) + Number(data.Rate) * Number(data.Count)
+                                    //加上运费
+                                if (data.Type == "2" && exgoodTypeTemp == "2") {
+                                    totalRateTemp = Number(totalRateTemp) + Number(exRateTemp);
+                                    exRateTemp = 0;
+                                } else if ((data.Type == "3" || data.Type == "4") && (exgoodTypeTemp == "3" || exgoodTypeTemp == "4")) {
+                                    totalRateTemp = Number(totalRateTemp) + Number(exRateTemp);
+                                    exRateTemp = 0;
+                                }
+                                totalRateTempHtml = '<div class="goodsCount"><div>共' + totalCount + '件商品　小计：</div><div>'
+                                totalRateTempHtml += '<span style="font-size:12px;">¥</span><span style="font-size:14px;">' + Number(totalRateTemp).toFixed(2) + '</span></div></div>'
+                                    //Type=2 签名书,3为特产，4为其它
+                                if (data.Type == "2") {
+                                    if ($(".div_bookType").html() == undefined || $(".div_bookType").html() == null || $(".div_bookType").html() == "") {
+                                        if ($(".goodsList").html() != "") {
+                                            bookTemp = '<div class="shopp" style="margin-top:2%;">';
+                                        } else {
+                                            bookTemp = '<div class="shopp">';
+                                        }
+                                        bookTemp += '<div class="goodsType div_bookType">';
+                                        bookTemp += '<div class="shoCart_book"></div>';
+                                        bookTemp += '<div>图书</div>';
+                                        bookTemp += '</div>';
+                                    }
+                                    bookTemp += Temp;
+                                } else if (data.Type == "3" || data.Type == "4") {
+                                    if ($(".div_othersType").html() == undefined || $(".div_othersType").html() == null || $(".div_othersType").html() == "") {
+                                        if ($(".goodsList").html() != "") {
+                                            OthersTemp = '<div class="shopp" style="margin-top:2%;">';
+                                        } else {
+                                            OthersTemp = '<div class="shopp">';
+                                        }
+                                        OthersTemp += '<div class="goodsType div_othersType">';
+                                        OthersTemp += '<div class="shoCart_tourism"></div>';
+                                        OthersTemp += '<div>特产&其它</div>';
+                                        OthersTemp += '</div>';
+                                    }
+
+                                    OthersTemp += Temp;
+                                }
+
+                                if (i == json.Data.length - 1) {
+                                    if (bookTemp != "") {
+                                        //添加运费
+                                        if (exgoodTypeTemp == "2") {
+                                            bookTemp += exRateTempHtml;
+                                        }
+                                        //添加小计
+                                        bookTemp += totalRateTempHtml;
+                                        bookTemp += '</div>';
+                                        //添加列表HTML
+                                        $(".goodsInfoList").append(bookTemp);
+                                        bookTemp = '';
+                                        Temp = "";
+                                        //小计初始化
+                                        totalRateTempHtml = "";
+                                        totalCount = 0;
+                                        totalRateTemp = 0;
+                                    }
+                                    if (OthersTemp != "") {
+                                        //添加运费
+                                        if (exgoodTypeTemp == "3" || exgoodTypeTemp == "4") {
+                                            OthersTemp += exRateTempHtml;
+                                        }
+                                        //添加小计
+                                        OthersTemp += totalRateTempHtml;
+
+                                        OthersTemp += '</div>'
+                                        $(".goodsInfoList").append(OthersTemp);
+                                        OthersTemp = '';
+                                        Temp = "";
+                                        //小计初始化
+                                        totalRateTempHtml = "";
+                                        totalCount = 0;
+                                        totalRateTemp = 0;
+                                    }
+
+                                } else if (data.Type != json.Data[i + 1].Type) {
+                                    if ((data.Type == "3" || data.Type == "4") && (json.Data[i + 1].Type == "3" || json.Data[i + 1].Type == "4")) {
+
+                                    } else {
+                                        if (bookTemp != "") {
+                                            //添加运费
+                                            if (exgoodTypeTemp == "2") {
+                                                bookTemp += exRateTempHtml;
+                                            }
+                                            //添加小计
+                                            bookTemp += totalRateTempHtml;
+
+                                            bookTemp += '</div>';
+                                            $(".goodsInfoList").append(bookTemp);
+                                            bookTemp = '';
+                                            Temp = "";
+                                            //小计初始化
+                                            totalRateTempHtml = "";
+                                            totalCount = 0;
+                                            totalRateTemp = 0;
+                                        }
+                                        if (OthersTemp != "") {
+                                            //添加运费
+                                            if (exgoodTypeTemp == "3" || exgoodTypeTemp == "4") {
+                                                OthersTemp += exRateTempHtml;
+                                            }
+                                            //添加小计
+                                            OthersTemp += totalRateTempHtml;
+                                            OthersTemp += '</div>'
+                                            $(".goodsInfoList").append(OthersTemp);
+                                            OthersTemp = '';
+                                            Temp = "";
+
+                                            //小计初始化
+                                            totalRateTempHtml = "";
+                                            totalCount = 0;
+                                            totalRateTemp = 0;
+                                        }
+                                    }
+
+                                }
+
+                            }
+                            //获取地址信息
+                            gtAdsinfo();
+                        }else {
+                          alert('商品信息不存在!');
+                        }
+                    }
+                }
+            });
+        } catch (e) {
+            $api.addCls(loading_layer, 'hide');
+            $api.addCls(loading_win, 'hide');
+            alert('哦？似乎我们的应用开小差了,请稍等片刻!');
+        }
+
+    }
+
+    //获得用户地址信息
+    function gtAdsinfo() {
+        $.get(app_apiconfig.MebContact.querymasterbymebid + "?mebid=" + $api.user.userid(),
+            function(data) {
+                if (data && data.Data) {
+                    inint_adsinfo(data.Data);
+                    $("#divDefault").addClass("isDefault");
+                } else {
+                    //没有获取到数据
+                    inint_adsinfo("");
+                }
+            });
+    }
+
+    //加载用户收货地址信息
+    function inint_adsinfo(contactdata) {
+        var elMebName = $api.byId('divMebName');
+        var elMobile = $api.byId('divMobile');
+        var elAds = $api.byId('divAds');
+        try {
+            if (contactdata) {
+                if (elMebName) {
+                    $api.text(elMebName, contactdata.ContactName);
+                }
+
+                if (elMobile) {
+                    $api.text(elMobile, contactdata.MobileNo);
+                }
+                if (elAds) {
+                    $api.text(elAds, contactdata.ProviceName + contactdata.CityName + contactdata.AreaName + contactdata.Address);
+                }
+            } else {
+                $api.text(elMebName, "");
+                $api.text(elMobile, "");
+                $api.text(elAds, "还没有收货地址，点击立即新增一个");
+            }
+        } catch (e) {
+            $api.text(elMebName, "");
+            $api.text(elMobile, "");
+            $api.text(elAds, "还没有收货地址，点击立即新增一个");
+        }
+        //显示金额
+        showRate();
+        $api.addCls(loading_layer, 'hide');
+        $api.addCls(loading_win, 'hide');
+    }
+
+    //加载用户收货地址信息
+    function add_adsinfo(sContactName,sMobileNo,sProviceName,sCityName,sAreaName,sAddress) {
+     try {
+        var elMebName = $api.byId('divMebName');
+        var elMobile = $api.byId('divMobile');
+        var elAds = $api.byId('divAds');
+        if (elMebName) {
+            $api.text(elMebName, sContactName);
+        }
+
+        if (elMobile) {
+            $api.text(elMobile, sMobileNo);
+        }
+        if (elAds) {
+            $api.text(elAds, sProviceName + sCityName + sAreaName + sAddress);
+        }
+      } catch (e) {}
+
+    }
+    //显示总金额
+    function showRate() {
+        //显示金额
+        try {
+            var loaddatafun = 'sumRate(' + _sumRate + ',' + _sumExRate + ');';
+            api.execScript({
+                name: 'shCartOrder_win',
+                script: loaddatafun
+            });
+        } catch (e) {}
+
+    }
+
+    //修改地址
+    function Edit_ads() {
+        try {
+            api.openWin({
+                name: 'managementAds',
+                url: 'managementAds.html',
+                pageParam: {
+                    'pageID': "shCartOrder_win",
+                    'idList':idList
+                },
+                bounces: true,
+                rect: {
+                    x: 0,
+                    y: 0,
+                    w: 'auto',
+                    h: 'auto'
+                }
+            });
+        } catch (e) {
+            alert("请求失败,请检查网络是否正常");
+        } finally {}
+
+
+    }
+
+    //选择支付方式 1支付宝 2微信
+    function payTypeOn(type) {
+        if (type == 1) {
+            $("#Hid_payType").val(1);
+            $(".payW_type").removeClass("pay_typeOk");
+            $(".payZ_type").removeClass("pay_typeNo");
+            $(".payW_type").addClass("pay_typeNo");
+            $(".payZ_type").addClass("pay_typeOk");
+        } else if (type == 2) {
+            $("#Hid_payType").val(2);
+            $(".payZ_type").removeClass("pay_typeOk");
+            $(".payW_type").removeClass("pay_typeNo");
+            $(".payW_type").addClass("pay_typeOk");
+            $(".payZ_type").addClass("pay_typeNo");
+        }
+    }
+
+    //生成订单
+    function SubmitOrder() {
+        //获得订单提交数据
+        var data = [];
+        var username = $("#divMebName").text().trim(); //收货人
+        var mobile = $("#divMobile").text().trim(); //收货人联系方式
+        var address = $("#divAds").text().trim(); //地址
+        var orderid = $("#Hid_orderId").val().trim() || 0; //订单ID,新订单生成传0
+        var payType = $("#Hid_payType").val(); //1支付宝 2微信
+        data = {
+                "ScOrderId": orderid,
+                "MebID": $api.user.userid(),
+                "MebName": username,
+                "Mobile": mobile,
+                "Address": address,
+                "EtyCode": "",
+                "ChainID": "0",
+                "ShopCartList": _OrderGoodList
+            }
+            //验证数据
+        if (data.MebName == undefined || data.MebName == "" || data.MebName == null) {
+            alert("请填写收货人");
+            return false;
+        }
+        if (data.Mobile == undefined || data.Mobile == "" || data.Mobile == null) {
+            alert("请填写收货人手机号");
+            return false;
+        }
+        if (data.Address == undefined || data.Address == "" || data.Address == null) {
+            alert("请填写收货人地址");
+            return false;
+        }
+        if (data.ShopCartList.length <= 0) {
+            alert("商品信息不存在");
+            return false;
+        }
+        if (payType != "1" && payType != "2") {
+            alert("请选择支付方式");
+            return false;
+        }
+        //订单生成
+        if (_SubOrderFlag) {
+            return false;
+        }
+        _SubOrderFlag = true;
+        $api.removeCls(loading_layer, 'hide');
+        $api.removeCls(loading_win, 'hide');
+        $.ajax({
+            type: 'POST',
+            url: app_apiconfig.ScAddOrder,
+            data: data,
+            dataType: 'json',
+            success: function(json) {
+                _SubOrderFlag = false;
+                $api.addCls(loading_layer, 'hide');
+                $api.addCls(loading_win, 'hide');
+                if (json.ErrCode == "201") {
+                    alert(json.ErrMsg);
+                } else if (json.ErrCode == "200") {
+                    if (json.Data == undefined || json.Data == null || json.Data == "") {
+                        alert("订单信息生成失败");
+                        return false;
+                    }
+                    if (json.Data.mainOr == undefined || json.Data.mainOr == null || json.Data.mainOr == "") {
+                        alert("订单信息生成失败");
+                        return false;
+                    }
+                    var or_orderData = json.Data.mainOr;
+                    if (or_orderData.MainOrderNo != undefined && or_orderData.MainOrderNo != null && or_orderData.MainOrderNo != "") {
+                        var or_orderId = or_orderData.ID;
+                        $("#Hid_orderId").val(or_orderId);
+                        var or_orderNo = or_orderData.MainOrderNo;
+                        var or_amount = or_orderData.Rate;
+                        var or_GoodsName = "购买游读会商品";
+                        var or_userId = $api.user.userid();
+                        //金额处理
+                        if (Number(or_amount) >= 0) {
+                            or_amount = Number(or_amount).toFixed(2);
+                        } else {
+                            alert("订单生成成功，调用支付失败");
+                            return false;
+                        }
+                        //支付调用对像
+                        var PayData = [];
+                        //支付宝支付方式
+                        if (payType == "1") {
+                            PayData = {
+                                "tradeNO": or_orderNo.toString(), //订单号
+                                "subject": or_GoodsName.toString(), //商品名称
+                                "body": or_GoodsName.toString(), //商品描述
+                                "amount": or_amount.toString() //商品商额 单位元
+                            };
+                        }
+                        //微信支付
+                        else if (payType == "2") {
+                            if (or_orderId == undefined || or_orderId == null || or_orderId == "") {
+                                alert("订单生成成功，调用支付失败");
+                                return false;
+                            }
+                            if (or_userId == undefined || or_userId == null || or_userId == "") {
+                                alert("订单生成成功，调用支付失败");
+                                return false;
+                            }
+                            or_amount =(Number(or_amount) * 100).toFixed(0);
+
+                            var or_attach = {
+                                "type": 1,
+                                "busid": or_orderId,
+                                "mebid": $api.user.userid(),
+                                "mebtype": 1,
+                                "orderno": or_orderNo.toString()
+                            }
+                            PayData = {
+                                "tradeNo": or_orderNo.toString(),
+                                "attach": JSON.stringify(or_attach).toString(),
+                                "description": or_GoodsName.toString(), //商品名称
+                                "totalFee": or_amount.toString() //总金额 单位分
+                            };
+                        }
+                        //刷新购物车页面
+                        try {
+                            var loaddatafun = 'getListInfo('+$api.user.userid()+');';
+                            api.execScript({
+                                name:'shoppingCart_win',
+                                frameName: 'shoppingCart_frm',
+                                script: loaddatafun
+                            });
+                        } catch (e) {}
+                        //调用支付
+                        Order_pay(PayData, payType);
+
+
+                    }
+                } else {
+                    alert("订单生成失败,请检查网络是否正常");
+                }
+            }
+
+        });
+    }
+
+    //调用支付
+    function Order_pay(PayData, payType) {
+        try {
+            //1支付宝 2微信
+            if (payType == 1) {
+                 $payObject.aliPayHelper(PayData, alip_paycallback);
+            } else if (payType == 2) {
+                 $payObject.wxPayHelper(PayData, wx_paycallback);
+            }
+        } catch (e) {
+            alert("支付请求失败,请检查网络是否正常");
+        } finally {}
+    }
+
+    //微信支付成功 回调
+    function wx_paycallback(ret, err) {
+        try {
+            var data = paycallback.wxPay_callback(ret, err);
+            if (data.status == '200') {
+                alert("支付成功！");
+                try {
+                    api.openWin({
+                        name: 'orderList_win',
+                        url: 'orderList_win.html',
+                        pageParam: {
+                            "type": 0,
+                            "pageName":"shCartOrder_win"
+                        },
+                        bounces: true,
+                        rect: {
+                            x: 0,
+                            y: 0,
+                            w: 'auto',
+                            h: 'auto'
+                        }
+                    });
+                } catch (e) {
+                    alert("请求失败,请检查网络是否正常");
+                }
+            } else {
+                alert(data.msg);
+            }
+        } catch (e) {
+            alert("请求失败,请检查网络是否正常");
+        } finally {}
+
+    }
+
+    //支付宝支付成功 回调
+    function alip_paycallback(res, err) {
+        try {
+            var data = paycallback.alipPay_callback(res, err);
+            if (data.status == '200') {
+              alert("支付成功！");
+              try {
+                  api.openWin({
+                      name: 'orderList_win',
+                      url: 'orderList_win.html',
+                      pageParam: {
+                          "type": 0,
+                          "pageName":"shCartOrder_win"
+                      },
+                      bounces: true,
+                      rect: {
+                          x: 0,
+                          y: 0,
+                          w: 'auto',
+                          h: 'auto'
+                      }
+                  });
+              } catch (e) {
+                  alert("请求失败,请检查网络是否正常");
+              }
+            } else {
+                alert(data.msg);
+            }
+        } catch (e) {
+            alert("请求失败,请检查网络是否正常");
+        } finally {}
+  }
+</script>
+
+</html>

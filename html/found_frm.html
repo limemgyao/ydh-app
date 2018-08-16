@@ -1,0 +1,229 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title></title>
+    <link href="../css/public.css" rel="stylesheet" />
+    <link href="../css/appfind.css" rel="stylesheet" />
+    <style>
+        #div_ShopCartTo{width:4rem;height:4rem;position:fixed;bottom:10%;right:0px;}
+        #div_ShopCartTo div:nth-child(1){background:url(../image/shopCart_img_1.png);background-size:100% 100%; height:100%;width:100%;}
+    </style>
+</head>
+
+<body>
+    <div class="wrapper">
+        <div class="content">
+            <div class="slidingblock" id="bklist" isrefresh='0'>
+
+            </div>
+        </div>
+    </div>
+    <!-- 显示购物车小图标 -->
+    <div id="div_ShopCartTo" onclick="open_shopCart()" >
+      <div></div>
+    </div>
+</body>
+
+<script type="text/javascript" src="../script/config.js"></script>
+<script type="text/javascript" src="../script/api.js"></script>
+
+<script type='text/javascript'>
+    try {
+        var imgurl = app_apiconfig.imageServer;
+        var npage = 0;
+        var isload = false; //判断是不是正在被加载 既是否正在做上滑动操作
+        var isend = false; //判断是不是已经没有数据可以加载了
+        var txt_name = "";
+    } catch (e) {
+        alert("请求失败,请检查网络是否正常");
+    } finally {}
+
+
+    //show 系统信息
+    function show(object) {
+      try {
+        var uid = $api.attr(object, 'uid')
+            //alert('哦？ 该版本还在加班加点处理中');
+            //return;
+        if (uid > 0) {
+            //如果获取到的图书存在，则需要使用其他方式进行展示，此时可以考虑使用appbuy
+            api.openWin({
+                name: 'recommendInfo_win',
+                url: 'recommendInfo_win.html',
+                pageParam: {
+                    "bookid": uid
+                },
+                bounces: true,
+                rect: {
+                    x: 0,
+                    y: 0,
+                    w: 'auto',
+                    h: 'auto'
+                }
+            });
+        }
+      } catch (e) {alert("请求失败,请检查网络是否正常");} finally {}
+
+    }
+
+    //加载信息集合
+    apiready = function() {
+      try {
+          api.parseTapmode();
+          npage = 1;
+          addpage(npage, false);
+          //向上实现加载
+          api.setRefreshHeaderInfo(function(ret, err) {
+              //refresh event callback
+              slidingblockOn();
+
+          });
+
+          //移动到底部
+          api.addEventListener({
+              name: 'scrolltobottom'
+          }, function(ret, err) {
+              if (!isload) {
+                  isload = true; //是否正在加载
+                  slidingdownOn();
+              }
+          });
+      } catch (e) {alert("请求失败,请检查网络是否正常");} finally {}
+
+
+    }
+
+    function slidingblockOn() {
+
+        api.refreshHeaderLoadDone(); //复位下拉刷新
+        //do your business
+    }
+
+
+    function slidingdownOn() {
+        api.refreshHeaderLoadDone(); //复位下拉刷新
+        npage++;
+        addpage(npage, true)
+            //do your business
+    }
+    // app_apiconfig.singnbkServerAP
+    //加载图文列表信息
+    function addpage(npageno, isrefresh) {
+      try {
+          if (npageno <= 0 || isend) return;
+            api.ajax({
+                url: app_apiconfig.foundAPI + 'pageno=' + npageno + '&pagesize=15&type=3&keytxt=' + txt_name,
+                method: 'get',
+            }, function(json, err) {
+                var data = null;
+                var temp = '';
+                var divinfo = $api.byId('bklist');
+                if (json) {
+                    if (json.State == 1) {
+                        if (json.Data != null && json.Data.length > 0) {
+                            for (var i = 0; i < json.Data.length; i++) {
+                                data = json.Data[i];
+                                var Cover=data.Cover==""?imgurl+"/Skin/images/goods_pic_def.jpg":imgurl+data.Cover;
+                                //var contest = data. .substring(start,stop)
+                                temp = '<div class="findimgtext mg10"  onclick="show(this)"  uid="' + data.ID + '">';
+                                temp += '<div class="findimgtext_img">';
+                                temp += '<img src="' + Cover + '" />';
+                                temp += '</div>';
+                                temp += '<div class="findimgtext_text underwrite">';
+                                temp += '<div>' + data.Name + '</div>';
+                                temp += '<div></div>';//<div>推荐理由:</br> 游读会强烈推荐</div>
+                                temp += '<div>￥' + data.DiscountRate.toFixed(2) + '</div>';
+                                temp += '</div>';
+                                temp += '</div>';
+                                $api.append(divinfo, temp);
+                            }
+                        }
+                    }
+                }
+
+                if (temp == '') {
+                    //如果是首页加载，则执行第一个
+                    if (isrefresh) {
+                        if (isend) {
+                            $api.append(divinfo, '<div class="findimgtext mg10" uid="0">已经到底了</div>');
+                            isend = true;
+                        }
+                    } else {
+                        $api.append(divinfo, '<div class="findimgtext mg10" uid="0">当前商品已经下架</div>');
+                    }
+                }
+
+                isload = false;
+            });
+        } catch (e) {
+            alert('哦？似乎我们的应用开小差了,请稍等片刻!');
+        }
+    }
+
+    function getfoundinfo(obj) {
+      try {
+          $api.html($api.byId('bklist'),"");
+          txt_name = obj;
+          npage = 1;
+          addpage(npage, false);
+      } catch (e) {
+
+      } finally {
+
+      }
+    }
+    //打开购物车
+    function open_shopCart(){
+      try {
+        //验证是否登录
+        if (!$api.user.islogin()) {
+            gologin();
+            return;
+        }
+        api.openWin({
+            name: 'shoppingCart_win',
+            url: 'shoppingCart_win.html',
+            bounces: true,
+            rect: {
+                x: 0,
+                y: 0,
+                w: 'auto',
+                h: 'auto'
+            }
+        });
+      } catch (e) {alert("请求失败,请检查网络是否正常");}
+    }
+    //登录页跳转
+    function gologin() {
+        try {
+            api.openWin({
+                name: 'login',
+                url: 'login.html',
+                bounces: true,
+                animation: {
+                    type: 'signbk_win'
+                },
+                rect: {
+                    x: 0,
+                    y: 0,
+                    w: 'auto',
+                    h: 'auto'
+                }
+            });
+        } catch (e) {
+            alert("请求失败,请检查网络是否正常");
+        } finally {}
+
+
+    }
+</script>
+
+
+
+
+
+</html>

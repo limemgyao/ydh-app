@@ -1,0 +1,471 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title></title>
+    <link href="../css/public.css" rel="stylesheet" />
+    <link href="../css/aui.css" rel="stylesheet" />
+    <link href="../css/apppersonalcenter.css" rel="stylesheet" />
+    <style>
+    #loading_layer {position: fixed;z-index: 10;top: 0;left: 0;width: 100%;height: 100%;}
+    #loading_win {position: absolute;left: 45%;margin: 0 auto;top: 40%;}
+    #loading_win img {border-radius: 40px;}
+    .hide {display: none;}
+        .underwrite div {
+            padding: 2%;
+        }
+    </style>
+
+</head>
+
+<body style="background-color:#F4F4F4 !important;">
+    <div class="wrapper" style="background:#F4F4F4">
+        <div class="content">
+            <div class="personalcenter_top">
+                <div class="block_settings aui-iconfont aui-icon-gear" tapmode onclick="setup()"></div>
+                <div class="block_head">
+                    <div class="block_head_left">
+                        <div class="block_head_left_block">
+                            <label onclick="showAction();">
+	                             <img id="avatar" class="avatar" name="avatar" />
+	                             <!-- <img id="avatar" class="avatar" name="avatar" src="../image/headportrait.jpg" /> -->
+	                            <i class="iconeye aui-iconfont aui-icon-gear"></i>
+                            </label>
+                            <label>
+	                             <span id="user_name" class="personalname"></span>
+	                             <span id="user_info" class="personalinfo">签约导师</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="block_head_right">
+                        <span id="user_stakes"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="personalcenter_order_type">
+                <div tapmode onclick="getOrderList(0)">
+                    <label>
+                       <img src="../image/fullorder.png" />
+                       <span class="amount hide">8</span>
+                   </label> 全部订单
+                </div>
+                <div tapmode onclick="getOrderList(1)">
+                    <label>
+                       <img src="../image/obligation.png" />
+                       <span class="amount hide">2</span>
+                   </label> 待支付
+                </div>
+                <div tapmode onclick="getOrderList(3)">
+                    <label>
+                       <img src="../image/comment.png" />
+                       <span class="amount hide">5</span>
+                   </label> 待签收
+                </div>
+            </div>
+
+            <div class="personalcenter_plate">
+                <div class="personalcenter_plate_content">
+                    <div><img src="../image/chuzhi.png" />储值</div>
+                    <div><span id="store_sum" class="price"></span>
+                        <!-- <span class="aui-iconfont aui-icon-right"></span> -->
+                    </div>
+                </div>
+                <div class="personalcenter_plate_content">
+                    <div><img src="../image/hongbao.png" />红包</div>
+                    <div><span id="coupon_sum" class="price"></span>
+                        <!-- <span class="aui-iconfont aui-icon-right"></span>  -->
+                    </div>
+                </div>
+                <div class="personalcenter_plate_content" tapmode onclick="gettravelList()">
+                    <div><img src="../image/youdu.png" />游读</div>
+                    <div><span class="aui-iconfont aui-icon-right"></span></div>
+                </div>
+                <div class="personalcenter_plate_content" tapmode onclick="userBookList()">
+                    <div><img src="../image/my_books.png" />我的书架</div>
+                    <div><span class="aui-iconfont aui-icon-right"></span></div>
+                </div>
+
+            </div>
+
+            <div class="personalcenter_handle">
+                <div class="personalcenter_upload">
+                    <div onclick="scanning();">
+                        <img src="../image/upload.png" /> 上传图书
+                    </div>
+                </div>
+                <!-- <div class="personalcenter_operate">
+                    <div onclick="moviesOn();">
+                        <span>
+                       <img src="../image/groom.png" />
+                       我要推荐
+                     </span>
+                    </div>
+                    <div onclick="moviesOn();">
+                        <span>
+                       <img src="../image/train.png" />
+                       发起培训
+                     </span>
+                    </div>
+                    <div onclick="moviesOn();">
+                        <span>
+                         <img src="../image/fly.png" />
+                         带队游读
+                     </span>
+                    </div>
+                </div> -->
+            </div>
+
+
+        </div>
+    </div>
+    <!-- 加载 -->
+    <div id="loading_layer" class="hide"></div>
+    <div id="loading_win" class="hide"><img src="../image/93.gif" /></div>
+</body>
+
+</html>
+<script type="text/javascript" src="../script/jquery.js"></script>
+<script type="text/javascript" src="../script/config.js"></script>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type='text/javascript'>
+    apiready = function() {
+        StuffInfo($api.user.userid());
+    }
+
+    function StuffInfo(user_id) {
+        try {
+            var meb_grade = {
+                1: "普通会员",
+                2: "金卡会员",
+                3: "企业会员"
+            };
+            api.ajax({
+                url: app_apiconfig.getMember + "?mebid=" + user_id,
+                method: 'get',
+            }, function(json, err) {
+                if (json) {
+                    if (json.ErrCode == 200) {
+                      if(json.Data){
+                        var res = json.Data;
+                        var StoreSum = res.StoreSum == undefined ? 0 : res.StoreSum;
+                        var CouponSum = 0;//res.CouponSum == undefined ? 0 : res.CouponSum;
+                        var PhotoPath = res.PhotoPath == "" ? "Skin/images/user_pic_def.png" : res.PhotoPath
+                        $api.html($api.byId('user_name'), res.MebName);
+                        $api.html($api.byId('user_stakes'), "原始股：" + res.Stakes);
+                        $api.html($api.byId('store_sum'), "￥" + StoreSum);
+                        $api.html($api.byId('coupon_sum'), "￥" + CouponSum);
+                        $api.attr(avatar, 'src', app_apiconfig.imageServer + "/" + PhotoPath);
+                        $api.html($api.byId('user_info'), meb_grade[res.MebType]);
+                      }
+                  } else {
+                        alert('无法获取您的身份信息，请尝试关闭应用在重新打开');
+                    }
+                }
+            });
+        } catch (e) {
+            alert('无法获取您的身份信息，请尝试关闭应用在重新打开');
+        }
+
+    }
+
+    function slidingblockOn() {
+        try {
+            api.refreshHeaderLoadDone(); //复位下拉刷新
+            //do your business
+        } catch (e) {
+            alert("请求失败,请检查网络是否正常");
+        } finally {}
+
+    }
+
+    function slidingdownOn() {
+        try {
+            api.refreshHeaderLoadDone(); //复位下拉刷新
+            npage++;
+            addpage(npage, true)
+                //do your business
+        } catch (e) {
+            alert("请求失败,请检查网络是否正常");
+        } finally {}
+
+    }
+
+    function setup() {
+      try {
+           api.openWin({
+               name: 'userInfo_win',
+               url: 'userInfo_win.html',
+               bounces: true,
+               rect: {
+                   x: 0,
+                   y: 0,
+                   w: 'auto',
+                   h: 'auto'
+               }
+           });
+       } catch (e) {
+           alert("请求失败,请检查网络是否正常");
+       } finally {}
+  }
+
+    function gettravelList() {
+        try {
+            api.openWin({
+                name: 'travelList_win',
+                url: 'travelList_win.html',
+                bounces: true,
+                rect: {
+                    x: 0,
+                    y: 0,
+                    w: 'auto',
+                    h: 'auto'
+                }
+            });
+        } catch (e) {
+            alert("请求失败,请检查网络是否正常");
+        } finally {}
+
+    }
+
+    function getOrderList(type) {
+        try {
+            api.openWin({
+                name: 'orderList_win',
+                url: 'orderList_win.html',
+                pageParam: {
+                    "type": type
+                },
+                bounces: true,
+                rect: {
+                    x: 0,
+                    y: 0,
+                    w: 'auto',
+                    h: 'auto'
+                }
+            });
+        } catch (e) {
+            alert("请求失败,请检查网络是否正常");
+        } finally {}
+
+    }
+    //修改头像
+    function showAction() {
+      try {
+          if (!$api.user.islogin()) {
+              gologin();
+              return;
+          }
+          api.openWin({
+              name: 'cropperImage',
+              url: 'cropperImage.html',
+              bounces: true,
+              rect: {
+                  x: 0,
+                  y: 0,
+                  w: 'auto',
+                  h: 'auto'
+              }
+          });
+      } catch (e) {
+          alert("请求失败,请检查网络是否正常");
+      } finally {}
+
+
+    }
+
+    function scanning() {
+        //$ScanObject.sanfphoto(callbaksfp);
+        api.openWin({
+            name: 'uploadbooksSi_win',
+            url: 'uploadbooksSi_win.html',
+            bounces: true,
+            rect: {
+                x: 0,
+                y: 0,
+                w: 'auto',
+                h: 'auto'
+            }
+        });
+    }
+
+    //扫码完成回调--此功能新建页面实现
+    // function callbaksfp(scan_id, scan_eventType) {
+    //     if (scan_eventType == '"success"') {
+    //         if (scan_id != "") {
+    //             api.openWin({
+    //                 name: 'uploadBooks_win',
+    //                 url: 'uploadBooks_win.html',
+    //                 bounces: true,
+    //                 pageParam: {
+    //                     "bnno": scan_id
+    //                 },
+    //                 rect: {
+    //                     x: 0,
+    //                     y: 0,
+    //                     w: 'auto',
+    //                     h: 'auto'
+    //                 }
+    //             });
+    //         }else {
+    //           setTimeout(function() {   uploadBookManual("未获取到书籍信息,"); }, 500);
+    //
+    //         }
+    //     }
+    //     //用户取消扫码
+    //     else if (scan_eventType == '"cancel"') {
+    //         setTimeout(function() {   uploadBookManual(""); }, 500);
+    //     }
+    //     //扫码识别失败,一般出现在选择图片二维情况下
+    //     else if (scan_eventType == '"fail"') {
+    //         setTimeout(function() {   uploadBookManual("扫码识别失败,"); }, 500);
+    //     } else {
+    //         setTimeout(function() {   uploadBookManual("请求失败,"); }, 500);
+    //     }
+    // }
+
+    //设定倒数秒数
+    // var t = 10;
+    // function showTime() {
+    //   console.log(t);
+    //     t -= 1;
+    //     if (t == 0) {
+    //         uploadBookManual();
+    //     }
+    //     //每秒执行一次,showTime()
+    //     setTimeout("showTime()", 1000);
+    // };
+
+    //--此功能新建页面实现
+    // function uploadBookManual(str_title) {
+    //     try {
+    //         if (str_title) {
+    //             str_title = str_title + "去手动上传图书？";
+    //         } else {
+    //             str_title = "去手动上传图书？";
+    //         }
+    //         var dialogBox = api.require('dialogBox');
+    //         dialogBox.alert({
+    //             texts: {
+    //                 title: str_title,
+    //                 leftBtnTitle: '取消',
+    //                 rightBtnTitle: '确认',
+    //             },
+    //             styles: {
+    //                 bg: '#fff',
+    //                 w: 300,
+    //                 title: {
+    //                     marginT: 10,
+    //                     icon: 'widget://res/gou.png',
+    //                     iconSize: 40,
+    //                     titleSize: 14,
+    //                     titleColor: '#000'
+    //                 },
+    //                 left: {
+    //                     marginT: 10,
+    //                     marginB: 7,
+    //                     marginL: 20,
+    //                     w: 130,
+    //                     h: 35,
+    //                     corner: 2,
+    //                     bg: '#D4D4D4',
+    //                     size: 12,
+    //                     color: '#fff'
+    //                 },
+    //                 right: {
+    //                     marginT: 10,
+    //                     marginB: 7,
+    //                     marginL: 10,
+    //                     w: 130,
+    //                     h: 35,
+    //                     corner: 2,
+    //                     bg: '#00AE67',
+    //                     color: '#fff',
+    //                     size: 12
+    //                 }
+    //             }
+    //         }, function(ret) {
+    //             if (ret.eventType == 'left') {
+    //                 var dialogBox = api.require('dialogBox');
+    //                 dialogBox.close({
+    //                     dialogName: 'alert'
+    //                 });
+    //             } else {
+    //                 var dialogBox = api.require('dialogBox');
+    //                 dialogBox.close({
+    //                     dialogName: 'alert'
+    //                 });
+    //                 api.openWin({
+    //                     name: 'uploadBook_manual_win',
+    //                     url: 'uploadBook_manual_win.html',
+    //                     bounces: true,
+    //                     rect: {
+    //                         x: 0,
+    //                         y: 0,
+    //                         w: 'auto',
+    //                         h: 'auto'
+    //                     }
+    //                 });
+    //
+    //             }
+    //         });
+    //     } catch (e) {
+    //         alert("请求失败,请检查网络是否正常");
+    //     } finally {}
+    // };
+
+    //我的书架
+    function userBookList() {
+        try {
+            if (!$api.user.islogin()) {
+                gologin();
+                return;
+            }
+            api.openWin({
+                name: 'myBooksList_win',
+                url: 'myBooksList_win.html',
+                pageParam: {},
+                bounces: true,
+                rect: {
+                    x: 0,
+                    y: 0,
+                    w: 'auto',
+                    h: 'auto'
+                }
+            });
+        } catch (e) {
+            alert("请求失败,请检查网络是否正常");
+        } finally {}
+    };
+
+    //登录页跳转
+    function gologin() {
+        try {
+            api.openWin({
+                name: 'login',
+                url: 'login.html',
+                bounces: true,
+                animation: {
+                    type: 'personalcenter_win'
+                },
+                rect: {
+                    x: 0,
+                    y: 0,
+                    w: 'auto',
+                    h: 'auto'
+                }
+            });
+        } catch (e) {
+            alert("请求失败,请检查网络是否正常");
+        } finally {}
+
+
+    }
+
+
+    function moviesOn() {
+        alert('我们的工程师正在研发中，敬请期待');
+    }
+</script>

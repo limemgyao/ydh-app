@@ -1,0 +1,209 @@
+/*书本详情 zzy 2017-6-15  Statr*/
+.bookInfo{width:100%;font-family:"Microsoft YaHei";font-size:18px;background-color: #F4F4F4;overflow:hidden;}
+.bookInfo .content{width:100%;}
+.bookInfo .content .contentTop {background-color:#FFFFFF;}
+.bookInfo .content .contentTop .head {width:100%;height:50px;position:fixed;top:0;left:0;background-color:#FFFFFF;}
+.bookInfo .content .contentTop .head .returnPage {float:left;}
+.bookInfo .content .contentTop .head .sharePage {float:right;}
+.bookInfo .content .contentTop .head .returnPage img {float: left;width:40%;margin:10px 0px 10px 10px;}
+.bookInfo .content .contentTop .head .sharePage img {float: right;width:40%;margin:10px 10px 10px 0px;}
+/**书本图片**/
+.bookInfo .content .BookImg{width:80%;margin:0 auto;background-color:#FFFFFF;}
+.bookInfo .content .BookImg img{width:50%;margin-left:25%;}
+.bookInfo .content .exhibitionCount{height:36px;}
+.bookInfo .content .exhibitionCount img{width:100%;background-color:#FFFFFF;}
+/**书本属性**/
+.bookInfo .content .bookAttribute{width:90%;background-color:#FFFFFF; border-top:1px solid #ccc; padding: 0% 5% 0% 5%;}
+.bookInfo .content .bookAttribute .bookNeme{width:100%; font-size:18px;color:#3C3C3C;font-family:PingFangSC-Medium; font-weight:bold; line-height:40px;}
+.bookInfo .content .bookAttribute .bookAuthor{width:100%;font-size:14px;color:#3C3C3C;font-family:PingFangSC-Light;line-height:20px;}
+.bookInfo .content .bookAttribute .bookPress{width:100%;font-size:14px;color:#B1B1B1;font-family:PingFangSC-Light;line-height:30px;}
+.bookInfo .content .bookAttribute .bookPrice{width:100%;font-size:26px;color:#FF435A;font-family:PingFangSC-Semibold;line-height:40px;}
+.bookInfo .content .bookAttribute .bookPrice span{width:100%;font-size:14px;color:#FF435A;font-family:PingFangSC-Light;}
+
+.bookInfo .content .bookAttribute .bookRecommend{width:100%;font-size:14px;color:#B2B2B2;font-family:PingFangSC-Medium;line-height:20px;}
+.bookInfo .content .bookAttribute .bookRecommendInfo{width:100%;font-size:14px;color:#3C3C3C;font-family:PingFangSC-Light;line-height:20px;}
+/**书本内容简介**/
+.bookInfo .content .contentSummary{width:100%;background:#F0F0F0;}
+.bookInfo .content .contentSummary .contentSummaryNeme{width:100%;line-height:50px; font-size:14px;font-family:PingFangSC-Medium; color:#B2B2B2;}
+.bookInfo .content .contentSummary .contentSummaryInfo{width:98% !important;margin-left:1%; line-height:20px; font-size:14px !important;font-family:PingFangSC-Light !important; color:#3C3C3C;}
+.bookInfo .content .contentSummary .contentSummaryInfo img{max-width:100% !important;height: auto; text-align: center;  }
+
+/**页底信息**/
+.bookInfo .content .operation{width:100%;background-color:#fff;border:1px solid #DFDFDF;border-style: solid none none none;display:table;text-align:center;color:#999999;font-size:14px;position:fixed;bottom:0;left:0;}
+.bookInfo .content .operation div{display: table-cell;text-align:center;padding-top:5px;}
+.bookInfo .content .operation div.active{color:#9D9D9D;}
+.bookInfo .content .operation div img{width:40%;}
+.bookInfo .content .operation div span{display: block;}
+.bookInfo .content .operation .personal{width:60%;background-color:#00AE67;}
+.bookInfo .content .operation .personal span{width:100%; font-size:18px; font-family:PingFangSC-Medium; font-weight:bold; color:#FFFFFF;}
+/*书本详情 zzy 2017-6-15 End*/
+
+/*订单页 zzy 2017-6-21  Statr*/
+.orderConfirm .content .bookAttribute .bookNeme{width:100%; font-size:16px;color:#3C3C3C;font-family:PingFangSC-Medium; font-weight:bold; line-height:22px;}
+.orderConfirm .content .OrderTable table{font-size: 12px;width:100%;}
+.orderConfirm .content .OrderTable table input{font-size: 18px;width:96%;border: 1px solid #ccc;-webkit-appearance: none;}
+.orderConfirm .content .OrderTable table select {padding:6px;line-height: 16px;font-size: 18px;height:border: 0px solid #ccc;}
+.orderConfirm .content .OrderTable table td{padding-left: 5px;padding-right: 5px;}
+.orderConfirm .content .OrderTable .order_plate{padding: 0 10px;background:#fff;margin-top: 10px;border:1px solid #D4D4D4;border-style:solid none solid none;}
+.orderConfirm .content .OrderTable .order_plate span{color:#9D9D9D;font-size:14px;}
+.orderConfirm .content .OrderTable .order_plate a{text-decoration:none;padding-left:20px;font-size:14px;color:#2386D1;}
+.orderConfirm .content .OrderTable .order_content{width:100%;height: 44px;border:1px solid #D4D4D4;border-style:none none solid none;display:table;}
+.orderConfirm .content .OrderTable .order_content div{width:100%;display: table-cell;font-size: 16px;vertical-align: middle;}
+.orderConfirm .content .OrderTable .order_content div:nth-child(1) img{width: 20px; height: 20px; vertical-align: middle; margin-right: 10px;}
+.orderConfirm .content .OrderTable .order_content div:nth-child(1){color:#3C3C3C;font-size:14px;}
+.orderConfirm .content .OrderTable .order_content:nth-child(2){border-style:none;}
+.orderConfirm .content .bookAttribute .bookPrice{width:100%;font-size:22px;color:#FF435A;font-family:PingFangSC-Semibold;line-height:40px;}
+.orderConfirm .content .bookAttribute .bookPrice span{width:100%;font-size:14px;color:#FF435A;font-family:PingFangSC-Light;}
+/*订单页 zzy 2017-6-21 End*/
+
+/*新增地址 and 编辑地址 zzy 2017-6-27  Statr*/
+.addGoodsAds_body{background-color: #F2F2F2; padding: 0px;margin: 0px;}
+.addGoodsAds{width:100%; background-color: #FFFFFF;top: 65px; bottom: 105px;position:absolute;}
+.addGoodsAds .content{}
+.addGoodsAds .content .tableInfo{width: 95%;font-size: 18px;line-height: 60px;margin-top:0%;border-collapse:collapse;}
+.addGoodsAds .content .tableInfo tr td:nth-child(1){width:90px;color: #808080;}
+.addGoodsAds .content .tableInfo tr td:nth-child(2) input{height:50px;}
+.addGoodsAds .content .tableInfo tr td{border-top: 1px solid #ccc;-webkit-appearance:none;}
+.addGoodsAds .content .tableInfo tr:nth-child(1) td{border-top: 0px solid #ccc;-webkit-appearance: none;}
+.addGoodsAds_body footer .footerSubmit{border-radius:25px;width:80%; margin:0 auto;color:#FFFFFF; height:50px; margin-top:20px;padding-top:10px; background-color:#00AE67;font-size:18px; font-weight:bold;}
+/*新增地址页 zzy 2017-6-27 End*/
+
+/*选择收货地址 zzy 2017-6-27  Statr*/
+.getGoodsAds_body{background-color: #F2F2F2;}
+.getGoodsAds{width:100%;}
+.getGoodsAds .content{}
+.getGoodsAds .content .tableInfo{font-family:"Microsoft YaHei",Arial,Helvetica,sans-serif,"宋体"; background-color: #FFFFFF; width: 100%;line-height: 35px; height:auto; margin-top:4%;border-collapse:collapse;}
+.getGoodsAds .content .tableInfo .ConsigneeInfo{padding-left:10px; width:100%;height:40px;}
+.getGoodsAds .content .tableInfo .isDefault{background:url(../image/defaultAds.png);background-size:100% 100%;text-align:center;float:left;width:33px; height:15px;margin-top:10px;margin-left: 6px;}
+.getGoodsAds .content .tableInfo .Consignee{float:left;padding-left:10px;font-size: 16px; height: 30px;font-weight: bold;}
+.getGoodsAds .content .tableInfo .td_Mobile{float:right;padding-right:8%; text-align:right; font-size: 16px;font-weight: bold;width: 50%; }
+.getGoodsAds .content .tableInfo .td_Ads{padding-left:15px;padding-right:10px; padding-bottom:8px; line-height:25px;font-size: 16px;color:#595959;border-bottom: 1px solid #ccc;-webkit-appearance:none;}
+.getGoodsAds .content .tableInfo .DelEditInfo{height: 45px;line-height:45px;}
+.getGoodsAds .content .tableInfo .Defaultflag{text-align:center;float:left;width:20px; height:20px;margin-top:10px; margin-left: 8px;}
+.getGoodsAds .content .tableInfo .isDefault_Ok{display: block;}
+.getGoodsAds .content .tableInfo .isDefault_No{display: none;}
+.getGoodsAds .content .tableInfo .Default_div{float:left;margin-left:10px;color:#808080;font-size: 14px;}
+.getGoodsAds .content .tableInfo .Defaultflag_OK{background:url(../image/CombinedShape.png);background-size:100% 100%;}
+.getGoodsAds .content .tableInfo .Defaultflag_No{background:url(../image/Rectangle.png);background-size:100% 100%;}
+.getGoodsAds .content .tableInfo .td_Edit{background:url(../image/Edit.png);background-size:100% 100%;text-align:center;float:left;margin-left: 15px;width:22px; height:21px;margin-top:10px; }
+.getGoodsAds .content .tableInfo .td_Del{background:url(../image/Del.png);background-size:100% 100%;text-align:center;float:left;margin-left: 15px;width:22px; height:24px;margin-top:10px;}
+.getGoodsAds .content .tableInfo .Div_DelEdit{float:left;margin-right:18px;margin-left: 5px;color:#808080;font-size: 14px;}
+.getGoodsAds_body footer .footerSubmit{border-radius:25px;width:80%; margin:0 auto;color:#FFFFFF; height:50px; margin-top:13px;padding-top:10px; background-color:#00AE67;font-size:18px; font-weight:bold;}
+/*选择收货地址页 zzy 2017-6-27 End*/
+
+/*管理收货地址-个人资料进入 zzy 2017-8-11  Statr*/
+.managementAds_body{background-color: #F2F2F2;}
+.managementAds{width:100%;}
+.managementAds .content{}
+.managementAds .content .tableInfo{font-family:"Microsoft YaHei",Arial,Helvetica,sans-serif,"宋体"; background-color: #FFFFFF; width: 100%;line-height: 35px; height:auto; margin-top:4%;border-collapse:collapse;}
+.managementAds .content .tableInfo .ConsigneeInfo{padding-left:10px; width:100%;height:40px;}
+.managementAds .content .tableInfo .isDefault{background:url(../image/defaultAds.png);background-size:100% 100%;text-align:center;float:left;width:33px; height:15px;margin-top:10px;margin-left: 6px;}
+.managementAds .content .tableInfo .Consignee{float:left;padding-left:10px;font-size: 16px; height: 30px;font-weight: bold;}
+.managementAds .content .tableInfo .td_Mobile{float:right;padding-right:8%; text-align:right; font-size: 16px;font-weight: bold;width: 50%; }
+.managementAds .content .tableInfo .td_Ads{padding-left:15px;padding-right:10px; padding-bottom:8px; line-height:25px;font-size: 16px;color:#595959;border-bottom: 1px solid #ccc;-webkit-appearance:none;}
+.managementAds .content .tableInfo .DelEditInfo{height: 45px;line-height:45px;}
+.managementAds .content .tableInfo .Defaultflag{text-align:center;float:left;width:20px; height:20px;margin-top:10px; margin-left: 8px;}
+.managementAds .content .tableInfo .isDefault_Ok{display: block;}
+.managementAds .content .tableInfo .isDefault_No{display: none;}
+.managementAds .content .tableInfo .Default_div{float:left;margin-left:10px;color:#808080;font-size: 14px;}
+.managementAds .content .tableInfo .Defaultflag_OK{background:url(../image/CombinedShape.png);background-size:100% 100%;}
+.managementAds .content .tableInfo .Defaultflag_No{background:url(../image/Rectangle.png);background-size:100% 100%;}
+.managementAds .content .tableInfo .td_Edit{background:url(../image/Edit.png);background-size:100% 100%;text-align:center;float:left;margin-left: 15px;width:22px; height:21px;margin-top:10px; }
+.managementAds .content .tableInfo .td_Del{background:url(../image/Del.png);background-size:100% 100%;text-align:center;float:left;margin-left: 15px;width:22px; height:24px;margin-top:10px;}
+.managementAds .content .tableInfo .Div_DelEdit{float:left;margin-right:18px;margin-left: 5px;color:#808080;font-size: 14px;}
+.managementAds_body footer .footerSubmit{border-radius:25px;width:80%; margin:0 auto;color:#FFFFFF; height:50px; margin-top:13px;padding-top:10px; background-color:#00AE67;font-size:18px; font-weight:bold;}
+
+
+.managementAds_body .add_adsCenter_cover {width: 100%; height: 100%;opacity: 0.6; filter: alpha(opacity=80);  position: fixed; top: 0; background: #000;display:none;}
+.managementAds_body .add_adsCenter{background-color:#f4f4f4;width: 100%;position: fixed;bottom: 0px;height:60%;z-index:3;display:none;}
+.managementAds_body .add_adsCenter .ads_divName{background-color:#ffffff;width: 100%;border:1px solid #f4f4f4;height: 15%;text-align: center;border-style:none none solid none;}
+.managementAds_body .add_adsCenter .ads_divName div:nth-child(1){float: left;padding-left:3%;font-size: 16px;color: #b1b1b1;width: 30%;text-align: left;margin-top:4%;}
+.managementAds_body .add_adsCenter .ads_divName input{font-size:14px; float: left;width: 67%; height: 100%; text-align: right;padding-right: 2%}
+.managementAds_body .add_adsCenter .add_adsClose{background:url(../image/close.png);background-size:100% 100%;  position: fixed;width:20px;height: 20px;right: 0px;margin:5%;}
+/*管理收货地址-个人资料进入 zzy 2017-8-11  End*/
+
+/*订单确认页 zzy 2017-6-27  Statr*/
+.goodsOrder_body{background-color: #F2F2F2;}
+.goodsOrder{width:100%;}
+.goodsOrder .content{}
+.goodsOrder .content {font-family:"Microsoft YaHei",Arial,Helvetica,sans-serif,"宋体"; width: 100%;border-collapse:collapse;}
+.goodsOrder .content  .ConsigneeInfo{ font-size: 16px;font-weight: bold;line-height: 45px;background-color: #FFFFFF;height: 120px;}
+.goodsOrder .content  .ConsigneeInfo .isDefault{background:url(../image/defaultAds.png);background-size:100% 100%;text-align:center;float:left;width:33px; height:15px;margin-top:15px;margin-left: 45px;}
+.goodsOrder .content  .ConsigneeInfo .Consignee{float:left;margin-left:10px;}
+.goodsOrder .content  .ConsigneeInfo .td_Mobile{float:right;margin-right: 45px;}
+.goodsOrder .content  .ConsigneeInfo  .gps{background:url(../image/gps.png);background-size:100% 100%;text-align:center;float:left;width:17px; height:24px;margin-top:5px;margin-left:10px;}
+.goodsOrder .content  .ConsigneeInfo  .td_Ads{padding-left:5px;padding-right:5px;line-height:28px;font-size: 16px;color:#595959;float:left;width:83%;font-weight: normal;margin-left:10px;}
+.goodsOrder .content  .ConsigneeInfo  .img_Edit{background:url(../image/edit_ads.png);background-size:100% 100%;text-align:center;float:right;margin-right: 5px;width:11px; height:19px;margin-top:10px;}
+.goodsOrder .content  .ConsigneeInfo  .ads_image{background:url(../image/ads_image.png);background-size:100% 100%;width:100%; height:5px;margin-top: 25px;}
+
+.goodsOrder .content  .goodsInfo{font-family:"Microsoft YaHei",Arial,Helvetica,sans-serif,"宋体"; background-color: #FFFFFF; width: 100%;border-collapse:collapse;margin-top:10px;height:150px;}
+.goodsOrder .content  .goodsInfo .goods_Divimage{background:url(../image/deft_img.png);background-size:100% 100%;float:left;width:30%; height:110px;margin-top:5px;margin-left:10px;}
+.goodsOrder .content  .goodsInfo .goods_image{height:120px;width:100px;float:left;margin-top:10px;}
+.goodsOrder .content  .goodsInfo .td_GoodsName{height: 90px;line-height: 25px;font-size: 16px; top:0px;padding-top: 15px; width:65%;float: left;}
+.goodsOrder .content  .goodsInfo .unit_Price{float: left;padding-left: 5px;}
+.goodsOrder .content  .goodsInfo .div_number{float: right;margin-right:15px;}
+.goodsOrder .content  .goodsInfo .number_add{background:url(../image/add.png);background-size:100% 100%; height:30px;width:30px;float: left;margin-right:15px;margin-top: 8px;}
+.goodsOrder .content  .goodsInfo .input_number{float: left;margin-right:10px;text-align: center; margin-top: 10px;font-size: 18px;border:1px solid #ccc; width: 45px; height: 25px;-webkit-appearance: none;}
+.goodsOrder .content  .goodsInfo .number_minus{background:url(../image/minus.png);background-size:100% 100%; height:30px;width:30px;float: left;margin-right:5px;margin-top: 8px;}
+
+.goodsOrder .content  .payType{font-family:"Microsoft YaHei",Arial,Helvetica,sans-serif,"宋体"; background-color: #FFFFFF; width: 100%;border-collapse:collapse;margin-top:10px;height:120px;}
+.goodsOrder .content  .payType .div_payZ{height: 60px;}
+.goodsOrder .content  .payType .payZ_image{background:url(../image/alipay.png);background-size:100% 100%; height:22px;width:22px;margin-left:15px; margin-top:20px;float: left;}
+.goodsOrder .content  .payType .payZ_Name{padding-left:10px;line-height: 25px;font-size: 16px;padding-top: 18px;float: left;}
+.goodsOrder .content  .payType .pay_type{ height:22px;width:22px;float: right;margin-right:25px;margin-top: 20px;}
+.goodsOrder .content  .payType .payHr{width: 90%;height: 1px;background-color: #ccc;margin-left:5%;}
+.goodsOrder .content  .payType .div_payW{height: 60px;}
+.goodsOrder .content  .payType .payW_image{background:url(../image/weixin.jpg);background-size:100% 100%; height:22px;width:22px;margin-left:15px; margin-top:20px;float: left;}
+.goodsOrder .content  .payType .payW_Name{padding-left:10px;line-height: 25px;font-size: 16px;padding-top: 18px;float: left;}
+.goodsOrder .content  .payType .payW_type{background:url(../image/CombinedShape.png); background-size:100% 100%; height:22px;width:22px;float: right;margin-right:25px;margin-top: 20px;}
+.goodsOrder .content  .payType .pay_typeNo{background:url(../image/Rectangle.png);background-size:100% 100%;}
+.goodsOrder .content  .payType .pay_typeOk{background:url(../image/CombinedShape.png);background-size:100% 100%;}
+
+
+.goodsOrder .content  .explainInfo{font-family:"Microsoft YaHei",Arial,Helvetica,sans-serif,"宋体"; background-color: #FFFFFF; width: 100%;border-collapse:collapse;margin-top:10px;height:110px;}
+.goodsOrder .content  .explainInfo .explain_image{background:url(../image/Explain.png);background-size:100% 100%; height:22px;width:22px;margin-left:15px; margin-top:15px;float: left;}
+.goodsOrder .content  .explainInfo .ex_Title{padding-left:10px;line-height: 25px;font-size: 16px;padding-top: 15px;float: left;color:#808080; }
+.goodsOrder .content  .explainInfo .ex_content{float:left;margin-left:45px;line-height: 25px;margin-right: 15px;color: #A6A6A6;}
+
+
+.delivery_plate{width:100%;font-family:"Microsoft YaHei",Arial,Helvetica,sans-serif,"宋体";background: #fff;margin-bottom: 20px;}
+.receiver_plate{width:100%;display:table;}
+.receiver_plate .receiver,.address,.operation{display:table-cell;padding:5px 10px;}
+.receiver_plate .receiver:nth-child(1){text-align:left;font-size: 1em;font-weight: bold;}
+.receiver_plate .receiver:nth-child(2){text-align:right;font-size: 1em;font-weight: bold;}
+.receiver_plate .operation:nth-child(1){text-align:left;}
+.receiver_plate .operation:nth-child(2){text-align:right}
+.receiver_plate .address{border:1px solid #D4D4D4;border-style:none none solid none;font-size: 1em;color: #797979;}
+.receiver_plate .operation div{display:inline;font-size: 1em;color: #8E8E8E}
+.receiver_plate .operation .operation_edit{margin-right: 10%;}
+.receiver_plate .operation .operation_trash{margin-left: 10%;}
+.receiver_plate .operation span{color: #00AF68;}
+.icon-radio {position: relative;box-sizing: border-box;padding-left: 25px; }
+.icon-radio input[type="radio"] {display: none;appearance: none; }
+@font-face {font-family: "aui_iconfont";src: url('aui-iconfont.ttf') format('truetype');}
+.icon-radio input[type="radio"]:checked + .icon-radio__placeholder { background: #00AF68; font-family: "aui_iconfont" !important;font-style: normal;}
+.icon-radio input[type="radio"]:checked + .icon-radio__placeholder:before {content: "\e6e5"; }
+.icon-radio input[type="radio"]:checked + .icon-radio__placeholder + .icon-radio__label {color: #b69b69; }
+.icon-radio i {font-style: normal; }
+.icon-radio .icon-radio__placeholder {width: 20px;height: 20px; border: solid 1px #bfbfbf;border-radius: 50%; position: absolute;left: 0;}
+.icon-radio .icon-radio__placeholder:before {position: absolute;color: #fff;left: 2px;font-size: 13px; }
+.icon-radio .icon-radio__label { color: #333;font-size: 12px; }
+/*订单确认页 zzy 2017-6-27 End*/
+
+
+/*我的书架列表 zzy 2017-7-21 start*/
+.myBooksList_body{background-color:#f4f4f4;font-family: PingFangSC-Regular, sans-serif;Font-size:62.5%;}
+.myBooksList .content{background-color:#f4f4f4;}
+.myBooksList .content .plate-activity{background-color:#f4f4f4;width: 100%;}
+.myBooksList .content .plate-activity .plate_imgtext{background-color:#ffffff; width:32%;margin-right:1.33%;margin-top:1%; float: left;display:table-cell; box-sizing: border-box;}
+.myBooksList .content .plate-activity .plate_imgtext .del_books{position:absolute;width:35px;height:35px;}
+.myBooksList .content .plate-activity .plate_imgtext .del_books div{background:url(../image/img_delete.png);background-size:100% 100%;width:25px;height:25px;margin-top:5px;margin-left:5px;}
+.myBooksList .content .plate-activity .plate_imgtext .imgtext{background:url(../image/books_img2.png);background-size:100% 100%; width:70%;height:110px;margin: 0 auto; margin-top: 15%;}
+.myBooksList .content .plate-activity .plate_imgtext .imgtext_text{width:142%; margin-left: -21%;margin-top: 0px;display:table;position:relative;}
+.myBooksList .content .plate-activity .plate_imgtext .imgtext_text div{width:100%; text-align:center;display: table-cell;position: absolute;bottom: -110px; line-height: 20px;height: 20px;font-size: 1.2em;opacity: 0.8;}
+.myBooksList .content .plate-activity .plate_imgtext .imgtext_text_2{background: #7E7E7E;color:#ffffff; }
+.myBooksList .content .plate-activity .plate_imgtext .imgtext_text_3{background: #00ae67;color:#ffffff;  }
+.myBooksList .content .plate-activity .plate_imgtext .imgtext_text_4{background: #ffda44;color:#444444; }
+.myBooksList .content .plate-activity .plate_imgtext .booksName{width: 70%;display: table; padding-bottom: 10%;margin-bottom:20%;margin: 0 auto;}
+.myBooksList .content .plate-activity .plate_imgtext .booksName div{vertical-align:middle;font-size:1.4em;color:#999999;overflow: hidden;text-overflow: ellipsis;display: -webkit-box;-webkit-line-clamp: 2;-webkit-box-orient: vertical;height: 25px;padding: 10px 0;line-height: 18px;}
+/*我的书架列表 zzy 2017-7-21 End*/

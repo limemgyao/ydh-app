@@ -1,0 +1,101 @@
+<!doctype html>
+<html>
+<!-- 游读活动 -->
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <link rel="stylesheet" type="text/css" href="../css/aui.css" />
+    <style>
+    .headerinfo {color: #fff;background-color: #00AF68;top: 0px;z-index: 2px;position:fixed;}
+    .inconn {color: #fff !important;}
+    .div_movies{background-color: #f4f4f4;width: 100%;}
+    .div_movies .content{width: 100%;background-color: #f4f4f4;}
+    .div_movies .content .div_content1{width: 100%;margin:0 auto;background-color:#ffffff;padding: 3%;line-height: 25px;}
+    .div_movies .content .div_content1 .div_Title{margin-top: 5%;color:#333333;font-size: 22px;font-family:PingFangSC-Regular;}
+    .div_movies .content .div_content1 .div_Title_bnt{margin-top: 1%;background-color: #ffda44;height: 2px;width: 12%;}
+    .div_movies .content .div_content1 .div_image{max-width:100%;padding-top: 4%;margin:0 auto;}
+    .div_movies .content .div_content1 .div_Title1{margin-top:4%;color:#333333;font-size: 14px;font-family:PingFangSC-Medium;}
+    .div_movies .content .div_content1 .div_Title_bnt1{margin-top: 1%;background-color: #ffda44;height: 2px;width: 6%;}
+    .div_movies .content .div_content1 .div_movies_content{margin-top: 3%;font-size: 14px;color: #666666;}
+    .div_movies .content .div_content1 .div_image1{max-width:100%;padding-top: 3%;margin:0 auto;}
+    </style>
+
+</head>
+
+<body style="position:absolute;">
+    <header class="aui-bar aui-bar-nav aui-bar-light headerinfo" id="aui-header">
+        <a class="aui-btn aui-pull-left" tapmode onclick="closeWin()">
+            <span class="aui-iconfont aui-icon-left inconn"></span>
+        </a>
+        <div class="aui-title">图书</div>
+    </header>
+    <div class="div_movies" id="movies">
+      <div class="div_header" style="width:100%;"></div>
+      <div class="content">
+        <!-- 电子书 -->
+        <div class="div_content1">
+          <div class="div_Title">电子书</div>
+          <div class="div_Title_bnt"></div>
+          <div class="div_image"><img src="../image/books_img1.png"/></div>
+          <div class="div_Title1">书写我心，读给你听</div>
+          <div class="div_Title_bnt1"></div>
+          <div class="div_movies_content">电子书的问世，给阅读带来了极大的便利，其便捷性、大容量、多功能、环保低碳等优点得到了广大消费者的极大地肯定。游读会整合线上２００Ｗ＋册电子书，供给游读会用户。</div>
+          </br>
+        </div>
+        <!-- 有声读物 -->
+        <div class="div_content1" style="margin-top:3%;">
+          <div class="div_Title">有声读物</div>
+          <div class="div_Title_bnt"></div>
+          <div class="div_image" style="width:35%;float:left;padding-right:3%;padding-top:5%;"><img src="../image/books_img2.png"/></div>
+          <div class="div_movies_content">　　有声书的增长为什么这么快？除了技术进步、移动设备的普及等硬件因素外，更重要的恐怕是读者从中获得了更好的“阅读”体验，因而愿意买单。有声书能够赶走孤独。21世纪，数字通讯成为主导，我们在很多情境下是孤独的，而从另一个人的声音里我们能找到慰藉。即便是倾听一个陌生人的故事也能让我们感觉到与广大世界的联系</div>
+          </br>
+        </div>
+
+        <!-- 读书会 -->
+        <div class="div_content1" style="margin-top:3%;">
+          <div class="div_Title">读书会</div>
+          <div class="div_Title_bnt"></div>
+          <div class="div_image"><img src="../image/books_img3.png"/></div>
+          <div class="div_Title1">游读会，线下读书会</div>
+          <div class="div_Title_bnt1"></div>
+          <div class="div_movies_content">　　生活不仅有工作、家人、朋友，还有诗和远方，以及能让您梦想开花并结果的老师！</br>　　 您有没有过这样的经历，读到一本好书，激发了您的共鸣，特想和作者当面交流您的心得体会？现在加入游读会，我们将邀请作者线下开展读书会活动。</div>
+          </br>
+          <div class="div_image"><img src="../image/books_img4.png"/></div>
+          </br>
+        </div>
+
+      </div>
+    </div>
+</body>
+
+<script type="text/javascript" src="../script/jquery.js"></script>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript">
+    apiready = function() {
+      try {
+        // 阻止页面弹动
+        api.setWinAttr({
+            bounces: false
+        });
+
+        var header = $api.byId('aui-header');
+        $api.fixStatusBar(header);
+        var headerH = $api.offset(header).h;
+        var body_h = $api.offset($api.dom('body')).h;
+        //计算头部页内Top，并赋值
+        var div_header=headerH+"px";
+        $(".div_header").css("height",""+div_header+"");
+
+      } catch (e) {alert("请求失败,请检查网络是否正常");} finally {}
+
+    }
+
+
+    function closeWin() {
+        api.closeWin();
+    }
+
+</script>
+
+</html>

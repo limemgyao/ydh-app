@@ -1,0 +1,334 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title></title>
+    <script type="text/javascript" src="../script/jquery.js"></script>
+    <link rel="stylesheet" href="../css/public.css" rel="stylesheet" />
+    <link rel="stylesheet" href="../css/appReadingactivities.css" rel="stylesheet" />
+</head>
+
+<body>
+    <div class="wrapper">
+        <div class="content">
+            <div class="title">
+                <b></b>
+                <span>热推活动</span>
+            </div>
+
+            <div class="picFocus">
+                <div class="bd">
+                    <ul id="ul_picFocus">
+
+                    </ul>
+                </div>
+            </div>
+
+            <div class="plate-activity">
+                <div class="activity">
+                    <div class="activity_nominate active" onclick="activitytype(this,1)">活动进行中<b></b></div>
+                    <div class="activity_swimread" onclick="activitytype(this,0)">已结束<b></b></div>
+                </div>
+            </div>
+            <div>
+                <div class="plate-activity" id='TravelList'>
+                    <!-- <div class="plate_imgtext be_overdue">
+                        <div class="imgtext">
+                            <div class="imgtext_text">
+                                <div>￥1999</div>
+                            </div>
+                        </div>
+                        <div class="actprice">
+                            <div class="actPrice_termini">跟作家教授深度游读尼泊尔</div>
+                        </div>
+                        <div class="actprice">
+                            <div class="actPrice_left">导师：袁老师</div>
+                            <div class="actprice_right">2017-10-08 出发</div>
+                        </div>
+                    </div> -->
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="../script/config.js"></script>
+<script type="text/javascript" src="../script/public.js"></script>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/jquery.js"></script>
+<script type="text/javascript" src="../script/jquery.SuperSlide.2.1.1.js"></script>
+<script type="text/javascript">
+    var imgurl = app_apiconfig.imageServer;
+    var npage = 0;
+    var isload = false;
+    var isend = false;
+    var txt_name = "";
+    apiready = function() {
+        try {
+            api.parseTapmode();
+            npage = 1;
+            addpage(npage, false,0);
+            $(".be_overdue").addClass("hide");
+            //向上实现加载
+            api.setRefreshHeaderInfo(function(ret, err) {
+                //refresh event callback
+                slidingblockOn();
+
+            });
+
+            //移动到底部
+            api.addEventListener({
+                name: 'scrolltobottom'
+            }, function(ret, err) {
+                if (!isload) {
+                    isload = true; //是否正在加载
+                    slidingdownOn();
+                }
+            });
+            //  Topimgscroll();
+        } catch (e) {
+            alert("请求失败,请检查网络是否正常");
+        } finally {}
+
+    }
+
+    function slidingblockOn() {
+        try {
+            api.refreshHeaderLoadDone(); //复位下拉刷新
+            //do your business
+        } catch (e) {
+            alert("请求失败,请检查网络是否正常");
+        } finally {}
+
+    }
+
+
+    function slidingdownOn() {
+        try {
+            api.refreshHeaderLoadDone(); //复位下拉刷新
+            npage++;
+            addpage(npage, true,0);
+            //do your business
+        } catch (e) {
+            alert("请求失败,请检查网络是否正常");
+        } finally {}
+
+    }
+    //加载图文列表信息
+    function addpage(npageno, isrefresh,picFocus_flag) {
+        try {
+            if (npageno <= 0 || isend) return;
+            api.ajax({
+                url: app_apiconfig.Travel + 'pageno=' + npageno + '&pagesize=30&id=0&keytxt=' + txt_name,
+                method: 'get',
+            }, function(json, err) {
+                var data = null;
+                var temp = '';
+                var divinfo = $api.byId('TravelList');
+                var picFocusinfo = $api.byId('ul_picFocus');
+
+                if (json) {
+                    if (json.State == 1) {
+                        if (json.Data != null && json.Data.length > 0) {
+                            for (var i = 0; i < json.Data.length; i++) {
+                                data = json.Data[i];
+                                var v_BeginDate = null;
+                                if (typeof(data.BeginDate) == "string") {
+                                    //v_BeginDate = new Date(parseInt(data.BeginDate.replace(/[^\d\-]/g, "")));
+                                    v_BeginDate = data.BeginDate.replace(/-/g,"/");
+                                    v_BeginDate=new Date(v_BeginDate).Format("yyyy年MM月dd日");
+
+                                } else {
+                                    v_BeginDate = data.BeginDate;
+                                }
+                                //判断导师是否为空
+                                var Leader = data.Leader;
+                                if (Leader == "点击选择") {
+                                    //Leader = "游读会签名作家";
+                                    Leader = "";
+                                }
+                                //判断游读活动是否过期
+                                var dt = new Date();
+                                var datatype = '<div class="plate_imgtext not_expired" onclick="ReadInfo(' + data.ID + ')">'
+                                if (data.BeginDate<= dt.Format('yyyy-MM-dd hh:mm:ss')) {
+                                    datatype = '<div class="plate_imgtext be_overdue">';
+                                }
+
+                                var figure=data.Figure==""?imgurl+"/skin/images/example.jpg":imgurl+data.Figure;
+                                //拼接数据
+                                temp = '';
+                                temp += datatype;
+                                temp += '<div class="imgtext" style="background:url(' + figure + ');background-size:100% 100%;">';
+                                temp += '<div class="imgtext_text">';
+                                temp += '<div>￥' + data.DiscountRate + '</div></div></div>';
+                                temp += '<div class="actprice">';
+                                temp += '<div class="actPrice_termini">' + data.Title + '</div></div>';
+                                temp += '<div class="actprice">';
+                                temp += '<div class="actPrice_left">导师:' + Leader + '</div>';
+                                temp += '<div class="actprice_right">' + v_BeginDate + ' 出发</div></div> </div>';
+                                $api.append(divinfo, temp);
+                                if (npageno === 1 && (data.BeginDate >= dt.Format('yyyy-MM-dd hh:mm:ss'))) {
+
+                                    //顶部图片切换
+                                    var temp_picFocus = '';
+                                    temp_picFocus += '<li><div class="con-topimgscroll"  onclick="ReadInfo(' + data.ID + ')">';
+                                    temp_picFocus += '<img src="' + imgurl + data.Figure + '" />';
+                                    temp_picFocus += '<div class="info_plate">';
+                                    temp_picFocus += '<div class="info_price">￥' + data.DiscountRate + '</div>';
+                                    temp_picFocus += '<div class="info_content">' + data.Title + '</div>';
+                                    temp_picFocus += '<div class="info_details">';
+                                    temp_picFocus += '<span class="actPrice_left">导师：' + Leader + '</span>';
+                                    temp_picFocus += '<span class="actprice_right">' + v_BeginDate + ' 出发</span>';
+                                    temp_picFocus += '</div></div></div></li>';
+                                    if (picFocus_flag==0) {
+                                        $api.append(picFocusinfo, temp_picFocus);
+                                    }
+                                }
+                            }
+                        }
+                        //数据加载完之后，顶部图片切换使用插件：jquery.SuperSlide.2.1.1.js
+                        if (npageno === 1 && picFocus_flag==0) {
+                            $(".picFocus").slide({
+                                mainCell: ".bd ul",
+                                effect: "left",
+                                autoPlay: true
+                            });
+                        }
+                        //判断选择查看的活动内容，显示查看的板块
+                        if ($(".activity_nominate").hasClass("active")) {
+                            $(".be_overdue").css("display", "none");
+                        } else {
+                            $(".not_expired").css("display", "none");
+                        }
+
+                    }
+                }
+
+                if (temp == '') {
+                    //如果是首页加载，则执行第一个
+                    if (isrefresh) {
+                        if (isend) {
+                            $api.append(divinfo, '<div class="findimgtext mg10" uid="0">已经到底了</div>');
+                            isend = true;
+                        }
+                    } else {
+                        $api.append(divinfo, '<div class="findimgtext mg10" uid="0">当前商品已经下架</div>');
+                    }
+                }
+
+                isload = false;
+            });
+        } catch (e) {
+            alert('哦？似乎我们的应用开小差了,请稍等片刻!');
+        }
+    }
+    //选择活动类型
+    function activitytype(obj, id) {
+        $(".activity div").removeClass("active");
+        $(obj).addClass("active");
+        $(".plate_imgtext").css("display", "none");
+        if (id == 1) {
+            $(".not_expired").css("display", "block");
+
+        } else {
+            $(".be_overdue").css("display", "block");
+
+        }
+    }
+
+    function ReadInfo(obj) {
+        try {
+            if (obj > 0) {
+                //如果获取到的图书存在，则需要使用其他方式进行展示，此时可以考虑使用appbuy
+                api.openWin({
+                    name: 'tourismReadInfo_win',
+                    url: 'tourismReadInfo_win.html',
+                    pageParam: {
+                        "TravelId": obj
+                    },
+                    bounces: true,
+                    rect: {
+                        x: 0,
+                        y: 0,
+                        w: 'auto',
+                        h: 'auto'
+                    }
+                });
+            }
+        } catch (e) {
+            alert("请求失败,请检查网络是否正常");
+        } finally {}
+
+    }
+
+    function Topimgscroll() {
+        try {
+            var UIScrollPicture = api.require('UIScrollPicture');
+            UIScrollPicture.open({
+                rect: {
+                    x: 0,
+                    y: 0,
+                    w: api.winWidth,
+                    h: api.winHeight / 2.9
+                },
+                data: {
+                    paths: [
+                        'widget:../image/logo.jpg',
+                        'widget:../image/book_book.png',
+                        'widget:../image/book_foot.png',
+                        'widget:../image/book_lump.png'
+                    ],
+                    captions: ['apicloud1', 'apicloud2', 'apicloud3', 'apicloud4']
+                },
+                styles: {
+                    caption: {
+                        height: 20,
+                        color: '#E0FFFF',
+                        size: 13,
+                        bgColor: '#fff',
+                        position: 'bottom'
+                    },
+                    indicator: {
+                        align: 'center',
+                        color: '#FFFFFF',
+                        activeColor: '#00ae67'
+                    }
+                },
+                placeholderImg: '//image/f2.jpg',
+                contentMode: 'scaleToFill',
+                interval: 3,
+                fixedOn: api.frameName,
+                loop: true,
+                fixed: true
+            }, function(ret, err) {
+                if (ret) {
+                    alert(JSON.stringify(ret));
+                } else {
+                    alert(JSON.stringify(err));
+                }
+            });
+        } catch (e) {
+            alert("请求失败,请检查网络是否正常");
+        } finally {}
+
+    }
+
+    function getTourisminfo(obj) {
+        try {
+            $api.html($api.byId('TravelList'), "");
+            txt_name = obj;
+            npage = 1;
+            addpage(npage, false,1);
+        } catch (e) {
+
+        } finally {
+
+        }
+    }
+</script>
+
+</html>

@@ -1,0 +1,170 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <link rel="stylesheet" type="text/css" href="../css/public.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui.css" />
+    <style>
+        .headerinfo {
+            color: #fff;
+            background-color: #00AF68;
+        }
+
+        .inconn {
+            color: #fff !important;
+        }
+        .img_box{ margin: auto;display: table;text-align: center;}
+        .avatar{ width: 150px;height: 150px;border-radius: 150px;display: inline;}
+        .p_tips{ color: #8d8d8d;font-size: 12px;}
+        .img_save{ width: 80%;color: #fff;border-radius: 5px;margin-top: 10px;background: #00AE67;outline:none; -webkit-appearance: none;}
+    </style>
+
+
+</head>
+
+<body>
+    <header class="aui-bar aui-bar-nav aui-bar-light headerinfo" id="aui-header">
+        <a class="aui-btn aui-pull-left" onclick="closeWin()">
+            <span class="aui-iconfont aui-icon-left inconn"></span>
+        </a>
+        <div class="aui-title">修改头像</div>
+    </header>
+    <div class="wrapper">
+        <div class="content">
+              <div class="img_box">
+                  <div style="margin:15px;" onclick="showAction();">
+                      <img id="avatar" class="avatar" name="avatar" src="../image/demo/b1.jpg"/>
+                  </div>
+                  <div class="p_tips">
+                        仅支持JPG、GIF、PNG、JPEG、BMP格式。
+                  </div>
+                  <div>
+                    <input id="img_save" class="img_save hide" type="button" value="保存" onclick="imgsave()"/>
+                  </div>
+              </div>
+        </div>
+    </div>
+
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/jquery.js"></script>
+<script type="text/javascript">
+    apiready = function() {
+      try {
+        api.parseTapmode();
+        var header = $api.byId('aui-header');
+        $api.fixStatusBar(header);
+        var headerPos = $api.offset(header);
+        var body_h = $api.offset($api.dom('body')).h;
+        //var footerH = $api.offset($api.byId('footer')).h;
+       $api.attr(avatar, 'src',api.pageParam.user_img_src)
+      } catch (e) {alert("请求失败,请检查网络是否正常");} finally {}
+
+    };
+
+    function closeWin() {
+        api.closeWin({});
+    }
+    function imgsave(){
+      //
+
+    }
+function showAction(){
+  try {
+    api.actionSheet({
+        title: '上传头像',
+        cancelTitle: '取消',
+        buttons: ['拍照','从手机相册选择']
+    }, function(ret, err) {
+        if (ret) {
+            getPicture(ret.buttonIndex);
+        }
+    });
+      } catch (e) {alert("请求失败,请检查网络是否正常");} finally {}
+
+}
+
+function getPicture(sourceType) {
+  try {
+    if(sourceType==1){ // 拍照
+        //获取一张图片
+        api.getPicture({
+            sourceType: 'camera',
+            encodingType: 'png',
+            mediaValue: 'pic',
+            destinationType: 'base64',
+            allowEdit: false,
+            quality: 90,
+            saveToPhotoAlbum: true
+        }, function(ret, err) {
+            // 获取拍照数据并处理
+            if (ret) {
+                var imgSrc = ret.base64Data;
+                if (imgSrc != "") {
+                    var ele=$api.dom('#avatar');
+                    $api.attr(ele,'src',imgSrc);
+                    $api.removeCls(img_save, 'hide');
+                }
+            }
+        });
+    }
+    else if(sourceType==2){ // 从相机中选择
+        //UIMediaScanner 是一个多媒体扫描器，可扫描系统的图片、视频等多媒体资源
+        var obj = api.require('UIMediaScanner');
+        obj.open({
+            //返回的资源种类,picture（图片）,video（视频）,all（图片和视频）
+            type: 'picture',
+            //（可选项）图片显示的列数，须大于1
+            column: 4,
+            max: 1,
+            //（可选项）图片排序方式,asc（旧->新）,desc（新->旧）
+            sort: {
+                key: 'time',
+                order: 'desc'
+            },
+            //（可选项）模块各部分的文字内容
+            texts: {
+                stateText: '已选择*项',
+                cancelText: '取消',
+                finishText: '完成'
+            },
+            styles: {
+                bg: '#fff',
+                mark: {
+                    icon: '',
+                    position: 'bottom_right',
+                    size: 20
+                },
+                nav: {
+                    bg: '#eee',
+                    stateColor: '#000',
+                    stateSize: 18,
+                    cancleBg: 'rgba(0,0,0,0)',
+                    cancelColor: '#000',
+                    cancelSize: 18,
+                    finishBg: 'rgba(0,0,0,0)',
+                    finishColor: '#000',
+                    finishSize: 18
+                }
+            }
+        }, function(ret) {
+            // 获取图片数据并处理
+            if (ret) {
+                if (ret.list != 0) {
+                    var ele=$api.dom('#avatar');
+                    $api.attr(ele,'src',ret.list[0].path);
+                    $api.removeCls(img_save, 'hide');
+
+                }
+            }
+        });
+    }
+      } catch (e) {alert("请求失败,请检查网络是否正常");} finally {}
+
+}
+</script>
+
+</html>

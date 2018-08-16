@@ -1,0 +1,115 @@
+<!doctype html>
+<html>
+<!-- 游读活动 -->
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <link rel="stylesheet" type="text/css" href="../css/aui.css" />
+    <style>
+    .headerinfo {color: #fff;background-color: #00AF68;top: 0px;z-index: 2px;position:fixed;}
+    .inconn {color: #fff !important;}
+    .div_movies{background-color: #f4f4f4;width: 100%;}
+    .div_movies .content{width: 100%;background-color: #f4f4f4;}
+    .div_movies .content .div_content1{width: 100%;margin:0 auto;background-color:#ffffff;padding: 3%;line-height: 25px;}
+    .div_movies .content .div_content1 .div_Title{margin-top: 5%;color:#333333;font-size: 22px;font-family:PingFangSC-Regular;}
+    .div_movies .content .div_content1 .div_Title_bnt{margin-top: 1%;background-color: #ffda44;height: 2px;width: 12%;}
+    .div_movies .content .div_content1 .div_image{max-width:100%;padding-top: 4%;margin:0 auto;}
+    .div_movies .content .div_content1 .div_Title1{margin-top:7%;color:#333333;font-size: 14px;font-family:PingFangSC-Medium;}
+    .div_movies .content .div_content1 .div_Title_bnt1{margin-top: 1%;background-color: #ffda44;height: 2px;width: 6%;}
+    .div_movies .content .div_content1 .div_movies_content{margin-top: 3%;font-size: 14px;color: #666666;}
+    .div_movies .content .div_content1 .div_image1{max-width:100%;padding-top: 3%;margin:0 auto;}
+    img{width: 100%;}
+    </style>
+
+</head>
+
+<body style="position:absolute;">
+    <header class="aui-bar aui-bar-nav aui-bar-light headerinfo" id="aui-header">
+        <a class="aui-btn aui-pull-left" tapmode onclick="closeWin()">
+            <span class="aui-iconfont aui-icon-left inconn"></span>
+        </a>
+        <div class="aui-title">培训</div>
+    </header>
+    <div class="div_movies" id="movies">
+      <div class="div_header" style="width:100%;"></div>
+      <div class="content">
+        <!-- 国际论坛 -->
+        <div class="div_content1"  style="margin-bottom:3%;">
+          <div class="div_Title">国际论坛</div>
+          <div class="div_Title_bnt"></div>
+          <div class="div_image"><img src="../image/train_img10.png"/></div>
+          <div class="div_image"><img src="../image/train_img12.png"/></div>
+          <div class="div_image"><img src="../image/train_img13.png"/></div>
+          <div class="div_Title1">蓝海战略国际论坛2016年10月25日在上海举行</div>
+          <div class="div_Title_bnt1"></div>
+          </br>
+        </div>
+
+          <!-- 国际论坛 -->
+          <div class="div_content1">
+            <div class="div_Title">国际论坛</div>
+            <div class="div_Title_bnt"></div>
+            <div class="div_image"><img src="../image/train_img11.png"/></div>
+            <div class="div_Title1">6月23日复旦管理学论坛：产业转型与企业创新暨《改变世界》新书发布会成功举行</div>
+            <div class="div_Title_bnt1"></div>
+            </br>
+          </div>
+        <!-- 企业定制 -->
+        <div class="div_content1" style="margin-top:3%;">
+          <div class="div_Title">企业定制</div>
+          <div class="div_Title_bnt"></div>
+          <div class="div_image"><img src="../image/train_img2.png"/></div>
+          <div class="div_Title1">蓝海战略作者探讨企业商业模式</div>
+          <div class="div_Title_bnt1"></div>
+          </br>
+        </div>
+
+        <!-- 公开课 -->
+        <div class="div_content1" style="margin-top:3%;">
+          <div class="div_Title">公开课</div>
+          <div class="div_Title_bnt"></div>
+          <div class="div_image"><img src="../image/train_img3.png"/></div>
+          <div class="div_image1"><img src="../image/train_img4.png"/></div>
+          <div class="div_image1"><img src="../image/train_img5.png"/></div>
+          <div class="div_Title1">游读会：线下复旦大学讲座文学与时代</div>
+          <div class="div_Title_bnt1"></div>
+          </br>
+        </div>
+
+
+
+      </div>
+    </div>
+</body>
+
+<script type="text/javascript" src="../script/jquery.js"></script>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript">
+    apiready = function() {
+      try {
+        // 阻止页面弹动
+        api.setWinAttr({
+            bounces: false
+        });
+
+        var header = $api.byId('aui-header');
+        $api.fixStatusBar(header);
+        var headerH = $api.offset(header).h;
+        var body_h = $api.offset($api.dom('body')).h;
+        //计算头部页内Top，并赋值
+        var div_header=headerH+"px";
+        $(".div_header").css("height",""+div_header+"");
+
+      } catch (e) {alert("请求失败,请检查网络是否正常");} finally {}
+
+    }
+
+
+    function closeWin() {
+        api.closeWin();
+    }
+
+</script>
+
+</html>

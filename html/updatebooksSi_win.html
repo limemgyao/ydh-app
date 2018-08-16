@@ -1,0 +1,87 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <link rel="stylesheet" type="text/css" href="../css/aui.css" />
+    <link href="../css/public.css" rel="stylesheet" />
+    <link href="../css/appUploadBooks.css" rel="stylesheet" />
+    <style>
+        .headerinfo {color: #fff;background-color: #C2B27E;height:60px;}
+        .aui-title{width:70% !important;float:left;left:15% !important;text-align:center;font-weight:500;}
+        .inconn {color: #fff !important;}
+
+      /*.div_Code{width:100%;margin-top:10px;overflow:hidden;}
+        .div_ScanCode{width:49%;height:80px;float:left;left:1%;}
+        .div_ScanCode div:nth-child(1){background:url(../image/ScanCode.png);background-size:100% 100%; width:45px;height:45px;margin:0 auto;}
+        .div_border{width:1%;height:60px;float:left; border-right:1px solid #ffffff;margin-top:7px;}
+        .div_supplement{width:49%;height:80px;float:left;margin-left:1%;}
+        .div_supplement div:nth-child(1){background:url(../image/SupCode.png);background-size:100% 100%;width:45px;height:45px;margin:0 auto;}*/
+    </style>
+</head>
+
+<body>
+    <header class="aui-bar aui-bar-nav aui-bar-light headerinfo" id="aui-header">
+        <a class="aui-btn aui-pull-left" id="div_uploadClose" onclick="closeWin()">
+           <span class="aui-iconfont aui-icon-left inconn"></span>
+        </a>
+        <div class="aui-title" id="div_uploadTitle">我推荐的图书</div>
+       <!-- <div class="div_Code">
+            <div class="div_ScanCode">
+                <div ></div>
+                <div>扫条形码</div>
+            </div>
+
+            <div class="div_border"></div>
+
+            <div class="div_supplement">
+              <div></div>
+              <div>手动补充</div>
+            </div>
+        </div> -->
+    </header>
+
+</body>
+<script type="text/javascript" src="../script/jquery.js"></script>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript">
+    apiready = function() {
+        try {
+          // 阻止页面弹动
+          api.setWinAttr({
+              bounces: false
+          });
+            var header = $api.byId('aui-header');
+            $api.fixStatusBar(header);
+            var headerPos = $api.offset(header);
+            var body_h = $api.offset($api.dom('body')).h;
+            var bookId =api.pageParam.bookId;
+            api.openFrame({
+                name: 'updatebooksSi_frm',
+                url: 'updatebooksSi_frm.html',
+                bounces: true,
+                pageParam: {
+                    "bookId": bookId
+                },
+                rect: {
+                    x: 0,
+                    y: headerPos.h,
+                    w: 'auto',
+                    h: api.winHeight - headerPos.h - 0
+                }
+            });
+        } catch (e) {
+            alert("请求失败,请检查网络是否正常");
+        } finally {}
+
+    };
+
+    function closeWin() {
+        api.closeToWin({name:'myBooksList_win'});
+    }
+
+</script>
+
+</html>

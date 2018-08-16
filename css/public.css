@@ -1,0 +1,39 @@
+﻿@font-face {
+    font-family: "iconfont";
+    src: url("../iconfonts/iconfont.eot?t=1492500092507");
+    /* IE9*/
+    src: url("../iconfonts/iconfont.eot?t=1492500092507#iefix") format("embedded-opentype"), url("../iconfonts/iconfont.woff?t=1492500092507") format("woff"), url("../iconfonts/iconfont.ttf?t=1492500092507") format("truetype"), url("../iconfonts/iconfont.svg?t=1492500092507#iconfont") format("svg");
+}
+.wrapper{width:100%;font-family:"Microsoft YaHei";font-size:18px;overflow:hidden;}
+.mg10 {margin-top:10px;}
+.hide {display:none;}
+.content{width:100%;}
+.slidingblock{width:100%;overflow-x:hidden;overflow-y:auto;}
+/**所以的body不保留边框信息**/
+body{margin:0px;padding:0px; background-color: #fff;}
+
+/**顶部信息 operation**/
+.nav_orderdeteils{width:100%;height:55px;background:#00AF68;display:table;}
+.nav_orderdeteils span{display:table-cell;vertical-align:middle;color:#fff;text-align:center;}
+.nav_orderdeteils img{position: absolute;width: 12px;top: 25px;padding-left: 10px;}
+
+/**页底信息 operation**/
+ .operation{width:100%;background-color:#fff;border:1px solid #DFDFDF;border-style: solid none none none;display:table;text-align:center;color:#999999;
+font-size:13px;position:fixed;bottom:0;left:0;}
+ .operation div{display: table-cell;text-align:center;padding-top:5px;}
+ .operation div.active{color:#00B068;}
+ .operation div img{width:20%;margin:auto;}
+ .operation div span{display: block;}
+
+/*支付成功*/
+ #success{display: none; height: 42.5%;width: 90%;position: absolute;bottom: 30%;left: 5%;z-index: 2; background: #fff; text-align: center; border-radius:10px;z-index: 11;}
+ #success .success_title{width:100%;}
+ #success img{width: 40%;margin: -50px auto 0 auto;}
+ #success .success_content{width:100%;display:table;margin-top: 5%;}
+ #success .success_content span{ display: block;font-size: 16px;padding: 0 20px;color:#333333;line-height: 25px;}
+ #success .success_foot{width:100%;height:80px;display:table;position: absolute;bottom: 0;}
+ #success .success_foot label{display: table-cell;position: relative;}
+ #success .success_foot label .share{color: #00ae67;  font-weight: bold;  font-size: 1.1em;  position: absolute;top: 12%;  padding-left: 10px;}
+ #success .success_foot label input{width: 100px;height: 45px;border-radius: 5px;background: #fff;border: 1px solid #00ae67;color: #00ae67;font-size: 1em;outline: none; -webkit-appearance: none;}
+
+ #layer_success {display: none;width: 100%; height: 100%;opacity: 0.5; filter: alpha(opacity=80); position:fixed; top: 0;left: 0; z-index: 10; background: #000;}

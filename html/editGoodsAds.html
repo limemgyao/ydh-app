@@ -1,0 +1,261 @@
+<!doctype html>
+<html>
+<!-- 新增地址列表  -->
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <link rel="stylesheet" type="text/css" href="../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../css/bookInfo.css" />
+    <style>
+        .headerinfo {
+            color: #fff;
+            background-color: #00AF68;
+        }
+
+        .inconn {
+            color: #fff !important;
+        }
+    </style>
+</head>
+
+<body class="addGoodsAds_body">
+    <header class="aui-bar aui-bar-nav aui-bar-light headerinfo" id="aui-header" style="font-size:18px;font-weight:bold;">
+        <a class="aui-btn aui-pull-left" tapmode onclick="closeWin()">
+            <span class="aui-iconfont aui-icon-left inconn"></span>
+        </a>
+        <div class="aui-title" id="EditTitle">编缉收货地址</div>
+    </header>
+    <div class="addGoodsAds" id="wrapper">
+        <div class="content">
+            <table align="center" class="tableInfo">
+                <tr>
+                    <td>收货人</td>
+                    <td><input id="txt_Name" placeholder="请输入收货人的姓名" type="text" value="" /></td>
+                </tr>
+                <tr>
+                    <td>联系电话</td>
+                    <td><input id="txt_Mobile" placeholder="请输入收货人的手机号码" type="text" value="" /></td>
+                </tr>
+                <tr>
+                    <td>省市区</td>
+                    <td>
+                        <div id="city" style="width:100%;">
+                            <select id="selp" class="prov" style="width: 33%;float:left;"></select>
+                            <select id="selc" class="city" style="width: 33%;float:left;"></select>
+                            <select id="sela" class="dist" style="width: 33%;float:left;"></select>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>详细地址</td>
+                    <td><input id="txt_Address" placeholder="请输入收货的详细地址" type="text" value="" /></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <footer class="aui-bar aui-bar-tab" id="footer" 　 style="height:90px;">
+        <input id="Hid_IsMain" type="hidden" />
+        <div class="footerSubmit" tapmode onclick="ads_Save()">保　存</div>
+    </footer>
+</body>
+<script type="text/javascript" src="../script/jquery.js"></script>
+<script type="text/javascript" src="../script/jquery.cityselect.js"></script>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/config.js"></script>
+<script type="text/javascript">
+    var mebid = 0;
+    apiready = function() {
+
+        try {
+          // 阻止页面弹动
+          api.setWinAttr({
+              bounces: false
+          });
+            api.parseTapmode();
+          $("#city").citySelect({
+              url: "../script/city.min.js",
+              prov: "北京",
+              nodata: "none"
+          });
+
+          var header = $api.byId('aui-header');
+          $api.fixStatusBar(header);
+          var headerPos = $api.offset(header);
+          var body_h = $api.offset($api.dom('body')).h;
+          var footerH = $api.offset($api.byId('footer')).h;
+
+          //如果contactID不为空，则是修改
+          if (api.pageParam.contactID) {
+              //查询需要修改的信息
+              get_Ads(api.pageParam.contactID);
+          }
+      } catch (e) {alert("请求失败,请检查网络是否正常");} finally {}
+
+
+    };
+
+    function closeWin() {
+        api.closeWin();
+    }
+
+    //查询单个收货地址
+    function get_Ads(str_contactID) {
+        if (!str_contactID) {
+            return;
+        }
+        api.ajax({
+            url: app_apiconfig.MebContact.querycontectbyid + '?conid=' + str_contactID,
+            method: 'get',
+        }, function(json, err) {
+            if (json) {
+                if (json.ErrCode == 200) {
+                    if (json.Data != null) {
+                        var htmldata = json.Data;
+                        var ContactName = htmldata.ContactName;
+                        var MobileNo = htmldata.MobileNo;
+                        var selp = htmldata.ProviceName;
+                        var selc = htmldata.CityName;
+                        var sela = htmldata.AreaName;
+                        var Address = htmldata.Address;
+                        var isMain = htmldata.IsMain == "" ? "0" : htmldata.IsMain;
+                        $("#txt_Name").val(ContactName);
+                        $("#txt_Mobile").val(MobileNo);
+                        $("#city").citySelect({
+                            url: "../script/city.min.js",
+                            prov: selp,
+                            city: selc,
+                            dist: sela,
+                            nodata: "none"
+                        });
+                        $("#txt_Address").val(Address);
+                        $("#Hid_IsMain").val(isMain);
+                    }
+                }
+            }
+        });
+
+    }
+
+    //保存信息
+    //此处需要调整的地方为，需要那到用户的ID，如果不存在用户ID，则不能见信息提交
+    //防止多次提交
+    var clickflag = false;
+
+    //新增
+    function ads_Save() {
+        if (clickflag) {
+            return;
+        }
+
+        clickflag = true;
+
+        var goodid = 0; // $api.val($api.byId('Hid_TravelId'));
+        var mebname = $api.val($api.byId('txt_Name'));
+        var mebmobile = $api.val($api.byId('txt_Mobile'));
+        var pronive = $api.byId('selp').children.length > 0 ? $api.val($api.byId('selp')) : "";
+        var cityname = $api.byId('selc').children.length > 0 ? $api.val($api.byId('selc')) : "";
+        var arename = $api.byId('sela').children.length > 0 ? $api.val($api.byId('sela')) : "";
+        var address = $api.val($api.byId('txt_Address'));
+        mebid = $api.user.userid();
+
+        if (!mebname || $api.trimAll(mebname) == '') {
+            alert('请填写收货人姓名');
+            clickflag = false;
+            return;
+        }
+        if (!mebmobile || $api.trimAll(mebmobile) == '') {
+            alert('请输入收货人的手机号码');
+            clickflag = false;
+            return;
+        }
+        if (!address || $api.trimAll(address) == '') {
+            alert('您需要填写更详细的信息');
+            clickflag = false;
+            return;
+        }
+        if (mebid == 0 || mebid == 'str-1') {
+            alert('您还未登录，请重新登录');
+            clickflag = false;
+            return;
+        }
+
+        pageparam = {
+            'ContactSotre': {
+                "ContactID": api.pageParam.contactID,
+                "MebID": mebid,
+                "ContactName": mebname,
+                "MobileNo": mebmobile,
+                "ProviceName": pronive,
+                "CityName": cityname,
+                "AreaName": arename == "" ? cityname : arename,
+                "Address": address,
+                "IsMain":$("#Hid_IsMain").val(),
+                "Flag": 1
+            },
+            'ContactID': api.pageParam.contactID,
+            'GoodId': goodid
+        }
+
+
+        $api.rmStorage('ContactSotre'); //缓存用户联系地址，用于在之后的跳转过程中加载数据
+        //  return;
+        try {
+            //开始异步执行异步增加信息
+            $.ajax({
+                type: 'POST',
+                url: app_apiconfig.MebContact.modifycontact,
+                data: pageparam.ContactSotre,
+                success: function(ret) {
+                    //保存成功
+                    // 需要打开界面信息
+                    if (ret && ret.ErrCode == "200" && ret.Data > 0) {
+                        ///将此信息存储到对应的缓存中，用于在下一步的时候，将此信息带入到下一个界面中
+                        //$api.setStorage('ContactSotre', pageparam);
+                        //将新增的ContactID存储进去，并且放置进缓存中
+                        pageparam.ContactID = ret.Data;
+                        $api.setStorage('pageParam', pageparam); //设置缓存
+                        clickflag = false;
+                        //让后台加载数据信息
+                        var loaddatafun = 'init_html();';
+                        api.execScript({
+                            name: 'goodsOrder',
+                            script: loaddatafun
+                        });
+
+                        api.openWin({
+                            name: 'goodsOrder',
+                            url: 'goodsOrder.html',
+                            pageParam: {
+                                goodsId: goodid
+                            },
+                            animation: {
+                                type: "push",
+                                subType: "from_left",
+                                duration: 300
+                            },
+                            bounces: true,
+                            rect: {
+                                x: 0,
+                                y: 0,
+                                w: 'auto',
+                                h: 'auto'
+                            }
+                        });
+                    } else {
+                        clickflag = false;
+                        alert("编缉联系人地址失败,请检查网络是否正常");
+                    }
+                },
+                dataType: 'json'
+            });
+
+        } catch (e) {
+            alert("遇到问题啦！请您稍后重试");
+            clickflag = false;
+        }
+    }
+</script>
+
+</html>

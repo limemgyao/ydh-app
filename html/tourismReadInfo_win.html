@@ -1,0 +1,234 @@
+<!doctype html>
+<html>
+<!-- 游读活动 -->
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <link rel="stylesheet" type="text/css" href="../css/aui.css" />
+    <style>
+        .headerinfo {
+            color: #fff;
+            background-color: #00AF68;
+        }
+
+        .inconn {
+            color: #fff !important;
+        }
+    </style>
+
+</head>
+
+<body>
+    <header class="aui-bar aui-bar-nav aui-bar-light headerinfo" id="aui-header">
+        <a class="aui-btn aui-pull-left" tapmode onclick="closeWin()">
+            <span class="aui-iconfont aui-icon-left inconn"></span>
+        </a>
+        <div class="aui-title">活动详情</div>
+    </header>
+    <footer class="aui-bar aui-bar-tab" id="footer">
+        <div class="aui-bar-tab-item" tapmode style="width: 152px;" onclick="share();">
+            <i class="aui-iconfont aui-icon-share aui-text-info"></i>
+            <div class="aui-bar-tab-label aui-text-info">分享</div>
+        </div>
+        <!-- <div class="aui-bar-tab-item" tapmode style="width: 3rem;">
+            <i class="aui-iconfont aui-icon-star aui-text-warning"></i>
+            <div class="aui-bar-tab-label aui-text-warning">收藏</div>
+        </div> -->
+        <input id="Hid_TravelId" type="hidden" />
+        <div id="signup"  class="aui-bar-tab-item aui-bg-danger aui-text-white"  onclick="order()"  style="width: auto;background-color:#00AE67 !important;">立即报名</div>
+    </footer>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/shareinfo.js"></script>
+<script type="text/javascript" src="../script/config.js"></script>
+<script type="text/javascript">
+    apiready = function() {
+        try {
+            // 阻止页面弹动
+            api.setWinAttr({
+                bounces: false
+            });
+            api.parseTapmode();
+            var header = $api.byId('aui-header');
+            $api.fixStatusBar(header);
+            var headerPos = $api.offset(header);
+            var body_h = $api.offset($api.dom('body')).h;
+            var footerH = $api.offset($api.byId('footer')).h;
+
+            // console.log('get');
+            // console.log(api.pageParam.bookid);
+            // console.log('get is ok');
+
+            var pageParam = api.pageParam.TravelId;
+            //赋值
+            $api.val($api.byId('Hid_TravelId'), pageParam);
+            //取值
+            //console.log($api.val($api.byId('Hid_TravelId')));
+            api.openFrame({
+                name: 'tourismReadInfo_frm',
+                url: 'tourismReadInfo_frm.html',
+                bounces: true,
+                pageParam: {
+                    "TravelId": pageParam
+                },
+                rect: {
+                    x: 0,
+                    y: headerPos.h,
+                    w: 'auto',
+                    h: api.winHeight - headerPos.h - footerH
+                }
+            })
+        } catch (e) {
+            alert("请求失败,请检查网络是否正常");
+        } finally {}
+
+    };
+
+    //不可报名
+    function cannosignup() {
+        $api.removeAttr(signup, 'onclick');
+        $api.html(signup, '已售罄');
+        $api.css(signup, 'background-color:gray !important;opacity: 0.5;');
+    }
+    //分享朋友圈
+    function share() {
+        //console.log($api.getStorage('sharedata').contentUrl);
+        $share.beginshare(callbakcfun);
+    }
+
+    function callbakcfun(data) {
+        var thumb = 'fs://image/share/' + new Date().getTime() + '.png';
+        try {
+            if (data) {
+
+                if (data.index == 2 || data.eventType != 'click') return;
+                var frm_data = $api.getStorage('Travel_sharedata'); // 从内部页面拿到URL信息
+
+                var share_data = {
+                    type: data.index == 0 ? 1 : 2,
+                    title: frm_data.title,
+                    description: frm_data.description,
+                    thumb: '',
+                    contentUrl: frm_data.contentUrl
+                };
+                //    $share.pushtowx(share_data);
+
+
+
+
+                var type = $api.getStorage('sharetype');
+                var keys = $api.getStorage('sharekey');
+                var htp_url = app_apiconfig.shareurl + 'buskey=' + keys + '&bustype=trl';
+                //console.log(htp_url);
+                api.ajax({
+                    url: htp_url,
+                    method: 'get',
+                }, function(json, err) {
+                    if (json) {
+                        //console.log(2.3);
+                        if (json.State == 1) {
+                            //console.log(2.4);
+                            if (json.Data != null && json.Data != "") {
+                                //onsole.log(2.5);
+                                //分享图片
+                                api.download({
+                                    url: json.Data,
+                                    savePath: thumb,
+                                    report: true,
+                                    cache: true,
+                                    allowResume: true
+                                }, function(ret, err) {
+                                    if (ret.state == 1) {
+                                        share_data.thumb = thumb;
+                                        $share.pushtowx(share_data);
+                                        //下载成功
+                                    } else {
+                                        if (err) {
+                                            share_data.thumb = 'widget://image/sharewx.png';
+                                            $share.pushtowx(share_data);
+                                        }
+
+                                    }
+                                });
+                            } else {
+                                share_data.thumb = 'widget://image/sharewx.png';
+                                //console.log($api.jsonToStr(share_data));
+                                $share.pushtowx(share_data);
+                            }
+                        }
+                    } else {
+                        share_data.thumb = 'widget://image/sharewx.png';
+                        $share.pushtowx(share_data);
+                    }
+                });
+
+
+
+
+
+
+
+
+
+                // console.log(JSON.stringify(share_data));
+                // if (data.index == 0) { // $share.pushtowx({ // type: 1, // title: frm_data.title, // description: frm_data.description, // thumb: 'widget://image/logo.jpg', // contentUrl: frm_data.contentUrl // }); // } // if (data.index == 1) { // $share.pushtowx({
+                // type: 2, // title: '测试分享', // description: '分享内容的描述', // thumb: 'widget://image/logo.jpg', // contentUrl: 'http://baidu.com' // }); // } // if (data.index == 2) { // alert(data.eventType); // }
+            }
+        } catch (e) {
+            alert("请求失败,请检查网络是否正常");
+        } finally {}
+
+    }
+
+    function closeWin() {
+        api.closeWin();
+    }
+
+    function order() {
+        try {
+            if (!$api.user.islogin()) {
+                api.openWin({
+                    name: 'login',
+                    url: 'login.html',
+                    bounces: true,
+                    animation: {
+                        type: 'none'
+                    },
+                    rect: {
+                        x: 0,
+                        y: 0,
+                        w: 'auto',
+                        h: 'auto'
+                    }
+                });
+                return;
+            }
+
+            var uid = api.pageParam.TravelId;
+            if (uid > 0) {
+                //如果获取到的图书存在，则需要使用其他方式进行展示，此时可以考虑使用appbuy
+                api.openWin({
+                    name: 'apporderconfirm_win',
+                    url: 'apporderconfirm_win.html',
+                    pageParam: {
+                        "TravelId": uid
+                    },
+                    bounces: true,
+                    rect: {
+                        x: 0,
+                        y: 0,
+                        w: 'auto',
+                        h: 'auto'
+                    }
+                });
+            }
+        } catch (e) {
+            alert("请求失败,请检查网络是否正常");
+        } finally {}
+
+    }
+</script>
+
+</html>

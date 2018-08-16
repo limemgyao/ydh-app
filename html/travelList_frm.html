@@ -1,0 +1,429 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title></title>
+    <link href="../css/public.css" rel="stylesheet" />
+    <link href="../css/appfullorder.css" rel="stylesheet" />
+</head>
+
+<body>
+
+    <div class="wrapper">
+        <div class="content">
+            <div id="bklist" isrefresh='0'>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- 支付方式 -->
+    <div id="cost_detail">
+        <div class="cost_detail_title">支付方式</div>
+        <div style="display:none;">
+            <span id="Gid"></span>
+            <span id="Gfee"></span>
+            <span id="Gorderno"></span>
+            <span id="Gname"></span>
+        </div>
+        <div class="cost_detail_content">
+            <div class="order_plate_type">
+                <div class="order_plate_content">
+                    <div><img src="../image/weixin.jpg" />微信支付</div>
+                    <label class="icon-radio">
+                           <input type="radio" tapmode   name="pay_type" paytype="1"/>
+                           <i class="icon-radio__placeholder"></i>
+                   </label>
+                </div>
+                <div class="order_plate_content">
+                    <div><img src="../image/alipay.png" />支付宝支付</div>
+                    <label class="icon-radio">
+                           <input type="radio" tapmode   name="pay_type" paytype="2"/>
+                           <i class="icon-radio__placeholder"></i>
+                       </label>
+                </div>
+                <div class="order_plate_foot">
+                    <div onclick="gopay()">支付</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="layer_cost_detail" onclick="layerclose()"></div>
+</body>
+<script type="text/javascript" src="../script/config.js"></script>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/jquery.js"></script>
+<script type="text/javascript" src="../script/payhelper.js"></script>
+<script type="text/javascript" src="../script/paycallback.js"></script>
+
+<script type='text/javascript'>
+    var npage = 0;
+    var isload = false; //判断是不是正在被加载 既是否正在做上滑动操作
+    var isend = false; //判断是不是已经没有数据可以加载了
+    //加载信息集合
+    apiready = function() {
+        try {
+            api.parseTapmode();
+            npage = 1;
+            addpage(npage, false);
+
+            var type_id = api.pageParam.type;
+
+            //向上实现加载
+            api.setRefreshHeaderInfo(function(ret, err) {
+                //refresh event callback
+                slidingblockOn();
+            });
+            //移动到底部
+            api.addEventListener({
+                name: 'scrolltobottom'
+            }, function(ret, err) {
+                if (!isload) {
+                    isload = true; //是否正在加载
+                    slidingdownOn();
+                }
+            });
+
+            //默认支付方式
+            $('input[name="pay_type"]:eq(0)').click();
+        } catch (e) {
+            alert("请求失败,请检查网络是否正常");
+        } finally {}
+
+    }
+
+    //取消
+    function cancel_order_show(id) {
+        try {
+            var dialogBox = api.require('dialogBox');
+            dialogBox.alert({
+                texts: {
+                    title: '确定取消订单？',
+                    leftBtnTitle: '取消',
+                    rightBtnTitle: '确认'
+                },
+                styles: {
+                    bg: '#fff',
+                    w: 300,
+                    title: {
+                        marginT: 10,
+                        icon: 'widget://res/gou.png',
+                        iconSize: 40,
+                        titleSize: 14,
+                        titleColor: '#000'
+                    },
+                    left: {
+                        marginT: 10,
+                        marginB: 7,
+                        marginL: 20,
+                        w: 130,
+                        h: 35,
+                        corner: 2,
+                        bg: '#D4D4D4',
+                        size: 12,
+                        color: '#fff'
+                    },
+                    right: {
+                        marginT: 10,
+                        marginB: 7,
+                        marginL: 10,
+                        w: 130,
+                        h: 35,
+                        corner: 2,
+                        bg: '#00AE67',
+                        color: '#fff',
+                        size: 12
+                    }
+                }
+            }, function(ret) {
+                if (ret.eventType == 'left') {
+                    var dialogBox = api.require('dialogBox');
+                    dialogBox.close({
+                        dialogName: 'alert'
+                    });
+                } else {
+                    cancel_order(id);
+                    var dialogBox = api.require('dialogBox');
+                    dialogBox.close({
+                        dialogName: 'alert'
+                    });
+                }
+            });
+        } catch (e) {
+            alert("请求失败,请检查网络是否正常");
+        } finally {}
+
+    }
+
+    function cancel_order(id) {
+        try {
+            api.ajax({
+                url: app_apiconfig.CancelApply + 'id=' + id,
+                method: 'get',
+            }, function(json, err) {
+                if (json.State != 404) {
+                    alert("取消成功");
+                    window.setTimeout("location.href = location.href;", 3000);
+                } else {
+                    alert("取消失败，请检查网络是否正常");
+                }
+            });
+        } catch (e) {
+            alert('哦？似乎我们的应用开小差了,请稍等片刻!');
+        }
+    }
+
+
+    function slidingblockOn() {
+        try {
+            api.refreshHeaderLoadDone(); //复位下拉刷新
+        } catch (e) {
+            alert("请求失败,请检查网络是否正常");
+        } finally {}
+
+    }
+
+    function slidingdownOn() {
+        try {
+            api.refreshHeaderLoadDone(); //复位下拉刷新
+            npage++;
+            addpage(npage, true)
+        } catch (e) {
+            alert("请求失败,请检查网络是否正常");
+        } finally {}
+
+    }
+    //加载订单列表信息
+    function addpage(npageno, isrefresh) {
+
+        try {
+            if (npageno <= 0 || isend) return;
+            api.ajax({
+                url: app_apiconfig.ApplyList + 'pageno=' + npageno + '&pagesize=15&mebid=' + $api.user.userid(),
+                method: 'get',
+            }, function(json, err) {
+                var data = null;
+                var card_tmp = "";
+                var divinfo = $api.byId('bklist');
+                if (json) {
+                    if (json.State == 1) {
+                        if (json.Data != null && json.Data.length > 0) {
+                            for (var i = 0; i < json.Data.length; i++) {
+                                data = json.Data[i];
+                                var v_BeginDate = null;
+                                if (typeof(data.BeginDate) == "string") {
+                                    v_BeginDate = new Date(data.BeginDate.split(" ")[0]);
+                                    v_BeginDate = v_BeginDate.Format("yyyy-MM-dd");
+                                } else {
+                                    v_BeginDate = data.BeginDate;
+                                }
+
+                                var cancel_tmp = '<div class="payment"><input class="white " type="button" value="取消"  tapmode onclick="cancel_order_show(' + data.ID +
+                                    ')"/><input type="button" class="green" value="支付"  tapmode  onclick="order_pay(' + data.ID + ',' + data.ApplyRate + ',' + data.TravelID + ',\'' + data.TravelName + '\');"/></div></div></div>';
+                                var order_state = {
+                                    1: '待支付',
+                                    2: '已支付',
+                                    3: '已取消'
+                                };
+                                if (data.State != 1) {
+                                    cancel_tmp = "</div></div>";
+                                }
+                                card_tmp = "";
+                                card_tmp += ' <div class="order_plate">';
+                                card_tmp += ' <div class="order_content"><div>';
+                                card_tmp += ' <span id="goods_title" cid="' + data.ID + '" onclick="">' + data.TravelName + '</span>';
+                                card_tmp += ' <span id="order_no">申请号：' + data.ID + '</span>';
+                                card_tmp += '<span id="order_time">出发日期：'+v_BeginDate+'</span>';
+                                card_tmp += ' <span id="goods_count_num">人数：' + data.ApplyNo + '</span></div>';
+                                card_tmp += ' <div id="order_state">' + order_state[data.State] + '</div></div>';
+                                card_tmp += ' <div class="order_price"><span id="goods_rate_num">￥' + data.ApplyRate + '</span>';
+                                card_tmp += cancel_tmp;
+                                $api.append(divinfo, card_tmp);
+                            }
+                        }
+                    }
+                }
+
+
+                if (card_tmp == '') {
+                    //如果是首页加载，则执行第一个
+                    if (isrefresh) {
+                        if (isend) {
+                            $api.append(divinfo, '<div class="findimgtext mg10" uid="0">已经到底了</div>');
+                            isend = true;
+                        }
+                    } else {
+                        $api.append(divinfo, '<div style="width:100%;text-align:center;color:#333;" uid="0">没有更多了↑</div>');
+                    }
+                }
+
+                isload = false;
+            });
+        } catch (e) {
+            alert('哦？似乎我们的应用开小差了,请稍等片刻!');
+        }
+    }
+
+
+
+
+    function gopay() {
+
+        try {
+            var paytype = $('input[name="pay_type"]:checked').attr('paytype');
+            var Gid = $('#Gid').html();
+            var Gorderno = $('#Gorderno').html();
+            var Gfee = $('#Gfee').html();
+            var Gname = $('#Gname').html();
+            var orderid = 0;
+            if (Number(Gid) != NaN) orderid = Number(Gid);
+            if (Gname != "") Gname = Gname.slice(0, 20) + '...';
+            if (orderid == 0) {
+                alert("支付出现异常，遇到了未知原因,请稍后尝试!")
+            }
+
+            var attach = {
+                    "type": 3,
+                    "mebid": $api.user.userid(),
+                    "busid": orderid,
+                    "mebtype": 1,
+                    "orderno": Number(Gid)
+                }
+                //===============微信支付=========================
+            if (paytype == 1) {
+                var data = {
+                    "description": Gname.toString(),
+                    "totalFee": (Number(Gfee) * 100).toString(), //微信需要转成字符串形式
+                    "attach": JSON.stringify(attach),
+                    "tradeNo": Number(Gid),
+                };
+                weixingpay(data);
+            }
+
+            //===============支付宝支付=========================
+            if (paytype == 2) {
+                var data = {
+                    "subject": Gname.toString(),
+                    "body": "游读报名支付",
+                    "amount": Gfee.toString(),
+                    "tradeNO": orderid,
+                };
+                alipay(data);
+            }
+
+            $("body").off("touchmove");
+        } catch (e) {
+            alert("支付失败,请检查网络是否正常");
+        } finally {}
+
+    }
+
+    function order_pay(goodid, fee, orderno, m_name) {
+        try {
+            if (fee > 0) {
+                $("#layer_cost_detail").show();
+                $("#cost_detail").show();
+                $("body").on("touchmove", function(event) {
+                    event.preventDefault;
+                }, false);
+                //$("body").off("touchmove");
+                $('#Gid').html(goodid);
+                $('#Gfee').html(fee);
+                $('#Gorderno').html(orderno);
+                $('#Gname').html(m_name);
+
+            }
+        } catch (e) {
+            alert("支付失败,请检查网络是否正常");
+        } finally {}
+
+
+
+    }
+
+    //关闭支付
+    function layerclose() {
+        $("#layer_cost_detail").hide();
+        $("#cost_detail").hide();
+
+        //释放滚动
+        $("body").off("touchmove");
+    }
+    ///关闭系统窗口，返回到上一层
+    function closewindows() {
+        api.closeWin({});
+    }
+
+
+
+    //支付宝支付
+    function alipay(data, orderid) {
+        try {
+            $payObject.aliPayHelper(data, alipay_paycallback);
+        } catch (e) {
+            alert("支付失败,请检查网络是否正常");
+        } finally {}
+
+    }
+    //支付宝支付回调函数
+    function alipay_paycallback(ret, err) {
+        try {
+            var data = paycallback.alipPay_callback(ret, err);
+            if (data.status == "200") {
+                successshow();
+            } else {
+                alert(data.msg);
+            }
+        } catch (e) {
+            alert("支付失败,请检查网络是否正常");
+        } finally {}
+
+    }
+    // 微信支付
+    function weixingpay(data) {
+        try {
+            $payObject.wxPayHelper(data, weixingpay_paycallback);
+        } catch (e) {
+            alert("支付失败,请检查网络是否正常");
+        } finally {}
+
+
+    }
+    //微信支付回调函数
+    function weixingpay_paycallback(ret, err) {
+        try {
+            var data = paycallback.wxPay_callback(ret, err);
+            if (data.status == "200") {
+                successshow();
+            } else {
+                alert(data.msg);
+            }
+        } catch (e) {
+            alert("支付失败,请检查网络是否正常");
+        } finally {}
+
+    }
+
+    function successshow() {
+        alert("订单已支付成功！");
+        window.setTimeout("location.href = location.href;", 1000);
+    }
+
+
+
+
+
+
+
+
+
+    ///关闭系统窗口，返回到上一层
+    function closewindows() {
+        api.closeWin({});
+    }
+</script>
+
+</html>

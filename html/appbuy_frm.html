@@ -1,0 +1,93 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <link href="../css/bookInfo.css" rel="stylesheet" />
+    <title></title>
+</head>
+
+<body>
+    <div class="bookInfo">
+        <div class="content">
+            <div class="contentTop">
+                <div class="BookImg" id="bkimage">
+
+                </div>
+                <div class="exhibitionCount">
+                    <img src="../image/imgCount.png" />
+                </div>
+            </div>
+            <div class="bookAttribute">
+                <span class="bookNeme" id="bookname"></span><br />
+                <span class="bookAuthor" id="authname"></span><br />
+                <span class="bookPress"></span><br />
+                <span class="bookPrice" id="price"><span>¥</span>48</span>
+            </div>
+            <div class="contentSummary">
+                <span class="contentSummaryNeme">内容简介</span><br />
+                <div class="contentSummaryInfo" id="info" bookid='0'>
+
+                </div>
+            </div>
+            <div style="height: 40px;"></div>
+        </div>
+    </div>
+</body>
+
+
+<script type="text/javascript" src="../script/config.js"></script>
+<script type="text/javascript" src="../script/api.js"></script>
+
+<script type="text/javascript">
+    // app_apiconfig.singnbkServerAP
+    //加载图文列表信息
+
+    apiready = function() {
+      try {
+        //输出Log，Log将显示在APICloud Studio控制台
+        api.parseTapmode();
+        var uuid = api.pageParam.bookid;
+        showinfo(uuid);
+      } catch (e) {alert("请求失败,请检查网络是否正常");} finally {}
+
+    }
+
+    function showinfo(uuid) {
+    try {
+            if (uuid <= 0) return;
+            api.ajax({
+                url:app_apiconfig.singnbkdetailAPI+'id=' + uuid,
+                method: 'get',
+            }, function(json, err) {
+                var divinfo = $api.byId('bklist');
+                if (json) {
+                    if (json.State == 1) {
+                        if (json.Data != null) {
+                            var htmldata = json.Data;
+                            var bkname = htmldata.Name;
+                            var authname = htmldata.Author;
+                            var imageurl = htmldata.Cover;
+                            var content = htmldata.Contect;
+                            var price = htmldata.DiscountRate;
+
+                            $api.html($api.byId('bookname'), bkname);
+                            $api.html($api.byId('authname'), authname + '  著');
+                            $api.html($api.byId('bkimage'), '<img src="' + app_apiconfig.imageServer + imageurl + '" />');
+                            $api.html($api.byId('price'), '<span>¥</span>' + price);
+                            $api.html($api.byId('info'), content);
+                            $api.attr($api.byId('info'), 'bookid', htmldata.ID);
+                        }
+                    }
+                }
+            });
+        } catch (e) {
+            alert('哦？似乎我们的应用开小差了,请稍等片刻!');
+        }
+    }
+</script>
+
+
+</html>

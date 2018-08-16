@@ -1,0 +1,316 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <link rel="stylesheet" type="text/css" href="../css/aui.css" />
+    <link href="../css/public.css" rel="stylesheet" />
+    <link href="../css/appUploadBooks.css" rel="stylesheet" />
+    <style>
+        #loading_layer {
+            position: fixed;
+            z-index: 10;
+            ;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        #loading_win {
+            position: absolute;
+            left: 45%;
+            margin: 0 auto;
+            top: 40%;
+        }
+
+        #loading_win img {
+            border-radius: 40px;
+        }
+
+        .hide {
+            display: none;
+        }
+
+        .headerinfo {
+            color: #fff;
+            background-color: #00AF68;
+        }
+
+        .inconn {
+            color: #fff !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrapper">
+        <div class="content">
+            <div class="order_plate">
+                <div class="order_content_other">
+                    <div>书名</div>
+                    <div id="Name"></div>
+                </div>
+                <div class="order_content_other">
+                    <div>作者</div>
+                    <div id="Author"></div>
+                </div>
+                <div class="order_content_other">
+                    <div>出版社</div>
+                    <div id="Press"></div>
+                </div>
+                <div class="order_content_other">
+                    <div>书号(ISBN)</div>
+                    <div id="ISBN"></div>
+                </div>
+                <div class="order_content_other">
+                    <div>书籍简介</div>
+                    <div id="context_html"></div>
+                </div>
+                <div class="order_content_other">
+                    <div>书籍图片</div>
+                    <div id="Cover" style="text-align:right;display: flex;overflow: auto;">
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="order_plate_price_manual">
+                <div class="order_content_price_manual">
+                    <div style="line-height: 50px;">价格</div>
+                    <div><input type="tel" id="DiscountRate" placeholder="请输入书籍的定价" /><span style="line-height: 45px;font-size: 1em;">￥</span></div>
+                </div>
+            </div>
+            <div style="height:80px;background-color:#F4F4F4;width:100%;"></div>
+        </div>
+    </div>
+    <footer>
+        <div class="logout">
+            <input type="button" value="确认上传" onclick="UploadBooks()" />
+        </div>
+
+    </footer>
+
+    <!-- 加载 -->
+    <div id="loading_layer"></div>
+    <div id="loading_win"><img src="../image/93.gif" /></div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/config.js"></script>
+<script type="text/javascript" src="../script/jquery.js"></script>
+<script type="text/javascript">
+    apiready = function() {
+        try {
+            var id = api.pageParam.bnno;
+            uploadBookinfo(id);
+        } catch (e) {
+            $api.addCls(loading_layer, 'hide');
+            $api.addCls(loading_win, 'hide');
+            alert("请求失败,请检查网络是否正常");
+        } finally {}
+    };
+
+    function getPrice(s) {
+        try {
+            s = s.match(/\d+(?:\.\d+)?/);
+            // 如果没有匹配项，会返回空字符串
+            return s ? s[0] : '0';
+        } catch (e) {
+            return '0';
+        }
+
+    }
+
+    function uploadBookinfo(id) {
+        try {
+            if (id <= 0 || id == null) return;
+            api.ajax({
+                url: app_apiconfig.AchieveInfo + 'bnno=' + id,
+                method: 'get',
+            }, function(json, err) {
+                $api.addCls(loading_layer, 'hide');
+                $api.addCls(loading_win, 'hide');
+                if (json) {
+                    if (json.Data != null) {
+                        var data = json.Data;
+                        //显示数据
+                        $api.html(Name, data.bookName);
+                        $api.html(Author, data.author);
+                        $api.html(context_html, data.context_html);
+                        $api.html(Press, data.publisher);
+                        $api.html(ISBN, id);
+                        $api.val(DiscountRate, parseFloat(getPrice(data.price)));
+                        $api.html(Cover, '<img src="' + data.image_url + '" />');
+
+                        //存储数据
+                        $api.attr(Name, 'Name', data.bookName);
+                        $api.attr(Author, 'Author', data.author);
+                        $api.attr(ISBN, 'ISBN', id);
+                        $api.attr(context_html, 'context_html', data.context_html);
+                        $api.attr(Cover, 'image_url', data.image_url);
+
+                    } else {
+                        alert('未获取到书籍信息！');
+                    }
+                }
+            });
+        } catch (e) {
+            $api.addCls(loading_layer, 'hide');
+            $api.addCls(loading_win, 'hide');
+            alert('哦？似乎我们的应用开小差了,请稍等片刻!');
+        }
+    }
+
+    function UploadBooks() {
+        var txt_Name = $api.html($api.byId('Name'));
+        var txt_Detail = $api.html($api.byId('context_html'));
+        var txt_Press = $api.html($api.byId('Press'));
+        var txt_Author = $api.html($api.byId('Author'));
+        var txt_ISBN = $api.html($api.byId('ISBN'));
+        var txt_DiscountRate = $api.val($api.byId('DiscountRate'));
+        var img_Cover = $api.attr(Cover, 'image_url');
+        var LoginUseriD = $api.user.userid();
+        var LoginUsername = $api.user.username();
+        if (!txt_Name || $api.trimAll(txt_Name) == '') {
+            alert('请填写书籍名称!');
+            return;
+        }
+        // if (!txt_Press || $api.trimAll(txt_Press) == '') {
+        //     alert('请填写出版社名称!');
+        //     return;
+        // }
+        if (!txt_Author || $api.trimAll(txt_Author) == '') {
+            alert('请填写作者名称!');
+            return;
+        }
+        if (!txt_ISBN || $api.trimAll(txt_ISBN) == '') {
+            alert('请输入书籍背面的数字条形码!');
+            return;
+        }
+        if (!txt_Detail || $api.trimAll(txt_Detail) == '') {
+            alert('请输入书籍简介!');
+            return;
+        }
+        if (!txt_DiscountRate || $api.trimAll(txt_DiscountRate) == '') {
+            alert('请输入书籍的定价!');
+            return;
+        }
+
+        // State=="1"?"上架":State=="2"?"下架":State=="3"?"审核中":State=="4"?"不通过"
+        var BooksData = {
+            "Name": txt_Name,
+            "Contect": txt_Detail,
+            "Press": txt_Press,
+            "Author": txt_Author,
+            "ISBN": txt_ISBN,
+            "Cover": img_Cover,
+            "DiscountRate": txt_DiscountRate,
+            "ModifyMebID": LoginUseriD,
+            "ModifyMebName": LoginUsername
+
+        }
+        try {
+            //开始异步执行异步增加信息
+            $.ajax({
+                type: 'POST',
+                url: app_apiconfig.UploadBooks,
+                data: BooksData,
+                success: function(ret) {
+                    if (parseInt(ret.Data) > 0) {
+                        refreshMyBooks();
+                        UploadBook_success();
+                    } else if (parseInt(ret.Data) == -99) {
+                        alert("您已经上传过此书！请不要重复上传");
+                    } else {
+                        alert("遇到问题啦！请您稍后重试");
+                    }
+                },
+                dataType: 'json'
+            });
+
+        } catch (e) {
+            alert("遇到问题啦！请您稍后重试");
+            clickflag = false;
+        }
+    }
+
+    function UploadBook_success() {
+        try {
+            var dialogBox = api.require('dialogBox');
+            dialogBox.alert({
+                texts: {
+                    content: '上传成功!',
+                    leftBtnTitle: '确认',
+                },
+                styles: {
+                    bg: '#fff',
+                    w: 300,
+                    content: {
+                        marginT: 5,
+                        size: 14,
+                        color: '#000'
+                    },
+                    left: {
+                        marginT: 0,
+                        marginB: 7,
+                        marginL: 85,
+                        w: 130,
+                        h: 35,
+                        corner: 1,
+                        bg: '#00AE67',
+                        size: 12,
+                        color: '#fff'
+                    }
+                }
+            }, function(ret) {
+                if (ret.eventType == 'left') {
+                    var dialogBox = api.require('dialogBox');
+                    dialogBox.close({
+                        dialogName: 'alert'
+                    });
+                    api.openWin({
+                        name: 'myBooksList_win',
+                        url: 'myBooksList_win.html',
+                        bounces: true,
+                        rect: {
+                            x: 0,
+                            y: 0,
+                            w: 'auto',
+                            h: 'auto'
+                        }
+                    });
+                }
+            });
+        } catch (e) {
+            alert("请求失败,请检查网络是否正常");
+        } finally {}
+    };
+
+    //刷新本页面方法
+    function refreshUpload(id) {
+        try {
+            uploadBookinfo(id);
+        } catch (e) {}
+    }
+
+    //刷新我的书架页面
+    function refreshMyBooks() {
+        try {
+            //让后台加载数据信息
+            var loaddatafun = 'refreshMyBooks();';
+            api.execScript({
+                name: 'myBooksList_win',
+                frameName: 'myBooksList_frm',
+                script: loaddatafun
+            });
+        } catch (e) {}
+    }
+
+    function closeWin() {
+        api.closeWin({});
+    }
+</script>
+
+</html>

@@ -1,0 +1,279 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title></title>
+    <link href="../css/public.css" rel="stylesheet" />
+    <link href="../css/appordersuccess.css" rel="stylesheet" />
+    <link href="../css/aui.css" rel="stylesheet" />
+    <style>
+        #div_copy {
+            position: absolute;
+            left: 40%;
+            border-radius: 10px;
+            font-size: 12px;
+            color: #ffffff;
+            margin: 0 auto;
+            top: 40%;
+            z-index: 9;
+            background-color: #ccc;
+            padding: 10px;
+        }
+
+        .hide {
+            display: none;
+        }
+    </style>
+    <script>
+    </script>
+</head>
+
+<body>
+    <div class="wrapper">
+        <div class="content">
+            <div class="slidingblock">
+                <div class="bookinfo" id="bookinfo">
+                    <!-- <div class="imgtext mg10">
+                        <div class="imgtext_img">
+                            <img src="../image/l1.png" />
+                        </div>
+                        <div class="imgtext_text">
+                            <div>在你拥有的一切之下，发现你想要的生活</div>
+                            <div class="imgtext_price">
+                                <span>￥98</span>
+                                <span>×10</span>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="total_imgtext">
+                        <div>
+                            <span>总计：</span>
+                            <span>￥198</span>
+                        </div>
+                    </div>
+                    <div class="receiving_info">
+                        <div>
+                            <span>订单编号：</span>
+                            <span>12345678910</span>
+                        </div>
+                        <div>
+                            <span>下单时间：</span>
+                            <span>2017-06-27 13:34:21</span>
+                        </div>
+                    </div> -->
+                </div>
+
+
+                <div class="consigneeinfo" id="consigneeinfo">
+                    <!-- <div class="consignee">
+                        <div>
+                            <span class="aui-iconfont aui-icon-location"></span>
+                            <span>收货人信息</span>
+                        </div>
+                    </div>
+                    <div class="consignee_info">
+                        <div>
+                            <span>灼大灼</span>
+                            <span>18799992323</span>
+                        </div>
+                        <div>
+                            <span>上海市-杨浦区-创业大厦2号楼1502-1503室上 海游读会科技公司</span>
+                        </div>
+                    </div> -->
+                </div>
+
+                <div class="logisticsinfo" id="logisticsinfo">
+                    <!-- <div class="logistics">
+                        <div>
+                            <span class="aui-iconfont aui-icon-forward"></span>
+                            <span>物流信息</span>
+                        </div>
+                    </div>
+                    <div class="logistics_info">
+                        <div>
+                            <span>圆通快递</span>
+                            <span>2017-07-13 12:24:08</span>
+                        </div>
+                        <div>
+                            <span>快递单号：1367651234567</span>
+                            <input type="button" value="复制" />
+                        </div>
+                    </div> -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="hide" id="div_copy">已复制</div>
+</body>
+<script type="text/javascript" src="../script/jquery.js"></script>
+<script type="text/javascript" src="../script/clipboard.min.js"></script>
+<script type="text/javascript" src="../script/config.js"></script>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript">
+    try {
+        var clipboard = new Clipboard("#copy_ExpressNo");
+        clipboard.on('success', function(e) {
+            //复制成功
+            $("#div_copy").fadeIn();
+            $("#div_copy").fadeIn("slow");
+            $("#div_copy").fadeIn(3000);
+            setTimeout(function() {
+                $("#div_copy").fadeOut();
+                $("#div_copy").fadeOut("slow");
+                $("#div_copy").fadeOut(3000);
+            }, 1500);
+        });
+    } catch (e) {} finally {}
+
+    clipboard.on('error', function(e) {
+        //复制异常
+        //alert("请重试");
+    });
+    apiready = function() {
+
+      try {
+        api.parseTapmode();
+          var pageParam = api.pageParam.orderid;
+          loadAjaxQueryOrderData(pageParam);
+        } catch (e) {
+            alert("数据获取失败，请检查网络是否正常")
+        } finally {}
+
+    };
+
+
+    //异步加载数据，加载来自服务器上的数据信息
+    function loadAjaxQueryOrderData(orderid) {
+      try {
+
+        $api.get(app_apiconfig.QueryOrderLogic + "OrderID=" + orderid,
+            function(ret) {
+                if (ret) {
+
+                    var jsonRet = $api.strToJson(ret);
+                    if (jsonRet && jsonRet.State == 1 && jsonRet.Data && jsonRet.Data != '') {
+                        var data = jsonRet.Data;
+                        if (!data) {
+                            return;
+                        }
+                        //获取订单信息
+                        if (jsonRet.Data["order"]) {
+                            //运费
+                            var str_ExpressRate = Number(jsonRet.Data['order'].ExpressRate == "" ? "0" : jsonRet.Data['order'].ExpressRate);
+                            //购买时总价（包括运费）
+                            var str_SumRate = Number(jsonRet.Data['order'].Rate == "" ? "0.00" : jsonRet.Data['order'].Rate);
+                            //购买数量
+                            var str_GoodsCount = Number(jsonRet.Data['order'].GoodsCount == "" ? "1" : jsonRet.Data['order'].GoodsCount);
+                            //计算单价 计算公式：（总价-运费）/数量
+                            var str_GoodsRate = ((str_SumRate - str_ExpressRate) / str_GoodsCount).toFixed(2);
+                            //下单时间
+                            var str_CreateTime = null;
+                            if (typeof(jsonRet.Data['order'].CreateTime) == "string") {
+                                // str_CreateTime = new Date(parseInt(jsonRet.Data['order'].CreateTime.replace(/[^\d\-]/g, "")));
+                                // str_CreateTime = str_CreateTime.Format("yyyy-MM-dd hh:mm:ss");
+                                  str_CreateTime = jsonRet.Data['order'].CreateTime;
+                            } else {
+                                str_CreateTime = jsonRet.Data['order'].CreateTime;
+                            }
+                            //发货时间
+                            var str_ExpressTime = null;
+                            if (typeof(jsonRet.Data['order'].ExpressTime) == "string") {
+                                // str_ExpressTime = new Date(parseInt(jsonRet.Data['order'].ExpressTime.replace(/[^\d\-]/g, "")));
+                                // str_ExpressTime = str_ExpressTime.Format("yyyy-MM-dd hh:mm:ss");
+                                    str_ExpressTime = jsonRet.Data['order'].ExpressTime;
+                            } else {
+                                str_ExpressTime = jsonRet.Data['order'].ExpressTime;
+                            }
+                            str_ExpressTime = str_ExpressTime == "1900-01-01 00:00:00" ? "　" : str_ExpressTime;
+
+                            var imageurl = jsonRet.Data['order'].GoodsCover==""?"/Skin/images/goods_pic_def.jpg":jsonRet.Data['order'].GoodsCover;
+
+
+                            //商品及订单信息
+                            var temp = "";
+                            temp += '<div class="imgtext mg10">';
+                            temp += '<div class="imgtext_img">';
+                            temp += '<img src="' + app_apiconfig.imageServer + imageurl + '" />';
+                            temp += '</div>';
+                            temp += '<div class="imgtext_text">';
+                            temp += '<div>' + jsonRet.Data['order'].GoodsName + '</div>';
+                            temp += '<div class="imgtext_price">';
+                            temp += '<span>￥' + str_GoodsRate + '<span style="font-size:14px;">  + ' + str_ExpressRate + ' (运费)</span></span>';
+                            temp += '<span>×' + str_GoodsCount + '</span>';
+                            temp += '</div>';
+                            temp += '</div>';
+                            temp += '</div>';
+                            temp += '<div class="total_imgtext">';
+                            temp += '<div>';
+                            temp += '<span>总计：</span>';
+                            temp += '<span>￥' + str_SumRate.toFixed(2) + '</span>';
+                            temp += '</div>';
+                            temp += '</div>';
+                            temp += '<div class="receiving_info">';
+                            temp += '<div>';
+                            temp += '<span>订单编号：</span>';
+                            temp += '<span>' + jsonRet.Data['order'].OrderNo + '</span>';
+                            temp += '</div>';
+                            temp += '<div>';
+                            temp += '<span>下单时间：</span>';
+                            temp += '<span>' + str_CreateTime + '</span>';
+                            temp += '</div>';
+                            temp += '</div>';
+                            //收货人信息
+                            var temp1 = "";
+                            temp1 += '<div class="consignee">';
+                            temp1 += '<div>';
+                            temp1 += '<span class="aui-iconfont aui-icon-location"></span>';
+                            temp1 += '<span>收货人信息</span>';
+                            temp1 += '</div>';
+                            temp1 += '</div>';
+                            temp1 += '<div class="consignee_info">';
+                            temp1 += '<div>';
+                            temp1 += '<span>' + jsonRet.Data['order'].MebName + '</span>';
+                            temp1 += '<span>' + jsonRet.Data['order'].Mobile + '</span>';
+                            temp1 += '</div>';
+                            temp1 += '<div>';
+                            temp1 += '<span>' + jsonRet.Data['order'].Address + '</span>';
+                            temp1 += '</div>';
+                            temp1 += '</div>';
+
+                            //物流信息
+                            var temp2 = "";
+                            temp2 += '<div class="logistics">';
+                            temp2 += '<div>';
+                            temp2 += '<span class="aui-iconfont aui-icon-forward"></span>';
+                            temp2 += '<span>物流信息</span>';
+                            temp2 += '</div>';
+                            temp2 += '</div>';
+                            temp2 += '<div class="logistics_info">';
+                            temp2 += '<div>';
+                            temp2 += '<span>' + jsonRet.Data['order'].ExpressName + '</span>';
+                            temp2 += '<span>' + str_ExpressTime + '</span>';
+                            temp2 += '</div>';
+                            temp2 += '<div>';
+                            temp2 += '<span>快递单号：' + jsonRet.Data['order'].ExpressNo + '</span>';
+                            temp2 += '<input type="button" value="复制" id="copy_ExpressNo" data-clipboard-text="' + jsonRet.Data['order'].ExpressNo + '" data-clipboard-action="copy"/>';
+                            temp2 += '</div>';
+                            temp2 += '</div>';
+                            $api.append($api.byId('bookinfo'), temp);
+                            $api.append($api.byId('consigneeinfo'), temp1);
+                            $api.append($api.byId('logisticsinfo'), temp2);
+                        }
+                    }
+                }
+
+            });
+      } catch (e) {alert("请求失败,请检查网络是否正常");} finally {}
+
+    }
+
+    function closeWin() {
+        api.closeWin({});
+    }
+</script>
+
+</html>

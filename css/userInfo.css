@@ -1,0 +1,28 @@
+/*个人信息页面 start*/
+.body_userInfo{background-color:#F4F4F4 !important;}
+.body_userInfo .personalcenter_plate{padding: 0 10px;background:#fff;margin-top: 20px;}
+.body_userInfo .personalcenter_plate span{color:#cccccc;font-size:14px;}
+.body_userInfo .personalcenter_plate .personalcenter_plate_content{width:100%;height: 50px;border:1px solid #f4f4f4;border-style:none none solid none;display:table;}
+.body_userInfo .personalcenter_plate .personalcenter_plate_content div{width:100%;display: table-cell;font-size: 16px;vertical-align: middle;color:#C0C0C0;}
+.body_userInfo .personalcenter_plate .personalcenter_plate_content div:nth-child(1){color:#757575;width:60%;}
+.body_userInfo .personalcenter_plate .personalcenter_plate_content div:nth-child(2){color:#cccccc;text-align: right;padding-right: 6%;width: 40%;}
+.body_userInfo .personalcenter_plate .personalcenter_plate_content div:nth-child(2) input{color:#cccccc;text-align: right;padding-right: 2%;width:150px;font-size: 16px;}
+.body_userInfo .personalcenter_plate .personalcenter_plate_content div:nth-child(2) img{width:50px;height:50px;border-radius: 25px;vertical-align:middle;float:right;}
+.body_userInfo .personalcenter_plate .user_Img{height: 70px;}
+.body_userInfo .usercenter_cover {width: 100%; height: 100%;opacity: 0.6; filter: alpha(opacity=80);  position: fixed; top: 0; background: #000;display:none;}
+.body_userInfo .usercenter_sex{background-color:#f4f4f4;width: 100%;position: fixed;bottom: 0px;height:30%;z-index:3;font-size: 18px;display:none;}
+.body_userInfo .usercenter_sex div{background-color:#ffffff;width: 100%;border:1px solid #f4f4f4;height:33%;text-align: center;padding-top: 4%;border-style:none none solid none;}
+.body_userInfo .usercenter_sex div:nth-child(1){color: #00ae67;}
+.body_userInfo .usercenter_sex div:nth-child(2){color: #00ae67;}
+.body_userInfo .usercenter_sex div:nth-child(3){height:30%;margin-bottom: 0px;border:1px solid #f4f4f4;margin-top: 2%;}
+/*个人信息页面 end*/
+
+
+/*个人信息-密码修改 start*/
+.body_editPwd{padding: 0 10px;background:#fff;margin-top: 20px;font-size: 16px;overflow: hidden;}
+.body_editPwd .content .user_code{background-color:#f4f4f4;float: left;color:#B9B9B9;text-indent:10%;outline:none;width: 70%;height: 40px; margin-top:5%; border-radius: 20px;}
+.body_editPwd .content .user_checkCode{float: left;text-align:center;line-height:40px;margin-left: 5%;font-size:14px;color:#00ae67;width: 25%;height: 40px; margin-top:5%; border-radius: 20px;border:1px solid #00ae67;}
+.body_editPwd .content .user_Smscode{background-color:#f4f4f4;float: left;color:#B9B9B9;text-indent:10%;outline:none;width: 100%;height: 40px; margin-top:5%; border-radius: 20px;}
+.body_editPwd .content .user_errMsg{font-size:12px; background-color:#FFF3EB;float: left;color:#d0021b;outline:none;margin-left: 5%;margin-top:3%;display: none;}
+.body_editPwd .content .user_Next{float: left;text-align:center;line-height:40px;font-size:18px;color:#ffffff; background-color:#00ae67; width: 100%;height: 40px; margin-top:10%; border-radius: 20px;}
+/*个人信息-密码修改 end*/

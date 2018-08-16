@@ -1,0 +1,17 @@
+﻿
+.order_type{width:100%;height:50px;border:1px solid #D4D4D4;border-style:none none solid none;display:table;background:#fff;}
+.order_type div{display:table-cell;font-size:14px; color:#A7A7A7; line-height: 30px;padding: 0 10px;text-align:center;line-height:50px;}
+.order_type div.active{font-size:18px; color:#D9A378; }
+
+.order_plate{padding: 0 10px;background:#fff;}
+.order_plate span{color:#9D9D9D;font-size:14px;}
+.order_plate a{text-decoration:none;padding-left:20px;font-size:14px;color:#2386D1;}
+.order_content_other,.order_content{width:100%;height:44px;border:1px solid #D4D4D4;border-style:none none solid none;display:table;}
+.order_content_other div{width:100%;display: table-cell;font-size: 16px;line-height: 20px;vertical-align:middle;}
+.order_content div{width:100%;display: table-cell;font-size: 16px;line-height: 20px;vertical-align:middle;}
+
+.order_content_other div:nth-child(1){color:#3C3C3C}
+.order_content_other div:nth-child(2){font-size: 16px; color: #C0C0C0;}
+
+.logout{width: 100%;text-align:center;position:absolute;bottom: 5%}
+.logout input[type=button]{width:85%;height:46px;background:#00AE67;font-size:18px;color:#fff; margin-top: 20px; border-radius: 25px;border-style:none;border:1px solid #DFDFDF;outline:none; -webkit-appearance: none;}

@@ -1,0 +1,152 @@
+<!doctype html>
+<html>
+<!-- 游读活动 -->
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <style>
+        body {background-color: #535250;Font-size:62.5%;}
+        .div_top{margin-top:7%; margin-left: 3%;width:94%;overflow: hidden;}
+        .div_top .div_img{background:url(../image/Return.png);background-size:100% 100%;width:45px;height: 45px;float: left;}
+        .div_top .div_AddManual{text-align:center;font-size: 16px;line-height: 37px;float: right;margin-top: 0px;float:right; border-radius:45px;background-color: #3A3A3A;color: #ffffff;width:95px;height: 40px;}
+        .div_footer{position:absolute;width: 75%;left: 12.5%;overflow: hidden;display: none;}
+        .div_footer .div_footer_img{float: left;width: 15%;}
+        .div_footer .div_footer_img div{background:url(../image/eqcode.png);background-size:100% 100%;width:25px;height: 25px;margin-top: 7px;float: left;}
+        .div_footer .div_footer_co{font-size: 18px;line-height: 30px;color: #ffffff;width:85%;float: left;}
+
+  </style>
+
+</head>
+
+<body>
+    <div class="div_top">
+        <div class="div_img" onclick="closeWin()"></div>
+    </div>
+
+    <div class="div_footer">
+      <div class="div_footer_img"><div></div></div>
+      <div class="div_footer_co">请将扫描书籍背面的条形码,即可自动扫描录入书籍信息</div>
+    </div>
+</body>
+<script type="text/javascript" src="../script/config.js"></script>
+<script type="text/javascript" src="../script/jquery.js"></script>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/scan.js"></script>
+<script type="text/javascript">
+    apiready = function() {
+      // 阻止页面弹动
+      try {
+        api.setWinAttr({
+            bounces: false
+        });
+          var winH = api.winHeight;
+          var winW = api.winWidth;
+
+          //计算扫描区
+          var rect_Wh = winW * 0.75;
+          var rect_x = winW * 0.125;
+          var rect_y = (winH - rect_Wh) / 2.3;
+          //计算底部数字区
+          var footerTop=(rect_Wh+rect_y+15).toFixed(0);
+          $(".div_footer").css("top",""+footerTop+"px");
+          $(".div_footer").css("display","block");
+          //扫码区大小
+          var  FNS_data = {
+              "rect_x": rect_x,
+              "rect_y": rect_y,
+              "rect_W": rect_Wh,
+              "rect_H": rect_Wh
+          };
+          //请求扫码接口
+          $ScanObject.sanfphoto(FNS_data,callbaksfp);
+
+        } catch (e) {alert("请求失败,请检查网络是否正常");}
+ };
+
+    //扫码完成回调
+    function callbaksfp(scan_id, scan_eventType) {
+     $(".div_footer").css("display","block");
+     try {
+       var dialogBox = api.require('dialogBox');
+      dialogBox.close({
+          dialogName: 'alert'
+      });
+     } catch (e) {}
+
+     try {
+       if (scan_eventType == '"success"') {
+           if (scan_id != "") {
+               refreshUpload(scan_id);
+               api.closeToWin({name:'uploadbooksSi_win'});
+              //  api.openWin({
+              //      name: 'uploadbooksSi_win',
+              //      url: 'uploadbooksSi_win.html',
+              //      bounces: true,
+              //      pageParam: {
+              //          "bnno": scan_id
+              //      },
+              //      rect: {
+              //          x: 0,
+              //          y: 0,
+              //          w: 'auto',
+              //          h: 'auto'
+              //      }
+              //  });
+           }else {
+             setTimeout(function() {   uploadBookManual("未获取到书籍信息,请手动补充"); }, 500);
+
+           }
+       }
+       //用户取消扫码
+       else if (scan_eventType == '"cancel"') {
+           setTimeout(function() {   uploadBookManual(""); }, 500);
+       }
+       //扫码识别失败,一般出现在选择图片二维情况下
+       else if (scan_eventType == '"fail"') {
+           setTimeout(function() {   uploadBookManual("扫码识别失败,请手动补充"); }, 500);
+       } else {
+           setTimeout(function() {   uploadBookManual("请求失败"); }, 500);
+       }
+     } catch (e) {}
+
+    }
+
+    function uploadBookManual(str_title) {
+      if(str_title!=""){alert(str_title);}
+      //清空自上传页内容
+      try {
+        if(str_title!=""){
+          var loaddatafun = 'refreshMyPage();';
+          api.execScript({
+             name: 'uploadbooksSi_win',
+              frameName: 'uploadbooksSi_frm',
+              script: loaddatafun
+          });
+        }
+
+        } catch (e) {}
+      api.closeToWin({name:'uploadbooksSi_win'});
+    }
+
+    //刷新上传页面
+    function refreshUpload(id){
+      try {
+        if(id!='' && id!=undefined){id =id.replace("\"", "").replace("\"", "");}
+          //让后台加载数据信息
+          var loaddatafun = 'uploadBookinfo("'+id+'");';
+          api.execScript({
+              name: 'uploadbooksSi_win',
+              frameName: 'uploadbooksSi_frm',
+              script: loaddatafun
+          });
+        } catch (e) {}
+    }
+
+    function closeWin() {
+        api.closeToWin({name:'uploadbooksSi_win'});
+    }
+</script>
+
+</html>

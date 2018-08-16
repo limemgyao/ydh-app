@@ -1,0 +1,19 @@
+﻿body{ padding: 0;margin: 0;width:100%;background:url(../image/register_bg.png);background-size:100%;}
+.register_t{width: 100%; border: 1px solid #000;color: #fff;font-size: 0.9rem;line-height: 1.25rem;position: relative;z-index: 20; height: 4rem; padding-left: 1rem;padding-top: 1.5rem;padding-bottom: 0;margin: 0; border-radius: 0.1rem; border-width: 0;background: transparent !important;}
+.register_t span{font-size: 20px;}
+.register_log { width: 100%;display: table;text-align: center;}
+.register_log img{width: 6em;margin: auto;display: table-cell;}
+.register_log span{display: block; font-size: 18px;color: #fff;margin-top: 20px;}
+.register_input{width:100%;margin-top: 20%}
+.register_input input[type=text]{ display: block;margin: auto;width: 85%;height: 30px; margin-top: 40px;margin-left: 30px;border: none;color:#B9B9B9;background-color: rgba(0,0,0,0);outline: none;}
+.register_input input[type=tel]{ display: block;margin: auto;width: 85%;height: 30px; margin-top: 40px;margin-left: 30px;border: none;color:#B9B9B9;background-color: rgba(0,0,0,0);outline: none;}
+
+.agreement {line-height: 46px;color: #B9B9B9; display: block;margin-top: 20px;text-align: left;font-size:12px; margin-left: 50px; }
+.agreement a{text-decoration: underline;color: #B9B9B9; }
+
+.fillin{border: 1px solid #DFDFDF;border-style: none none solid none;padding: 0 25px;margin: 0 25px;position:relative;opacity: 0.8}
+.fillin img{display: inline;position: absolute;width: 16px;top: 5px;}
+.logout{width: 100%;text-align:center;position:absolute;bottom: 5%}
+.logout input[type=button]{width:85%;height:46px;background:#00AE67;font-size:18px;color:#fff; margin-top: 20px; border-radius: 25px;border-style:none;outline:none; -webkit-appearance: none;}
+.vfccode{position: absolute;right: 20px;top: 5px;font-size: 14px;color: #02dc83;}
+.enabled{ color: #8d8d8d; pointer-events: none; }

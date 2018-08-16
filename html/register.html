@@ -1,0 +1,185 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title></title>
+    <link href="../css/appregister.css" rel="stylesheet" />
+    <link href="../css/aui.css" rel="stylesheet" />
+</head>
+
+<body>
+
+    <div class="register_t" onclick="closeWin()"><span class="aui-iconfont aui-icon-left"></span> </div>
+    <div class="register_log">
+        <img src="../image/ydh_logo.png" />
+        <span>游读会</span>
+    </div>
+    <div class="register_input">
+        <div class="fillin"> <img src="../image/phone.png" /><input type="text" placeholder="手机号码" id="txt_name" value="" /></div>
+        <div class="fillin"><img src="../image/vfccode.png" /><input type="text" placeholder="验证码" id="txt_mobile" /><span class="vfccode" id="span_sendcode" onclick="sendcode();">获取验证码</span></div>
+        <div class="agreement"><input type="checkbox" checked="checked" style="margin-right: 15px;">我已阅读并同意 <a href="#" onclick="agreement()">《游读会用户协议》</a></div>
+
+    </div>
+    <div class="logout">
+        <input type="button" value="注册" onclick="register()" />
+    </div>
+</body>
+
+</html>
+<script type="text/javascript" src="../script/config.js"></script>
+<script type="text/javascript" src="../script/api.js"></script>
+<script>
+    function sendcode() {
+      try {
+        // 阻止页面弹动
+        api.setWinAttr({
+            bounces: false
+        });
+        var mobile = $api.val($api.byId('txt_name'));
+        var Regex = /^0?1[0-9]{10}$/;
+        if (!Regex.test(mobile)) {
+
+            alert("请输入正确的手机号码！");
+            return;
+        }
+        $api.addCls(span_sendcode, 'enabled');
+        $api.html($api.byId('span_sendcode'), '获取中...');
+        api.ajax({
+            url: app_apiconfig.SendCode + '?mobile=' + mobile,
+            method: 'get'
+        }, function(json, err) {
+            if (json) {
+                if (json.Data != null && json.Data!="") {
+                    if(json.Data>0){
+                      $api.html($api.byId('span_sendcode'), '获取验证码');
+                      $api.removeCls(span_sendcode, 'enabled');
+                    }else if(json.Data=="-99"){
+
+                      $api.html($api.byId('span_sendcode'), '获取验证码');
+                      $api.removeCls(span_sendcode, 'enabled');
+                        alert("正在发送验证码，请1分钟后再获取");
+                    }else {
+
+                      $api.html($api.byId('span_sendcode'), '获取验证码');
+                      $api.removeCls(span_sendcode, 'enabled');
+                      alert("获取验证码失败");
+                    }
+                }else {
+
+                    $api.html($api.byId('span_sendcode'), '获取验证码');
+                    $api.removeCls(span_sendcode, 'enabled');
+                      alert("获取验证码失败");
+                }
+              }else {
+
+                $api.html($api.byId('span_sendcode'), '获取验证码');
+                $api.removeCls(span_sendcode, 'enabled');
+                alert("获取验证码失败");
+              }
+        });
+      } catch (e) {alert("请求失败,请检查网络是否正常");
+      $api.html($api.byId('span_sendcode'), '获取验证码');
+      $api.removeCls(span_sendcode, 'enabled');
+    } finally {}
+
+    }
+
+    function agreement() {
+      try {
+        api.openFrame({
+            name: 'agreement_win',
+            url: 'agreement_win.html',
+            bounces: true,
+            rect: {
+                x: 0,
+                y: 0,
+                w: 'auto',
+                h: 'auto'
+            }
+        })
+      } catch (e) {alert("请求失败,请检查网络是否正常");} finally {}
+
+    }
+
+
+    function register() {
+        try {
+          var usercode = $api.val($api.byId('txt_name')),
+              mobile = $api.val($api.byId('txt_name')),
+              username = $api.val($api.byId('txt_name')),
+              checkCode = $api.val($api.byId('txt_mobile'));
+          if (username == "") {
+              alert("请输入姓名！");
+              return false;
+          }
+          Regex = /^0?1[0-9]{10}$/;
+          if (!Regex.test(mobile)) {
+              alert("请输入正确的手机号码！");
+              return false;
+          }
+          var urlapi = app_apiconfig.Register + "MebCode=" + usercode + "&MebName=" + username + "&Mobile=" + mobile + "&ChainID=0" + "&CheckCode=" + checkCode;
+
+            //发送请求
+            api.ajax({
+                url: urlapi,
+                method: 'get',
+            }, function(json, err) {
+                if (json.State == "200") {
+                    // window.localStorage.setItem("User", $api.jsonToStr(json));
+                    // window.localStorage.setItem("user_id", json.Data.ID);
+                    // console.log("json.Data.ID:"+json.Data.ID);
+
+                    var userData = json.Data;
+                    $api.setStorage('loginUser', userData);
+                    $api.user.setInfo({
+                        "user_mobile": userData.Mobile,
+                        "user_id": userData.ID,
+                        "user_name": userData.MebName,
+                        "user_login": true,
+                        "user_type": userData.MebType,
+                        "user_ads": userData.Address
+                    });
+
+                    api.openWin({
+                        name: 'personalcenter_win',
+                        url: 'personalcenter_win.html',
+                        bounces: true,
+                        animation: {
+                            type: 'none'
+                        },
+                        rect: {
+                            x: 0,
+                            y: 0,
+                            w: 'auto',
+                            h: 'auto'
+                        }
+                    });
+                }
+                if (json.State == "201") {
+                    alert(json.ErrMsg)
+                }
+            });
+
+        } catch (e) {
+            alert('哦？似乎我们的应用开小差了,请稍等片刻!');
+        }
+    }
+
+    function getQueryStr(str) { //获取URL指定传递参数的值
+      try {
+        var url = window.location.href.replace("#", "");
+        var rs = new RegExp("(^|[\&\?])" + str + "=([^\&]*)(\&|$)", "gi").exec(url),
+            tmp;
+        if (tmp = rs) return tmp[2];
+        return "";
+      } catch (e) {alert("请求失败,请检查网络是否正常");} finally {}
+
+    }
+
+    function closeWin() {
+        api.closeWin({});
+    }
+</script>
